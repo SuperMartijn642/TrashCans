@@ -1,0 +1,45 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle": "#all"
+	},
+	"elements": [
+		{
+			"name": "base",
+			"from": [3, 0, 3],
+			"to": [13, 12, 13],
+			"faces": {
+				"north": {"uv": [1.5, 2.5, 6.5, 8], "texture": "#all"},
+				"east": {"uv": [1.5, 2.5, 6.5, 8], "texture": "#all"},
+				"south": {"uv": [1.5, 2.5, 6.5, 8], "texture": "#all"},
+				"west": {"uv": [1.5, 2.5, 6.5, 8], "texture": "#all"},
+				"down": {"uv": [9.5, 9.5, 14.5, 14.5], "texture": "#all", "cullface": "down"}
+			}
+		},
+		{
+			"name": "lid",
+			"from": [2, 12, 2],
+			"to": [14, 13, 14],
+			"faces": {
+				"north": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"east": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"south": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"west": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"up": {"uv": [1, 9, 7, 15], "texture": "#all"},
+				"down": {"uv": [1, 9, 7, 15], "texture": "#all"}
+			}
+		},
+		{
+			"name": "upper_lid",
+			"from": [3, 12.5, 3],
+			"to": [13, 13.5, 13],
+			"faces": {
+				"north": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"east": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"south": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"west": {"uv": [1, 2, 7, 2.5], "texture": "#all"},
+				"up": {"uv": [1.5, 9.5, 6.5, 14.5], "texture": "#all"}
+			}
+		}
+	]
+}
