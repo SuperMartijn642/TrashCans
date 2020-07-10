@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "CAC",
+    "CCC"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "C": {
+      "tag": "forge:cobblestone"
+    },
+    "A": {
+      "item": "minecraft:bucket"
+    }
+  },
+  "result": {
+    "item": "trashcans:liquid_trash_can"
+  }
+}
