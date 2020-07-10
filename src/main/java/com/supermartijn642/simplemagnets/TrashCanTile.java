@@ -2,15 +2,14 @@ package com.supermartijn642.simplemagnets;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -59,41 +58,56 @@ public class TrashCanTile extends TileEntity {
 
     private static final IFluidHandler FLUID_HANDLER = new IFluidHandler() {
         @Override
-        public int getTanks(){
-            return 1;
+        public IFluidTankProperties[] getTankProperties(){
+            return new IFluidTankProperties[]{new IFluidTankProperties() {
+                @Nullable
+                @Override
+                public FluidStack getContents(){
+                    return null;
+                }
+
+                @Override
+                public int getCapacity(){
+                    return Integer.MAX_VALUE;
+                }
+
+                @Override
+                public boolean canFill(){
+                    return true;
+                }
+
+                @Override
+                public boolean canDrain(){
+                    return false;
+                }
+
+                @Override
+                public boolean canFillFluidType(FluidStack fluidStack){
+                    return true;
+                }
+
+                @Override
+                public boolean canDrainFluidType(FluidStack fluidStack){
+                    return false;
+                }
+            }};
         }
 
-        @Nonnull
         @Override
-        public FluidStack getFluidInTank(int tank){
-            return FluidStack.EMPTY;
+        public int fill(FluidStack resource, boolean doFill){
+            return resource.amount;
         }
 
+        @Nullable
         @Override
-        public int getTankCapacity(int tank){
-            return Integer.MAX_VALUE;
+        public FluidStack drain(FluidStack resource, boolean doDrain){
+            return null;
         }
 
+        @Nullable
         @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack){
-            return true;
-        }
-
-        @Override
-        public int fill(FluidStack resource, FluidAction action){
-            return resource.getAmount();
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction action){
-            return FluidStack.EMPTY;
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction action){
-            return FluidStack.EMPTY;
+        public FluidStack drain(int maxDrain, boolean doDrain){
+            return null;
         }
     };
 
@@ -129,26 +143,58 @@ public class TrashCanTile extends TileEntity {
         }
     };
 
+    public static class ItemTrashCanTile extends TrashCanTile {
+        public ItemTrashCanTile(){
+            super(true, false, false);
+        }
+    }
+
+    public static class LiquidTrashCanTile extends TrashCanTile {
+        public LiquidTrashCanTile(){
+            super(false, true, false);
+        }
+    }
+
+    public static class EnergyTrashCanTile extends TrashCanTile {
+        public EnergyTrashCanTile(){
+            super(false, false, true);
+        }
+    }
+
+    public static class UltimateTrashCanTile extends TrashCanTile {
+        public UltimateTrashCanTile(){
+            super(true, true, true);
+        }
+    }
+
     private final boolean items;
     private final boolean liquids;
     private final boolean energy;
 
-    public TrashCanTile(TileEntityType<?> tileEntityTypeIn, boolean items, boolean liquids, boolean energy){
-        super(tileEntityTypeIn);
+    public TrashCanTile(boolean items, boolean liquids, boolean energy){
+        super();
         this.items = items;
         this.liquids = liquids;
         this.energy = energy;
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
+    public boolean hasCapability(Capability<?> cap, @Nullable EnumFacing facing){
+        return (this.items && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ||
+            (this.liquids && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) ||
+            (this.energy && cap == CapabilityEnergy.ENERGY) ||
+            super.hasCapability(cap, facing);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing facing){
         if(this.items && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return LazyOptional.of(() -> ITEM_HANDLER).cast();
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(ITEM_HANDLER);
         if(this.liquids && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-            return LazyOptional.of(() -> FLUID_HANDLER).cast();
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(FLUID_HANDLER);
         if(this.energy && cap == CapabilityEnergy.ENERGY)
-            return LazyOptional.of(() -> ENERGY_STORAGE).cast();
-        return LazyOptional.empty();
+            return CapabilityEnergy.ENERGY.cast(ENERGY_STORAGE);
+        return super.getCapability(cap, facing);
     }
 }

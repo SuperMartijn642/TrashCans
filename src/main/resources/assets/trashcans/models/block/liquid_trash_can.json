@@ -1,5 +1,5 @@
 {
-  "parent": "trashcans:trash_can",
+  "parent": "trashcans:block/trash_can",
   "textures": {
     "all": "trashcans:trash_can_liquids"
   }

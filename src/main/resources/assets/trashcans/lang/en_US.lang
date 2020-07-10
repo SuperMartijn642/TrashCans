@@ -1,0 +1,4 @@
+tile.trashcans:item_trash_can.name=Item Trash Can
+tile.trashcans:liquid_trash_can.name=Liquid Trash Can
+tile.trashcans:energy_trash_can.name=Energy Trash Can
+tile.trashcans:ultimate_trash_can.name=Ultimate Trash Can

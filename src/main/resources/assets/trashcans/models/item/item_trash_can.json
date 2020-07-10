@@ -1,3 +1,3 @@
 {
-    "parent": "trashcans:item_trash_can"
+    "parent": "trashcans:block/item_trash_can"
 }

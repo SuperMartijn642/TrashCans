@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "trashcans:energy_trash_can" }
+    "normal": { "model": "trashcans:energy_trash_can" }
   }
 }
