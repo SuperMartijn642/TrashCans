@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -405,8 +406,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
     }
 
     @Override
-    public void read(CompoundNBT compound){
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound){
+        super.func_230337_a_(state, compound);
         this.handleData(compound.getCompound("data"));
     }
 
@@ -418,8 +419,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
     }
 
     @Override
-    public void handleUpdateTag(CompoundNBT tag){
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(BlockState state, CompoundNBT tag){
+        super.handleUpdateTag(state, tag);
         this.handleData(tag.getCompound("data"));
     }
 

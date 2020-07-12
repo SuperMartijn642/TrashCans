@@ -1,12 +1,13 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.trashcans.TrashCanTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 /**
@@ -21,8 +22,8 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     }
 
     @Override
-    protected void init(){
-        super.init();
+    protected void func_231160_c_(){
+        super.func_231160_c_();
 
         TrashCanTile tile = this.container.getTileOrClose();
         if(tile != null)
@@ -32,30 +33,25 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     protected abstract void addButtons(TrashCanTile tile);
 
     @Override
-    protected <T extends Widget> T addButton(T p_addButton_1_){
-        return super.addButton(p_addButton_1_);
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks){
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+    public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+        this.func_230446_a_(matrixStack);
+        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+        this.func_230459_a_(matrixStack, mouseX, mouseY);
 
         TrashCanTile tile = this.container.getTileOrClose();
         if(tile != null)
-            this.drawToolTips(tile, mouseX, mouseY);
+            this.drawToolTips(matrixStack, tile, mouseX, mouseY);
     }
 
-    protected abstract void drawToolTips(TrashCanTile tile, int mouseX, int mouseY);
+    protected abstract void drawToolTips(MatrixStack matrixStack, TrashCanTile tile, int mouseX, int mouseY);
 
     @Override
-    public void tick(){
+    public void func_231023_e_(){
         TrashCanTile tile = this.container.getTileOrClose();
         if(tile == null)
             return;
 
-        super.tick();
+        super.func_231023_e_();
         this.tick(tile);
     }
 
@@ -64,38 +60,35 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     protected abstract String getBackground();
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY){
+    protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY){
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getInstance().getTextureManager().bindTexture(new ResourceLocation("trashcans", "textures/" + this.getBackground()));
-        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        this.func_238474_b_(matrixStack, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
-        this.drawCenteredString(this.title, this.xSize / 2f, 6);
-        this.drawString(this.playerInventory.getDisplayName(), 21, this.ySize - 94);
+        this.drawCenteredString(matrixStack, this.field_230704_d_, this.xSize / 2f, 6);
+        this.drawString(matrixStack, this.playerInventory.getDisplayName(), 21, this.ySize - 94);
 
         TrashCanTile tile = this.container.getTileOrClose();
         if(tile != null)
-            this.drawText(tile);
+            this.drawText(matrixStack, tile);
     }
 
-    protected abstract void drawText(TrashCanTile tile);
+    protected abstract void drawText(MatrixStack matrixStack, TrashCanTile tile);
 
-    protected void drawCenteredString(ITextComponent text, float x, float y){
-        this.drawCenteredString(text.getFormattedText(), x, y);
+    public void drawCenteredString(MatrixStack matrixStack, ITextComponent text, float x, float y){
+        this.field_230712_o_.func_238422_b_(matrixStack, text, this.guiLeft + x - this.field_230712_o_.func_238414_a_(text) / 2f, this.guiTop + y, 4210752);
     }
 
-    protected void drawCenteredString(String s, float x, float y){
-        this.font.drawString(s, this.guiLeft + x - this.font.getStringWidth(s) / 2f, this.guiTop + y, 4210752);
+    public void drawString(MatrixStack matrixStack, ITextComponent text, float x, float y){
+        this.field_230712_o_.func_238422_b_(matrixStack, text, this.guiLeft + x, this.guiTop + y, 4210752);
     }
 
-    protected void drawString(ITextComponent text, float x, float y){
-        this.drawString(text.getFormattedText(), x, y);
+    public void renderToolTip(MatrixStack matrixStack, boolean translate, String string, int x, int y){
+        super.func_238652_a_(matrixStack, translate ? new TranslationTextComponent(string) : new StringTextComponent(string), x, y);
     }
 
-    protected void drawString(String s, float x, float y){
-        this.font.drawString(s, this.guiLeft + x, this.guiTop + y, 4210752);
-    }
-
-    public void renderToolTip(boolean translate, String string, int x, int y){
-        super.renderTooltip(translate ? new TranslationTextComponent(string).getFormattedText() : string, x, y);
+    @Override
+    protected void func_230451_b_(MatrixStack p_230451_1_, int p_230451_2_, int p_230451_3_){
+        // stop default text drawing
     }
 }
