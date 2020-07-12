@@ -1,6 +1,6 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.supermartijn642.trashcans.TrashCanTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -65,7 +65,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY){
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getInstance().getTextureManager().bindTexture(new ResourceLocation("trashcans", "textures/" + this.getBackground()));
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
