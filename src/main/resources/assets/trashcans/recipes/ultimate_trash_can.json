@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "trashcans:item_trash_can"
+    },
+    {
+      "item": "trashcans:liquid_trash_can"
+    },
+    {
+      "item": "trashcans:energy_trash_can"
+    }
+  ],
+  "result": {
+    "item": "trashcans:ultimate_trash_can"
+  }
+}
