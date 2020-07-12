@@ -1,4 +1,4 @@
-package com.supermartijn642.simplemagnets;
+package com.supermartijn642.trashcans;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

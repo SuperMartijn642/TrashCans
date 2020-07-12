@@ -1,4 +1,4 @@
-package com.supermartijn642.simplemagnets;
+package com.supermartijn642.trashcans;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
