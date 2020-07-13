@@ -8,9 +8,11 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -28,19 +30,28 @@ import java.util.function.Supplier;
  */
 public class TrashCanBlock extends Block {
 
-    private final Supplier<? extends TileEntity> provider;
+    private final Supplier<? extends TileEntity> tileProvider;
+    private final int guiId;
 
-    public TrashCanBlock(String registryName, Supplier<? extends TileEntity> provider){
+    public TrashCanBlock(String registryName, Supplier<? extends TileEntity> tileProvider, int guiId){
         super(Material.IRON, MapColor.GRAY);
         this.setRegistryName(registryName);
         this.setUnlocalizedName(TrashCans.MODID + ":" + registryName);
-        this.provider = provider;
+        this.tileProvider = tileProvider;
+        this.guiId = guiId;
 
         this.setCreativeTab(CreativeTabs.SEARCH);
         this.setHardness(1.5f);
         this.setResistance(6);
         this.setHarvestLevel("pickaxe", 1);
         this.setSoundType(SoundType.STONE);
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
+        if(!worldIn.isRemote)
+            playerIn.openGui(TrashCans.instance, this.guiId, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        return true;
     }
 
     @Override
@@ -82,7 +93,7 @@ public class TrashCanBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(World world, IBlockState state){
-        return this.provider.get();
+        return this.tileProvider.get();
     }
 
     @Override

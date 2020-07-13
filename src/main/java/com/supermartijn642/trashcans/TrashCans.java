@@ -1,13 +1,22 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
+import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
+import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
+import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -19,6 +28,11 @@ public class TrashCans {
     public static final String NAME = "Trash Cans";
     public static final String VERSION = "1.0.0";
 
+    @Mod.Instance
+    public static TrashCans instance;
+
+    public static SimpleNetworkWrapper channel;
+
     @GameRegistry.ObjectHolder("trashcans:item_trash_can")
     public static Block item_trash_can;
     @GameRegistry.ObjectHolder("trashcans:liquid_trash_can")
@@ -28,14 +42,29 @@ public class TrashCans {
     @GameRegistry.ObjectHolder("trashcans:ultimate_trash_can")
     public static Block ultimate_trash_can;
 
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent e){
+        channel = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+
+        channel.registerMessage(PacketToggleItemWhitelist.class, PacketToggleItemWhitelist.class, 0, Side.SERVER);
+        channel.registerMessage(PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist.class, 1, Side.SERVER);
+        channel.registerMessage(PacketToggleEnergyLimit.class, PacketToggleEnergyLimit.class, 2, Side.SERVER);
+        channel.registerMessage(PacketChangeEnergyLimit.class, PacketChangeEnergyLimit.class, 3, Side.SERVER);
+    }
+
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent e){
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+    }
+
     @Mod.EventBusSubscriber
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlockRegistry(final RegistryEvent.Register<Block> e){
-            e.getRegistry().register(new TrashCanBlock("item_trash_can", TrashCanTile.ItemTrashCanTile::new));
-            e.getRegistry().register(new TrashCanBlock("liquid_trash_can", TrashCanTile.LiquidTrashCanTile::new));
-            e.getRegistry().register(new TrashCanBlock("energy_trash_can", TrashCanTile.EnergyTrashCanTile::new));
-            e.getRegistry().register(new TrashCanBlock("ultimate_trash_can", TrashCanTile.UltimateTrashCanTile::new));
+            e.getRegistry().register(new TrashCanBlock("item_trash_can", TrashCanTile.ItemTrashCanTile::new, 0));
+            e.getRegistry().register(new TrashCanBlock("liquid_trash_can", TrashCanTile.LiquidTrashCanTile::new, 1));
+            e.getRegistry().register(new TrashCanBlock("energy_trash_can", TrashCanTile.EnergyTrashCanTile::new, 2));
+            e.getRegistry().register(new TrashCanBlock("ultimate_trash_can", TrashCanTile.UltimateTrashCanTile::new, 3));
             GameRegistry.registerTileEntity(TrashCanTile.ItemTrashCanTile.class, new ResourceLocation(MODID, "itemtrashcan"));
             GameRegistry.registerTileEntity(TrashCanTile.LiquidTrashCanTile.class, new ResourceLocation(MODID, "liquidtrashcan"));
             GameRegistry.registerTileEntity(TrashCanTile.EnergyTrashCanTile.class, new ResourceLocation(MODID, "energytrashcan"));
