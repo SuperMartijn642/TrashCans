@@ -7,13 +7,16 @@
   ],
   "key": {
     "S": {
-      "item": "minecraft:stone"
+      "item": "minecraft:stone",
+      "data": 0
     },
     "C": {
-      "tag": "forge:cobblestone"
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
     },
     "A": {
-      "tag": "forge:chests/wooden"
+      "type": "forge:ore_dict",
+      "ore": "chestWood"
     }
   },
   "result": {

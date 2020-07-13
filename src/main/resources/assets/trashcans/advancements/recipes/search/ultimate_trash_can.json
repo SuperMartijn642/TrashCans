@@ -1,0 +1,38 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "trashcans:ultimate_trash_can"
+    ]
+  },
+  "criteria": {
+    "cans": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "trashcans:item_trash_can"
+          },
+          {
+            "item": "trashcans:liquid_trash_can"
+          },
+          {
+            "item": "trashcans:energy_trash_can"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "trashcans:ultimate_trash_can"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "cans",
+      "has_the_recipe"
+    ]
+  ]
+}
