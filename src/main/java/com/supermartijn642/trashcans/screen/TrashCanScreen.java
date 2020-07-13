@@ -32,11 +32,6 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     protected abstract void addButtons(TrashCanTile tile);
 
     @Override
-    protected <T extends Widget> T addButton(T p_addButton_1_){
-        return super.addButton(p_addButton_1_);
-    }
-
-    @Override
     public void render(int mouseX, int mouseY, float partialTicks){
         this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
