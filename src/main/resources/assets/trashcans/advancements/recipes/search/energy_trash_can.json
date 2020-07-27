@@ -15,18 +15,11 @@
           }
         ]
       }
-    },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "trashcans:energy_trash_can"
-      }
     }
   },
   "requirements": [
     [
-      "redstone",
-      "has_the_recipe"
+      "redstone"
     ]
   ]
 }
