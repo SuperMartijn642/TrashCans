@@ -21,18 +21,11 @@
           }
         ]
       }
-    },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "trashcans:ultimate_trash_can"
-      }
     }
   },
   "requirements": [
     [
-      "cans",
-      "has_the_recipe"
+      "cans"
     ]
   ]
 }
