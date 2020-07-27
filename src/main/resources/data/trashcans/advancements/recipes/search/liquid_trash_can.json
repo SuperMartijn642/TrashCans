@@ -15,18 +15,11 @@
           }
         ]
       }
-    },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "trashcans:liquid_trash_can"
-      }
     }
   },
   "requirements": [
     [
-      "bucket",
-      "has_the_recipe"
+      "bucket"
     ]
   ]
 }
