@@ -19,13 +19,13 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
 
     @Override
     protected void addButtons(TrashCanTile tile){
-        this.whitelistButton = this.func_230480_a_(new WhitelistButton(this.guiLeft + 175, this.guiTop + this.ySize - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.pos))));
+        this.whitelistButton = this.addButton(new WhitelistButton(this.guiLeft + 175, this.guiTop + this.ySize - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.pos))));
         this.whitelistButton.update(tile.itemFilterWhitelist);
     }
 
     @Override
     protected void drawToolTips(MatrixStack matrixStack, TrashCanTile tile, int mouseX, int mouseY){
-        if(this.whitelistButton.func_230449_g_())
+        if(this.whitelistButton.isHovered())
             this.renderToolTip(matrixStack, true, "gui.whitelist." + (this.whitelistButton.white ? "on" : "off"), mouseX, mouseY);
     }
 
