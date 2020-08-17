@@ -76,11 +76,11 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     protected abstract void drawText(MatrixStack matrixStack, TrashCanTile tile);
 
     public void drawCenteredString(MatrixStack matrixStack, ITextComponent text, float x, float y){
-        this.font.func_243248_b(matrixStack, text, this.guiLeft + x - this.font.func_238414_a_(text) / 2f, this.guiTop + y, 4210752);
+        this.font.func_238407_a_(matrixStack, text, this.guiLeft + x - this.font.func_238414_a_(text) / 2f, this.guiTop + y, 4210752);
     }
 
     public void drawString(MatrixStack matrixStack, ITextComponent text, float x, float y){
-        this.font.func_243248_b(matrixStack, text, this.guiLeft + x, this.guiTop + y, 4210752);
+        this.font.func_238407_a_(matrixStack, text, this.guiLeft + x, this.guiTop + y, 4210752);
     }
 
     public void renderToolTip(MatrixStack matrixStack, boolean translate, String string, int x, int y){
