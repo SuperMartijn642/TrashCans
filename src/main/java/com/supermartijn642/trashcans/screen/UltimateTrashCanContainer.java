@@ -150,7 +150,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             @Override
             public ItemStack getStackInSlot(int slot){
                 TrashCanTile tile = UltimateTrashCanContainer.this.getTileOrClose();
-                return tile == null ? ItemStack.EMPTY : FluidUtil.getFilledBucket(tile.liquidFilter.get(slot));
+                return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : FluidUtil.getFilledBucket(tile.liquidFilter.get(slot));
             }
         };
     }
