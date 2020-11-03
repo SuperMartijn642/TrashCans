@@ -36,7 +36,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.func_230459_a_(matrixStack, mouseX, mouseY);
+        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
 
         TrashCanTile tile = this.container.getTileOrClose();
         if(tile != null)
@@ -76,7 +76,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     protected abstract void drawText(MatrixStack matrixStack, TrashCanTile tile);
 
     public void drawCenteredString(MatrixStack matrixStack, ITextComponent text, float x, float y){
-        this.font.func_243248_b(matrixStack, text, this.guiLeft + x - this.font.func_238414_a_(text) / 2f, this.guiTop + y, 4210752);
+        this.font.func_243248_b(matrixStack, text, this.guiLeft + x - this.font.getStringPropertyWidth(text) / 2f, this.guiTop + y, 4210752);
     }
 
     public void drawString(MatrixStack matrixStack, ITextComponent text, float x, float y){
