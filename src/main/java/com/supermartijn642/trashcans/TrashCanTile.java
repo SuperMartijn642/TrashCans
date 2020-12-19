@@ -1,5 +1,7 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.trashcans.filter.ItemFilter;
+import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -98,8 +100,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
 
         @Override
         public boolean isFluidValid(int tank, @Nonnull FluidStack stack){
-            for(FluidStack filter : TrashCanTile.this.liquidFilter){
-                if(!filter.isEmpty() && filter.isFluidEqual(stack) && FluidStack.areFluidStackTagsEqual(stack, filter))
+            for(ItemFilter filter : TrashCanTile.this.liquidFilter){
+                if(filter != null && filter.matches(stack))
                     return TrashCanTile.this.liquidFilterWhitelist;
             }
             return !TrashCanTile.this.liquidFilterWhitelist;
@@ -107,8 +109,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
 
         @Override
         public int fill(FluidStack resource, FluidAction action){
-            for(FluidStack filter : TrashCanTile.this.liquidFilter){
-                if(!filter.isEmpty() && filter.isFluidEqual(resource) && FluidStack.areFluidStackTagsEqual(resource, filter))
+            for(ItemFilter filter : TrashCanTile.this.liquidFilter){
+                if(filter != null && filter.matches(resource))
                     return TrashCanTile.this.liquidFilterWhitelist ? resource.getAmount() : 0;
             }
             return TrashCanTile.this.liquidFilterWhitelist ? 0 : resource.getAmount();
@@ -179,6 +181,16 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack){
+            boolean filtered = !TrashCanTile.this.liquidFilterWhitelist;
+            for(ItemFilter filter : TrashCanTile.this.liquidFilter){
+                if(filter != null && filter.matches(stack)){
+                    filtered = TrashCanTile.this.liquidFilterWhitelist;
+                    break;
+                }
+            }
+            if(!filtered)
+                return false;
+
             return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).filter(handler -> {
                 for(int tank = 0; tank < handler.getTanks(); tank++)
                     if(!handler.getFluidInTank(tank).isEmpty())
@@ -280,7 +292,7 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
     public final ArrayList<ItemStack> itemFilter = new ArrayList<>();
     public boolean itemFilterWhitelist = false;
     public final boolean liquids;
-    public final ArrayList<FluidStack> liquidFilter = new ArrayList<>();
+    public final ArrayList<ItemFilter> liquidFilter = new ArrayList<>();
     public boolean liquidFilterWhitelist = false;
     public ItemStack liquidItem = ItemStack.EMPTY;
     public final boolean energy;
@@ -298,7 +310,7 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
 
         for(int i = 0; i < 9; i++){
             this.itemFilter.add(ItemStack.EMPTY);
-            this.liquidFilter.add(FluidStack.EMPTY);
+            this.liquidFilter.add(null);
         }
     }
 
@@ -308,7 +320,7 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
             if(this.liquidItem.getItem() instanceof BucketItem)
                 this.liquidItem = new ItemStack(Items.BUCKET);
             else{
-                TrashCanTile.this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(fluidHandler -> {
+                this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(fluidHandler -> {
                     boolean changed = false;
                     for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
                         if(!fluidHandler.getFluidInTank(tank).isEmpty()){
@@ -333,8 +345,10 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
         if(this.items && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return LazyOptional.of(() -> ITEM_HANDLER).cast();
-        if(this.liquids && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-            return LazyOptional.of(() -> FLUID_HANDLER).cast();
+        if(this.liquids){
+            if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                return LazyOptional.of(() -> FLUID_HANDLER).cast();
+        }
         if(this.energy && cap == CapabilityEnergy.ENERGY)
             return LazyOptional.of(() -> ENERGY_STORAGE).cast();
         return LazyOptional.empty();
@@ -364,7 +378,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                tag.put("liquidFilter" + i, this.liquidFilter.get(i).writeToNBT(new CompoundNBT()));
+                if(this.liquidFilter.get(i) != null)
+                    tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i)));
             tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
                 tag.put("liquidItem", this.liquidItem.write(new CompoundNBT()));
@@ -386,7 +401,7 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? FluidStack.loadFluidStackFromNBT(tag.getCompound("liquidFilter" + i)) : FluidStack.EMPTY);
+                this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i)) : null);
             this.liquidFilterWhitelist = tag.contains("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
             this.liquidItem = tag.contains("liquidItem") ? ItemStack.read(tag.getCompound("liquidItem")) : ItemStack.EMPTY;
         }
