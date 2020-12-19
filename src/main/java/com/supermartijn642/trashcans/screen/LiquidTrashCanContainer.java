@@ -1,14 +1,12 @@
 package com.supermartijn642.trashcans.screen;
 
 import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.trashcans.filter.ItemFilter;
+import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -45,9 +43,9 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
                 if(player.inventory.getItemStack().isEmpty())
                     tile.liquidFilter.set(slotId - 1, null);
                 else{
-                    FluidStack fluid = getFluid(player.inventory.getItemStack());
-                    if(fluid != null)
-                        tile.liquidFilter.set(slotId - 1, fluid.copy());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getItemStack());
+                    if(filter != null)
+                        tile.liquidFilter.set(slotId - 1, filter);
                 }
                 tile.dataChanged();
             }
@@ -67,9 +65,9 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
                 if(player.inventory.getItemStack().isEmpty())
                     tile.liquidFilter.set(index - 1, null);
                 else{
-                    FluidStack fluid = getFluid(player.inventory.getItemStack());
-                    if(fluid != null)
-                        tile.liquidFilter.set(index - 1, fluid.copy());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getItemStack());
+                    if(filter != null)
+                        tile.liquidFilter.set(index - 1, filter);
                 }
                 tile.dataChanged();
             }
@@ -84,22 +82,13 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
         return ItemStack.EMPTY;
     }
 
-    public static FluidStack getFluid(ItemStack stack){
-        if(!stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null))
-            return null;
-        IFluidHandler fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-        return fluidHandler == null || fluidHandler.getTankProperties() == null || fluidHandler.getTankProperties().length != 1 ||
-            fluidHandler.getTankProperties()[0].getContents() == null || fluidHandler.getTankProperties()[0].getContents().amount == 0
-            ? null : fluidHandler.getTankProperties()[0].getContents();
-    }
-
     private IItemHandlerModifiable itemHandler(){
         return new ItemStackHandler(9) {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
                 TrashCanTile tile = LiquidTrashCanContainer.this.getTileOrClose();
-                return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : FluidUtil.getFilledBucket(tile.liquidFilter.get(slot));
+                return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : tile.liquidFilter.get(slot).getRepresentingItem();
             }
         };
     }

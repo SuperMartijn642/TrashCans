@@ -1,5 +1,8 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.trashcans.compat.Compatibility;
+import com.supermartijn642.trashcans.filter.ItemFilter;
+import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBucket;
@@ -107,13 +110,7 @@ public class TrashCanTile extends TileEntity implements ITickable {
 
                 @Override
                 public boolean canFillFluidType(FluidStack fluidStack){
-                    if(fluidStack == null)
-                        return true;
-                    for(FluidStack filter : TrashCanTile.this.liquidFilter){
-                        if(filter != null && filter.isFluidEqual(fluidStack) && FluidStack.areFluidStackTagsEqual(fluidStack, filter))
-                            return TrashCanTile.this.liquidFilterWhitelist;
-                    }
-                    return !TrashCanTile.this.liquidFilterWhitelist;
+                    return fluidStack == null || isFluidValid(0, fluidStack);
                 }
 
                 @Override
@@ -123,10 +120,22 @@ public class TrashCanTile extends TileEntity implements ITickable {
             }};
         }
 
+        public boolean isFluidValid(int tank, @Nonnull FluidStack stack){
+            if(stack == null)
+                return false;
+            for(ItemFilter filter : TrashCanTile.this.liquidFilter){
+                if(filter != null && filter.matches(stack))
+                    return TrashCanTile.this.liquidFilterWhitelist;
+            }
+            return !TrashCanTile.this.liquidFilterWhitelist;
+        }
+
         @Override
         public int fill(FluidStack resource, boolean doFill){
-            for(FluidStack filter : TrashCanTile.this.liquidFilter){
-                if(filter != null && filter.isFluidEqual(resource) && FluidStack.areFluidStackTagsEqual(resource, filter))
+            if(resource == null)
+                return 0;
+            for(ItemFilter filter : TrashCanTile.this.liquidFilter){
+                if(filter != null && filter.matches(resource))
                     return TrashCanTile.this.liquidFilterWhitelist ? resource.amount : 0;
             }
             return TrashCanTile.this.liquidFilterWhitelist ? 0 : resource.amount;
@@ -197,6 +206,18 @@ public class TrashCanTile extends TileEntity implements ITickable {
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack){
+            boolean filtered = !TrashCanTile.this.liquidFilterWhitelist;
+            for(ItemFilter filter : TrashCanTile.this.liquidFilter){
+                if(filter != null && filter.matches(stack)){
+                    filtered = TrashCanTile.this.liquidFilterWhitelist;
+                    break;
+                }
+            }
+            if(!filtered)
+                return false;
+
+            if(Compatibility.MEKANISM.doesItemHaveGasStored(stack))
+                return true;
             if(!stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null))
                 return false;
             IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
@@ -331,7 +352,7 @@ public class TrashCanTile extends TileEntity implements ITickable {
     public final ArrayList<ItemStack> itemFilter = new ArrayList<>();
     public boolean itemFilterWhitelist = false;
     public final boolean liquids;
-    public final ArrayList<FluidStack> liquidFilter = new ArrayList<>();
+    public final ArrayList<ItemFilter> liquidFilter = new ArrayList<>();
     public boolean liquidFilterWhitelist = false;
     public ItemStack liquidItem = ItemStack.EMPTY;
     public final boolean energy;
@@ -358,21 +379,25 @@ public class TrashCanTile extends TileEntity implements ITickable {
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
             if(this.liquidItem.getItem() instanceof ItemBucket)
                 this.liquidItem = new ItemStack(Items.BUCKET);
-            else if(this.liquidItem.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)){
-                IFluidHandlerItem fluidHandler = this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-                if(fluidHandler != null){
-                    IFluidTankProperties[] properties = fluidHandler.getTankProperties();
-                    if(properties != null){
-                        boolean changed = false;
-                        for(IFluidTankProperties property : properties)
-                            if(property.getContents() != null && property.canDrain() && property.getContents().amount > 0){
-                                fluidHandler.drain(property.getContents(), true);
-                                changed = true;
-                            }
-                        if(changed)
-                            TrashCanTile.this.dataChanged();
+            else{
+                if(this.liquidItem.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)){
+                    IFluidHandlerItem fluidHandler = this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                    if(fluidHandler != null){
+                        IFluidTankProperties[] properties = fluidHandler.getTankProperties();
+                        if(properties != null){
+                            boolean changed = false;
+                            for(IFluidTankProperties property : properties)
+                                if(property.getContents() != null && property.canDrain() && property.getContents().amount > 0){
+                                    fluidHandler.drain(property.getContents(), true);
+                                    changed = true;
+                                }
+                            if(changed)
+                                TrashCanTile.this.dataChanged();
+                        }
                     }
                 }
+                if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
+                    this.dataChanged();
             }
         }
         if(this.energy && !this.energyItem.isEmpty() && this.energyItem.hasCapability(CapabilityEnergy.ENERGY, null)){
@@ -387,7 +412,8 @@ public class TrashCanTile extends TileEntity implements ITickable {
     @Override
     public boolean hasCapability(Capability<?> cap, @Nullable EnumFacing facing){
         return (this.items && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ||
-            (this.liquids && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) ||
+            (this.liquids &&
+                (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || (Compatibility.MEKANISM.isInstalled() && cap == Compatibility.MEKANISM.getGasHandlerCapability()))) ||
             (this.energy && cap == CapabilityEnergy.ENERGY) ||
             super.hasCapability(cap, facing);
     }
@@ -397,8 +423,12 @@ public class TrashCanTile extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing facing){
         if(this.items && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(ITEM_HANDLER);
-        if(this.liquids && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(FLUID_HANDLER);
+        if(this.liquids){
+            if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(FLUID_HANDLER);
+            else if(Compatibility.MEKANISM.isInstalled() && cap == Compatibility.MEKANISM.getGasHandlerCapability())
+                return Compatibility.MEKANISM.getGasHandler(this.liquidFilter, () -> TrashCanTile.this.liquidFilterWhitelist);
+        }
         if(this.energy && cap == CapabilityEnergy.ENERGY)
             return CapabilityEnergy.ENERGY.cast(ENERGY_STORAGE);
         return super.getCapability(cap, facing);
@@ -430,7 +460,7 @@ public class TrashCanTile extends TileEntity implements ITickable {
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
                 if(this.liquidFilter.get(i) != null)
-                    tag.setTag("liquidFilter" + i, this.liquidFilter.get(i).writeToNBT(new NBTTagCompound()));
+                    tag.setTag("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i)));
             tag.setBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
                 tag.setTag("liquidItem", this.liquidItem.writeToNBT(new NBTTagCompound()));
@@ -452,7 +482,7 @@ public class TrashCanTile extends TileEntity implements ITickable {
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.hasKey("liquidFilter" + i) ? FluidStack.loadFluidStackFromNBT(tag.getCompoundTag("liquidFilter" + i)) : null);
+                this.liquidFilter.set(i, tag.hasKey("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompoundTag("liquidFilter" + i)) : null);
             this.liquidFilterWhitelist = tag.hasKey("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
             this.liquidItem = tag.hasKey("liquidItem") ? new ItemStack(tag.getCompoundTag("liquidItem")) : ItemStack.EMPTY;
         }

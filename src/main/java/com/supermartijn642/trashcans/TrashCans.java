@@ -1,5 +1,8 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.trashcans.compat.Compatibility;
+import com.supermartijn642.trashcans.filter.FluidFilterManager;
+import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
@@ -55,6 +58,8 @@ public class TrashCans {
     @Mod.EventHandler
     public void init(FMLInitializationEvent e){
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+        LiquidTrashCanFilters.register(new FluidFilterManager(), "fluid");
+        Compatibility.init();
     }
 
     @Mod.EventBusSubscriber
