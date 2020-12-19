@@ -1,5 +1,8 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.trashcans.compat.Compatibility;
+import com.supermartijn642.trashcans.filter.FluidFilterManager;
+import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
@@ -73,6 +76,8 @@ public class TrashCans {
 
     public void init(FMLCommonSetupEvent e){
         DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientProxy::registerScreen);
+        LiquidTrashCanFilters.register(new FluidFilterManager(), "fluid");
+        Compatibility.init();
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
