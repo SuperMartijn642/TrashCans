@@ -29,7 +29,7 @@ public class TrashCans {
 
     public static final String MODID = "trashcans";
     public static final String NAME = "Trash Cans";
-    public static final String VERSION = "1.0.3a";
+    public static final String VERSION = "1.0.4";
 
     @Mod.Instance
     public static TrashCans instance;
