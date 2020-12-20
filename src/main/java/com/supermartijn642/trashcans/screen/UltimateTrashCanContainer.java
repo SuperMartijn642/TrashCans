@@ -113,36 +113,24 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             }
         }else if(index >= 21 && !this.getSlot(index).getStack().isEmpty()){
             ItemStack stack = this.getSlot(index).getStack();
-            if(hasFluidHandler(stack)){
-                if(this.getSlot(1).getStack().isEmpty() && this.getSlot(1).isItemValid(stack)){
-                    TrashCanTile tile = this.getTileOrClose();
-                    if(tile != null){
-                        this.getSlot(1).putStack(stack);
-                        this.getSlot(index).putStack(ItemStack.EMPTY);
-                        tile.dataChanged();
-                    }
+            if(this.getSlot(1).getStack().isEmpty() && this.getSlot(1).isItemValid(stack)){
+                TrashCanTile tile = this.getTileOrClose();
+                if(tile != null){
+                    this.getSlot(1).putStack(stack);
+                    this.getSlot(index).putStack(ItemStack.EMPTY);
+                    tile.dataChanged();
                 }
-            }else if(hasEnergyHandler(stack)){
-                if(this.getSlot(2).getStack().isEmpty() && this.getSlot(2).isItemValid(stack)){
-                    TrashCanTile tile = this.getTileOrClose();
-                    if(tile != null){
-                        this.getSlot(2).putStack(stack);
-                        this.getSlot(index).putStack(ItemStack.EMPTY);
-                        tile.dataChanged();
-                    }
+            }else if(this.getSlot(2).getStack().isEmpty() && this.getSlot(2).isItemValid(stack)){
+                TrashCanTile tile = this.getTileOrClose();
+                if(tile != null){
+                    this.getSlot(2).putStack(stack);
+                    this.getSlot(index).putStack(ItemStack.EMPTY);
+                    tile.dataChanged();
                 }
             }else if(this.getSlot(0).isItemValid(stack))
                 this.getSlot(index).putStack(ItemStack.EMPTY);
         }
         return ItemStack.EMPTY;
-    }
-
-    private static boolean hasFluidHandler(ItemStack stack){
-        return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent();
-    }
-
-    private static boolean hasEnergyHandler(ItemStack stack){
-        return stack.getCapability(CapabilityEnergy.ENERGY).isPresent();
     }
 
     private IItemHandlerModifiable liquidFilterHandler(){
@@ -151,7 +139,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             @Override
             public ItemStack getStackInSlot(int slot){
                 TrashCanTile tile = UltimateTrashCanContainer.this.getTileOrClose();
-                return tile == null ? ItemStack.EMPTY : tile.liquidFilter.get(slot).getRepresentingItem();
+                return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : tile.liquidFilter.get(slot).getRepresentingItem();
             }
         };
     }
