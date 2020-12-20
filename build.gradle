@@ -83,7 +83,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.4-35.0.1'
+    minecraft 'net.minecraftforge:forge:1.16.4-35.1.13'
 
     compileOnly fg.deobf("curse.maven:mekanism:3134211")
     runtimeOnly fg.deobf("curse.maven:mekanism:3134211")
