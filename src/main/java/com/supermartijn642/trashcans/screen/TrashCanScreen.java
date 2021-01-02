@@ -4,10 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.supermartijn642.trashcans.TrashCanTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -88,6 +90,10 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
 
     protected void drawString(String s, float x, float y){
         this.font.drawString(s, this.guiLeft + x, this.guiTop + y, 4210752);
+    }
+
+    public void renderToolTip(List<ITextComponent> text, int x, int y){
+        super.renderTooltip(text.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), x, y);
     }
 
     public void renderToolTip(boolean translate, String string, int x, int y){
