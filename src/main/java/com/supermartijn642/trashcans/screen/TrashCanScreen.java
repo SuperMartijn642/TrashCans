@@ -9,6 +9,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
@@ -96,6 +99,10 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends GuiCon
 
     public void renderToolTip(boolean translate, String string, int x, int y){
         super.drawHoveringText(translate ? new TextComponentTranslation(string).getFormattedText() : string, x, y);
+    }
+
+    public void renderToolTip(List<ITextComponent> text, int x, int y){
+        super.drawHoveringText(text.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), x, y);
     }
 
     @Override

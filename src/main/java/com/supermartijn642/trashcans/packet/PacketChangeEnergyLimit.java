@@ -35,8 +35,9 @@ public class PacketChangeEnergyLimit extends TrashCanPacket<PacketChangeEnergyLi
 
     @Override
     protected void handle(PacketChangeEnergyLimit message, EntityPlayer player, World world, TrashCanTile tile){
-        if(tile.energy && Math.abs(message.amount) >= 100 && Math.abs(message.amount) <= 100000 && message.amount % 10 == 0){
-            int limit = Math.min(Math.max(tile.energyLimit + message.amount, TrashCanTile.MIN_ENERGY_LIMIT), TrashCanTile.MAX_ENERGY_LIMIT);
+        if(tile.energy && Math.abs(this.amount) >= 1 && Math.abs(this.amount) <= 10000){
+            int amount = tile.energyLimit == 1 && this.amount > 1 ? this.amount : tile.energyLimit + this.amount;
+            int limit = Math.min(Math.max(amount, TrashCanTile.MIN_ENERGY_LIMIT), TrashCanTile.MAX_ENERGY_LIMIT);
             if(tile.energyLimit != limit){
                 tile.energyLimit = limit;
                 tile.dataChanged();

@@ -1,11 +1,15 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.google.common.collect.Lists;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -28,9 +32,9 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     protected void addButtons(TrashCanTile tile){
         this.checkBox = this.addButton(new CheckBox(0, this.guiLeft + 21, this.guiTop + 66, () -> TrashCans.channel.sendToServer(new PacketToggleEnergyLimit(this.container.pos))));
         this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow = this.addButton(new ArrowButton(1, this.guiLeft + 49, this.guiTop + 66, true, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.pos, this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000))));
+        this.leftArrow = this.addButton(new ArrowButton(1, this.guiLeft + 49, this.guiTop + 66, true, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.pos, this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
         this.leftArrow.enabled = tile.useEnergyLimit;
-        this.rightArrow = this.addButton(new ArrowButton(2, this.guiLeft + 170, this.guiTop + 66, false, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.pos, this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000))));
+        this.rightArrow = this.addButton(new ArrowButton(2, this.guiLeft + 170, this.guiTop + 66, false, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.pos, this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
         this.rightArrow.enabled = tile.useEnergyLimit;
     }
 
@@ -39,9 +43,19 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
         if(this.checkBox.isMouseOver())
             this.renderToolTip(true, "gui.energy_trash_can.check." + (this.checkBox.checked ? "on" : "off"), mouseX, mouseY);
         if(this.leftArrow.isMouseOver() && this.leftArrow.enabled)
-            this.renderToolTip(false, "" + (this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000), mouseX, mouseY);
+            this.renderToolTip(Lists.newArrayList(
+                new TextComponentString("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
+                new TextComponentTranslation("gui.energy_trash_can.limit.change1", "-100").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("gui.energy_trash_can.limit.change2", "-10000").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("gui.energy_trash_can.limit.change3", "-1").setStyle(new Style().setColor(TextFormatting.AQUA))),
+                mouseX, mouseY);
         if(this.rightArrow.isMouseOver() && this.rightArrow.enabled)
-            this.renderToolTip(false, "+" + (this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000), mouseX, mouseY);
+            this.renderToolTip(Lists.newArrayList(
+                new TextComponentString("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
+                new TextComponentTranslation("gui.energy_trash_can.limit.change1", "+100").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("gui.energy_trash_can.limit.change2", "+10000").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("gui.energy_trash_can.limit.change3", "+1").setStyle(new Style().setColor(TextFormatting.AQUA))),
+                mouseX, mouseY);
     }
 
     @Override
