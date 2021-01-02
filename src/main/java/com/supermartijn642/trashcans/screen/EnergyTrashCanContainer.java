@@ -3,17 +3,9 @@ package com.supermartijn642.trashcans.screen;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
