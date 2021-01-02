@@ -33,7 +33,7 @@ import java.util.ArrayList;
  */
 public class TrashCanTile extends TileEntity implements ITickableTileEntity {
 
-    public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 100;
+    public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
     public final IItemHandler ITEM_HANDLER = new IItemHandlerModifiable() {
         @Override
