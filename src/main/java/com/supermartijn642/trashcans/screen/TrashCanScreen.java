@@ -10,6 +10,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.List;
+
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
@@ -85,6 +87,10 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
 
     public void renderToolTip(MatrixStack matrixStack, boolean translate, String string, int x, int y){
         super.renderTooltip(matrixStack, translate ? new TranslationTextComponent(string) : new StringTextComponent(string), x, y);
+    }
+
+    public void renderToolTip(MatrixStack matrixStack, List<ITextComponent> text, int x, int y){
+        super.renderTooltip(matrixStack, text, x, y);
     }
 
     @Override
