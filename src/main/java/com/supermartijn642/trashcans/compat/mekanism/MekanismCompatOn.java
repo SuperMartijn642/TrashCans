@@ -87,7 +87,9 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
             @Override
             public GasStack insertGas(int i, GasStack gasStack, Action action){
-                return GasStack.EMPTY;
+                if(this.isGasValid(i, gasStack))
+                    return GasStack.EMPTY;
+                return gasStack;
             }
 
             @Override
