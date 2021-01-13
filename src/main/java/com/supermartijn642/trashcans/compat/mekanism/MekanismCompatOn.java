@@ -5,6 +5,7 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import mekanism.api.Action;
 import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
+import mekanism.api.chemical.gas.attribute.GasAttributes;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
@@ -78,6 +79,9 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
             @Override
             public boolean isValid(int i, GasStack gasStack){
+                if(gasStack.has(GasAttributes.Radiation.class))
+                    return false;
+
                 for(ItemFilter filter : filters){
                     if(filter != null && filter.matches(gasStack))
                         return whitelist.get();
@@ -87,7 +91,9 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
             @Override
             public GasStack insertChemical(int i, GasStack gasStack, Action action){
-                return GasStack.EMPTY;
+                if(this.isValid(i, gasStack))
+                    return GasStack.EMPTY;
+                return gasStack;
             }
 
             @Override
