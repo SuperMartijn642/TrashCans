@@ -3,10 +3,7 @@ package com.supermartijn642.trashcans;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.FluidFilterManager;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
-import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
-import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
-import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
+import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.EnergyTrashCanContainer;
 import com.supermartijn642.trashcans.screen.ItemTrashCanContainer;
 import com.supermartijn642.trashcans.screen.LiquidTrashCanContainer;
@@ -72,6 +69,8 @@ public class TrashCans {
         CHANNEL.registerMessage(1, PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist::encode, PacketToggleLiquidWhitelist::decode, PacketToggleLiquidWhitelist::handle);
         CHANNEL.registerMessage(2, PacketToggleEnergyLimit.class, PacketToggleEnergyLimit::encode, PacketToggleEnergyLimit::decode, PacketToggleEnergyLimit::handle);
         CHANNEL.registerMessage(3, PacketChangeEnergyLimit.class, PacketChangeEnergyLimit::encode, PacketChangeEnergyLimit::decode, PacketChangeEnergyLimit::handle);
+        CHANNEL.registerMessage(4, PacketChangeItemFilter.class, PacketChangeItemFilter::encode, PacketChangeItemFilter::decode, PacketChangeItemFilter::handle);
+        CHANNEL.registerMessage(5, PacketChangeLiquidFilter.class, PacketChangeLiquidFilter::encode, PacketChangeLiquidFilter::decode, PacketChangeLiquidFilter::handle);
     }
 
     public void init(FMLCommonSetupEvent e){
