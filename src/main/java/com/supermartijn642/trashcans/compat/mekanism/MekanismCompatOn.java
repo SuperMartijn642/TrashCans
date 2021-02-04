@@ -105,12 +105,12 @@ public class MekanismCompatOn extends MekanismCompatOff {
     }
 
     @Override
-    public boolean isGasStack(Object obj) {
+    public boolean isGasStack(Object obj){
         return obj instanceof GasStack;
     }
 
     @Override
-    public ItemStack getChemicalTankForGasStack(Object gasStack) {
+    public ItemStack getChemicalTankForGasStack(Object gasStack){
         ItemStack stack = new ItemStack(MekanismBlocks.CREATIVE_CHEMICAL_TANK);
         stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).ifPresent(handler -> {
             GasStack gas = ((GasStack)gasStack).copy();

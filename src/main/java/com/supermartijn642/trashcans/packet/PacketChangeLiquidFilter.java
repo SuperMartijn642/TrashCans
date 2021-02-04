@@ -12,38 +12,38 @@ public class PacketChangeLiquidFilter extends TrashCanPacket {
     private int filterSlot;
     private ItemFilter filter;
 
-    public PacketChangeLiquidFilter(BlockPos pos, int filterSlot, ItemFilter filter) {
+    public PacketChangeLiquidFilter(BlockPos pos, int filterSlot, ItemFilter filter){
         super(pos);
         this.filterSlot = filterSlot;
         this.filter = filter;
     }
 
-    public PacketChangeLiquidFilter(PacketBuffer buffer) {
+    public PacketChangeLiquidFilter(PacketBuffer buffer){
         super(buffer);
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(PacketBuffer buffer){
         super.encode(buffer);
-        buffer.writeInt(filterSlot);
-        buffer.writeCompoundTag(LiquidTrashCanFilters.write(filter));
+        buffer.writeInt(this.filterSlot);
+        buffer.writeCompoundTag(LiquidTrashCanFilters.write(this.filter));
     }
 
     @Override
-    protected void decodeBuffer(PacketBuffer buffer) {
+    protected void decodeBuffer(PacketBuffer buffer){
         super.decodeBuffer(buffer);
-        filterSlot = buffer.readInt();
-        filter = LiquidTrashCanFilters.read(buffer.readCompoundTag());
+        this.filterSlot = buffer.readInt();
+        this.filter = LiquidTrashCanFilters.read(buffer.readCompoundTag());
     }
 
-    public static PacketChangeLiquidFilter decode(PacketBuffer buffer) {
+    public static PacketChangeLiquidFilter decode(PacketBuffer buffer){
         return new PacketChangeLiquidFilter(buffer);
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, TrashCanTile tile) {
-        if (tile.liquids) {
-            tile.liquidFilter.set(filterSlot, filter);
+    protected void handle(PlayerEntity player, World world, TrashCanTile tile){
+        if(tile.liquids){
+            tile.liquidFilter.set(this.filterSlot, this.filter);
             tile.dataChanged();
         }
     }

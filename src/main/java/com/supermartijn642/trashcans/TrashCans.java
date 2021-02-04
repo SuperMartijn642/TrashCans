@@ -3,12 +3,7 @@ package com.supermartijn642.trashcans;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.FluidFilterManager;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
-import com.supermartijn642.trashcans.packet.PacketChangeItemFilter;
-import com.supermartijn642.trashcans.packet.PacketChangeLiquidFilter;
-import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
-import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
-import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
+import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.EnergyTrashCanContainer;
 import com.supermartijn642.trashcans.screen.ItemTrashCanContainer;
 import com.supermartijn642.trashcans.screen.LiquidTrashCanContainer;
@@ -35,37 +30,36 @@ import net.minecraftforge.registries.ObjectHolder;
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
-@Mod(TrashCans.MODID)
+@Mod("trashcans")
 public class TrashCans {
 
-    public static final String MODID = "trashcans";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(MODID, "main"), () -> "2", "2"::equals, "2"::equals);
+    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("trashcans", "main"), () -> "1", "1"::equals, "1"::equals);
 
-    @ObjectHolder("item_trash_can")
+    @ObjectHolder("trashcans:item_trash_can")
     public static Block item_trash_can;
-    @ObjectHolder("liquid_trash_can")
+    @ObjectHolder("trashcans:liquid_trash_can")
     public static Block liquid_trash_can;
-    @ObjectHolder("energy_trash_can")
+    @ObjectHolder("trashcans:energy_trash_can")
     public static Block energy_trash_can;
-    @ObjectHolder("ultimate_trash_can")
+    @ObjectHolder("trashcans:ultimate_trash_can")
     public static Block ultimate_trash_can;
 
-    @ObjectHolder("item_trash_can_tile")
+    @ObjectHolder("trashcans:item_trash_can_tile")
     public static TileEntityType<TrashCanTile> item_trash_can_tile;
-    @ObjectHolder("liquid_trash_can_tile")
+    @ObjectHolder("trashcans:liquid_trash_can_tile")
     public static TileEntityType<TrashCanTile> liquid_trash_can_tile;
-    @ObjectHolder("energy_trash_can_tile")
+    @ObjectHolder("trashcans:energy_trash_can_tile")
     public static TileEntityType<TrashCanTile> energy_trash_can_tile;
-    @ObjectHolder("ultimate_trash_can_tile")
+    @ObjectHolder("trashcans:ultimate_trash_can_tile")
     public static TileEntityType<TrashCanTile> ultimate_trash_can_tile;
 
-    @ObjectHolder("item_trash_can_container")
+    @ObjectHolder("trashcans:item_trash_can_container")
     public static ContainerType<ItemTrashCanContainer> item_trash_can_container;
-    @ObjectHolder("liquid_trash_can_container")
+    @ObjectHolder("trashcans:liquid_trash_can_container")
     public static ContainerType<LiquidTrashCanContainer> liquid_trash_can_container;
-    @ObjectHolder("energy_trash_can_container")
+    @ObjectHolder("trashcans:energy_trash_can_container")
     public static ContainerType<EnergyTrashCanContainer> energy_trash_can_container;
-    @ObjectHolder("ultimate_trash_can_container")
+    @ObjectHolder("trashcans:ultimate_trash_can_container")
     public static ContainerType<UltimateTrashCanContainer> ultimate_trash_can_container;
 
     public TrashCans(){
