@@ -6,6 +6,7 @@ import mekanism.api.Action;
 import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
 import mekanism.common.capabilities.Capabilities;
+import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -97,5 +98,21 @@ public class MekanismCompatOn extends MekanismCompatOff {
                 return GasStack.EMPTY;
             }
         };
+    }
+
+    @Override
+    public boolean isGasStack(Object obj){
+        return obj instanceof GasStack;
+    }
+
+    @Override
+    public ItemStack getChemicalTankForGasStack(Object gasStack){
+        ItemStack stack = new ItemStack(MekanismBlocks.CREATIVE_GAS_TANK);
+        stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).ifPresent(handler -> {
+            GasStack gas = ((GasStack)gasStack).copy();
+            gas.setAmount(handler.getGasTankCapacity(0));
+            handler.setGasInTank(0, gas);
+        });
+        return stack;
     }
 }
