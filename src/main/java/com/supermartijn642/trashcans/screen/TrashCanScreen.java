@@ -3,6 +3,7 @@ package com.supermartijn642.trashcans.screen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.ResourceLocation;
@@ -64,7 +65,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Contai
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY){
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getInstance().getTextureManager().bindTexture(new ResourceLocation("trashcans", "textures/" + this.getBackground()));
+        Minecraft.getInstance().getTextureManager().bindTexture(new ResourceLocation(TrashCans.MODID, "textures/" + this.getBackground()));
         this.blit(matrixStack, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
         this.drawCenteredString(matrixStack, this.title, this.xSize / 2f, 6);
