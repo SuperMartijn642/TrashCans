@@ -1,11 +1,11 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
+import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.IFilterManager;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
 import mekanism.common.capabilities.Capabilities;
-import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -45,13 +45,7 @@ public class GasFilterManager implements IFilterManager {
 
         @Override
         public ItemStack getRepresentingItem(){
-            ItemStack stack = new ItemStack(MekanismBlocks.CREATIVE_CHEMICAL_TANK);
-            stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).ifPresent(handler -> {
-                GasStack gas = this.stack.copy();
-                gas.setAmount(handler.getTankCapacity(0));
-                handler.setChemicalInTank(0, gas);
-            });
-            return stack;
+            return Compatibility.MEKANISM.getChemicalTankForGasStack(this.stack);
         }
 
         @Override

@@ -8,8 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;

@@ -32,4 +32,11 @@ public class MekanismCompatOff {
         return null;
     }
 
+    public boolean isGasStack(Object obj){
+        return false;
+    }
+
+    public ItemStack getChemicalTankForGasStack(Object gasStack){
+        return ItemStack.EMPTY;
+    }
 }
