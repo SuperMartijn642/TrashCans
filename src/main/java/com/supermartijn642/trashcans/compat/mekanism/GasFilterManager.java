@@ -1,11 +1,10 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
+import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.IFilterManager;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import mekanism.api.gas.GasStack;
-import mekanism.api.gas.IGasHandler;
-import mekanism.common.MekanismBlocks;
-import mekanism.common.capabilities.Capabilities;
+import mekanism.api.gas.IGasItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -45,14 +44,7 @@ public class GasFilterManager implements IFilterManager {
 
         @Override
         public ItemStack getRepresentingItem(){
-            ItemStack stack = new ItemStack(MekanismBlocks.GasTank);
-            IGasHandler handler = stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
-            if(handler.getTankInfo().length > 0){
-                GasStack gas = this.stack.copy();
-                gas.amount = handler.getTankInfo()[0].getMaxGas();
-                handler.receiveGas(null, gas, true);
-            }
-            return stack;
+            return Compatibility.MEKANISM.getChemicalTankForGasStack(this.stack);
         }
 
         @Override
@@ -66,8 +58,8 @@ public class GasFilterManager implements IFilterManager {
         }
 
         private static GasStack getGas(ItemStack stack){
-            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
-            return gasHandler == null || gasHandler.getTankInfo().length != 1 || gasHandler.getTankInfo()[0].getGas() == null || gasHandler.getTankInfo()[0].getStored() == 0 ? null : gasHandler.getTankInfo()[0].getGas();
+            GasStack gasStack = stack.getItem() instanceof IGasItem ? ((IGasItem)stack.getItem()).getGas(stack) : null;
+            return gasStack != null && gasStack.amount > 0 ? gasStack : null;
         }
     }
 }

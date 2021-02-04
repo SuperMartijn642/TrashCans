@@ -2,11 +2,10 @@ package com.supermartijn642.trashcans.compat.mekanism;
 
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import mekanism.api.gas.Gas;
-import mekanism.api.gas.GasStack;
-import mekanism.api.gas.GasTankInfo;
-import mekanism.api.gas.IGasHandler;
+import mekanism.api.gas.*;
+import mekanism.common.MekanismBlocks;
 import mekanism.common.capabilities.Capabilities;
+import mekanism.common.item.ItemBlockGasTank;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,35 +34,17 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
     @Override
     public boolean doesItemHaveGasStored(ItemStack stack){
-        if(!stack.hasCapability(Capabilities.GAS_HANDLER_CAPABILITY, null))
+        if(!(stack.getItem() instanceof IGasItem))
             return false;
-        IGasHandler handler = stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
-        if(handler == null)
-            return false;
-        GasTankInfo[] properties = handler.getTankInfo();
-        if(properties == null)
-            return false;
-        for(GasTankInfo property : properties)
-            if(property != null && property.getGas() != null && property.getStored() > 0 && handler.canDrawGas(null, property.getGas().getGas()))
-                return true;
-        return false;
+        IGasItem item = (IGasItem)stack.getItem();
+        return item.getGas(stack) != null && item.getGas(stack).amount > 0;
     }
 
     @Override
     public boolean drainGasFromItem(ItemStack stack){
-        IGasHandler handler = stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
-        if(handler != null){
-            GasTankInfo[] properties = handler.getTankInfo();
-            if(properties != null){
-                boolean changed = false;
-                for(GasTankInfo property : properties){
-                    if(property.getGas() != null && property.getStored() > 0 && handler.canDrawGas(null, property.getGas().getGas())){
-                        handler.drawGas(null, property.getStored(), true);
-                        changed = true;
-                    }
-                }
-                return changed;
-            }
+        if(stack.getItem() instanceof IGasItem){
+            IGasItem item = (IGasItem)stack.getItem();
+            item.setGas(stack, null);
         }
         return false;
     }
@@ -112,5 +93,22 @@ public class MekanismCompatOn extends MekanismCompatOff {
                 }};
             }
         };
+    }
+
+    @Override
+    public boolean isGasStack(Object obj){
+        return obj instanceof GasStack;
+    }
+
+    @Override
+    public ItemStack getChemicalTankForGasStack(Object gasStack){
+        ItemStack stack = new ItemStack(MekanismBlocks.GasTank);
+        if(stack.getItem() instanceof IGasItem){
+            IGasItem gasTank = ((ItemBlockGasTank)stack.getItem());
+            GasStack gas = ((GasStack)gasStack).copy();
+            gas.amount = gasTank.getMaxGas(stack);
+            gasTank.setGas(stack, gas);
+        }
+        return stack;
     }
 }

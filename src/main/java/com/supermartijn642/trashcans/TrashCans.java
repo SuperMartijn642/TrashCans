@@ -3,10 +3,7 @@ package com.supermartijn642.trashcans;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.FluidFilterManager;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
-import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
-import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
-import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
+import com.supermartijn642.trashcans.packet.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -53,6 +50,8 @@ public class TrashCans {
         channel.registerMessage(PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist.class, 1, Side.SERVER);
         channel.registerMessage(PacketToggleEnergyLimit.class, PacketToggleEnergyLimit.class, 2, Side.SERVER);
         channel.registerMessage(PacketChangeEnergyLimit.class, PacketChangeEnergyLimit.class, 3, Side.SERVER);
+        channel.registerMessage(PacketChangeItemFilter.class, PacketChangeItemFilter.class, 4, Side.SERVER);
+        channel.registerMessage(PacketChangeLiquidFilter.class, PacketChangeLiquidFilter.class, 5, Side.SERVER);
     }
 
     @Mod.EventHandler

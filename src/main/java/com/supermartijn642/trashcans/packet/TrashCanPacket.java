@@ -58,7 +58,7 @@ public abstract class TrashCanPacket<T extends TrashCanPacket> implements IMessa
             return null;
         TileEntity tile = world.getTileEntity(message.pos);
         if(tile instanceof TrashCanTile)
-            world.addScheduledTask(() -> this.handle(message, player, world, (TrashCanTile)tile));
+            world.addScheduledTask(() -> message.handle(message, player, world, (TrashCanTile)tile));
 
         return null;
     }

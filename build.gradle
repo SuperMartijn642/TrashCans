@@ -35,8 +35,26 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+repositories {
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.k-4u.nl"
+    }
+}
+
 dependencies {
     compile "curse.maven:mekanism:2835175"
+
+    // compile against the JEI API but do not include it at runtime
+    provided "mezz.jei:jei_1.12.2:4.16.1.301:api"
+    // at runtime, use the full JEI jar
+    compile "mezz.jei:jei_1.12.2:4.16.1.301"
 }
 
 processResources {
