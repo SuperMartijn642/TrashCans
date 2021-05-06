@@ -1,16 +1,13 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.block.BaseTileEntity;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -31,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanTile extends TileEntity implements ITickableTileEntity {
+public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity {
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
@@ -302,8 +299,6 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
     public boolean useEnergyLimit = false;
     public ItemStack energyItem = ItemStack.EMPTY;
 
-    private boolean dataChanged = false;
-
     public TrashCanTile(TileEntityType<?> tileEntityTypeIn, boolean items, boolean liquids, boolean energy){
         super(tileEntityTypeIn);
         this.items = items;
@@ -360,22 +355,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
         return LazyOptional.empty();
     }
 
-    public void dataChanged(){
-        if(this.world.isRemote)
-            return;
-        this.dataChanged = true;
-        this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 2);
-    }
-
-    private CompoundNBT getChangedData(){
-        if(this.dataChanged){
-            this.dataChanged = false;
-            return this.getData();
-        }
-        return null;
-    }
-
-    private CompoundNBT getData(){
+    @Override
+    protected CompoundNBT writeData(){
         CompoundNBT tag = new CompoundNBT();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
@@ -399,7 +380,8 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
         return tag;
     }
 
-    private void handleData(CompoundNBT tag){
+    @Override
+    protected void readData(CompoundNBT tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
                 this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.read(tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);
@@ -416,43 +398,5 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
             this.energyLimit = tag.contains("energyLimit") ? tag.getInt("energyLimit") : DEFAULT_ENERGY_LIMIT;
             this.energyItem = tag.contains("energyItem") ? ItemStack.read(tag.getCompound("energyItem")) : ItemStack.EMPTY;
         }
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT compound){
-        super.write(compound);
-        compound.put("data", this.getData());
-        return compound;
-    }
-
-    @Override
-    public void read(BlockState state, CompoundNBT compound){
-        super.read(state, compound);
-        this.handleData(compound.getCompound("data"));
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag(){
-        CompoundNBT tag = super.getUpdateTag();
-        tag.put("data", this.getData());
-        return tag;
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag){
-        super.handleUpdateTag(state, tag);
-        this.handleData(tag.getCompound("data"));
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket(){
-        CompoundNBT tag = this.getChangedData();
-        return tag == null || tag.isEmpty() ? null : new SUpdateTileEntityPacket(this.pos, 0, tag);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
-        this.handleData(pkt.getNbtCompound());
     }
 }
