@@ -24,7 +24,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
     }
 
     @Override
-    protected void addSlots(TrashCanTile tile, PlayerEntity player){
+    protected void addSlots(PlayerEntity player, TrashCanTile tile){
         this.addSlot(new SlotItemHandler(tile.ITEM_HANDLER, 0, 63, 25));
         this.addSlot(new SlotItemHandler(tile.LIQUID_ITEM_HANDLER, 0, 93, 25));
         this.addSlot(new SlotItemHandler(tile.ENERGY_ITEM_HANDLER, 0, 123, 25));
@@ -51,7 +51,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 3 && slotId <= 11){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.itemFilter.set(slotId - 3, ItemStack.EMPTY);
@@ -64,7 +64,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             }
             return ItemStack.EMPTY;
         }else if(slotId >= 12 && slotId <= 20){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.liquidFilter.set(slotId - 12, null);
@@ -86,7 +86,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             if(this.mergeItemStack(this.getSlot(index).getStack(), 21, this.inventorySlots.size(), true))
                 this.getSlot(index).putStack(ItemStack.EMPTY);
         }else if(index >= 3 && index <= 11){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.itemFilter.set(index - 3, ItemStack.EMPTY);
@@ -98,7 +98,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
                 tile.dataChanged();
             }
         }else if(index >= 12 && index <= 20){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.liquidFilter.set(index - 12, null);
@@ -112,14 +112,14 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         }else if(index >= 21 && !this.getSlot(index).getStack().isEmpty()){
             ItemStack stack = this.getSlot(index).getStack();
             if(this.getSlot(1).getStack().isEmpty() && this.getSlot(1).isItemValid(stack)){
-                TrashCanTile tile = this.getTileOrClose();
+                TrashCanTile tile = this.getObjectOrClose();
                 if(tile != null){
                     this.getSlot(1).putStack(stack);
                     this.getSlot(index).putStack(ItemStack.EMPTY);
                     tile.dataChanged();
                 }
             }else if(this.getSlot(2).getStack().isEmpty() && this.getSlot(2).isItemValid(stack)){
-                TrashCanTile tile = this.getTileOrClose();
+                TrashCanTile tile = this.getObjectOrClose();
                 if(tile != null){
                     this.getSlot(2).putStack(stack);
                     this.getSlot(index).putStack(ItemStack.EMPTY);
@@ -136,7 +136,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                TrashCanTile tile = UltimateTrashCanContainer.this.getTileOrClose();
+                TrashCanTile tile = UltimateTrashCanContainer.this.getObjectOrClose();
                 return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : tile.liquidFilter.get(slot).getRepresentingItem();
             }
         };
@@ -147,7 +147,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                TrashCanTile tile = UltimateTrashCanContainer.this.getTileOrClose();
+                TrashCanTile tile = UltimateTrashCanContainer.this.getObjectOrClose();
                 return tile == null ? ItemStack.EMPTY : tile.itemFilter.get(slot);
             }
         };
