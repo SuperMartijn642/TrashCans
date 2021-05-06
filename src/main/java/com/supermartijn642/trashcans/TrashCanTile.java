@@ -4,7 +4,6 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -320,22 +319,20 @@ public class TrashCanTile extends TileEntity implements ITickableTileEntity {
     @Override
     public void tick(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-            if(this.liquidItem.getItem() instanceof BucketItem)
-                this.liquidItem = new ItemStack(Items.BUCKET);
-            else{
-                this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(fluidHandler -> {
-                    boolean changed = false;
-                    for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
-                        if(!fluidHandler.getFluidInTank(tank).isEmpty()){
-                            fluidHandler.drain(fluidHandler.getFluidInTank(tank), IFluidHandler.FluidAction.EXECUTE);
-                            changed = true;
-                        }
-                    if(changed)
-                        TrashCanTile.this.dataChanged();
-                });
-                if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
+            this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(fluidHandler -> {
+                boolean changed = false;
+                for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
+                    if(!fluidHandler.getFluidInTank(tank).isEmpty()){
+                        fluidHandler.drain(fluidHandler.getFluidInTank(tank), IFluidHandler.FluidAction.EXECUTE);
+                        changed = true;
+                    }
+                if(changed){
+                    this.liquidItem = fluidHandler.getContainer();
                     this.dataChanged();
-            }
+                }
+            });
+            if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
+                this.dataChanged();
         }
         if(this.energy && !this.energyItem.isEmpty()){
             TrashCanTile.this.energyItem.getCapability(CapabilityEnergy.ENERGY).ifPresent(energyStorage -> {
