@@ -88,6 +88,9 @@ dependencies {
     compileOnly fg.deobf("curse.maven:mekanism:3134211")
     runtimeOnly fg.deobf("curse.maven:mekanism:3134211")
 
+    runtimeOnly fg.deobf("curse.maven:ceramics:3234775")
+    runtimeOnly fg.deobf("curse.maven:mantle:3273201")
+
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-1.16.4:7.6.1.68:api")
     // at runtime, use the full JEI jar
