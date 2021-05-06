@@ -22,7 +22,7 @@ public class ItemTrashCanContainer extends TrashCanContainer {
     }
 
     @Override
-    protected void addSlots(TrashCanTile tile, PlayerEntity player){
+    protected void addSlots(PlayerEntity player, TrashCanTile tile){
         this.addSlot(new SlotItemHandler(tile.ITEM_HANDLER, 0, 93, 25));
 
         for(int column = 0; column < 9; column++)
@@ -37,7 +37,7 @@ public class ItemTrashCanContainer extends TrashCanContainer {
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 1 && slotId <= 9){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.itemFilter.set(slotId - 1, ItemStack.EMPTY);
@@ -56,7 +56,7 @@ public class ItemTrashCanContainer extends TrashCanContainer {
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
         if(index >= 1 && index <= 9){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.itemFilter.set(index - 1, ItemStack.EMPTY);
@@ -77,7 +77,7 @@ public class ItemTrashCanContainer extends TrashCanContainer {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                TrashCanTile tile = ItemTrashCanContainer.this.getTileOrClose();
+                TrashCanTile tile = ItemTrashCanContainer.this.getObjectOrClose();
                 return tile == null ? ItemStack.EMPTY : tile.itemFilter.get(slot);
             }
         };

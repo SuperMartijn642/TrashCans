@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.trashcans.util.TrashCanContainerProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,7 +40,7 @@ import java.util.function.Supplier;
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanBlock extends Block implements IWaterLoggable {
+public class TrashCanBlock extends BaseBlock implements IWaterLoggable {
 
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -52,8 +53,7 @@ public class TrashCanBlock extends Block implements IWaterLoggable {
     private final TrashCanContainerProvider containerProvider;
 
     public TrashCanBlock(String registryName, Supplier<? extends TileEntity> tileProvider, TrashCanContainerProvider containerProvider){
-        super(Properties.create(Material.IRON, MaterialColor.GRAY).hardnessAndResistance(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
-        this.setRegistryName(registryName);
+        super(registryName, false, Properties.create(Material.IRON, MaterialColor.GRAY).hardnessAndResistance(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
         this.tileProvider = tileProvider;
         this.containerProvider = containerProvider;
 
