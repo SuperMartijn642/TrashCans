@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.trashcans.util.TrashCanContainerProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,7 +19,6 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanBlock extends Block implements IWaterLoggable {
+public class TrashCanBlock extends BaseBlock implements IWaterLoggable {
 
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -52,8 +52,7 @@ public class TrashCanBlock extends Block implements IWaterLoggable {
     private final TrashCanContainerProvider containerProvider;
 
     public TrashCanBlock(String registryName, Supplier<? extends TileEntity> tileProvider, TrashCanContainerProvider containerProvider){
-        super(Properties.create(Material.IRON, MaterialColor.GRAY).hardnessAndResistance(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
-        this.setRegistryName(registryName);
+        super(registryName, false, Properties.create(Material.IRON, MaterialColor.GRAY).hardnessAndResistance(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
         this.tileProvider = tileProvider;
         this.containerProvider = containerProvider;
 
@@ -107,7 +106,7 @@ public class TrashCanBlock extends Block implements IWaterLoggable {
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos){
-        if (stateIn.get(WATERLOGGED))
+        if(stateIn.get(WATERLOGGED))
             worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }

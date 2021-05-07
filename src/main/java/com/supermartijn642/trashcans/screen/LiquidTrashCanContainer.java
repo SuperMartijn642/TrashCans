@@ -24,7 +24,7 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
     }
 
     @Override
-    protected void addSlots(TrashCanTile tile, PlayerEntity player){
+    protected void addSlots(PlayerEntity player, TrashCanTile tile){
         this.addSlot(new SlotItemHandler(tile.LIQUID_ITEM_HANDLER, 0, 93, 25));
 
         for(int column = 0; column < 9; column++)
@@ -39,7 +39,7 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 1 && slotId <= 9){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.liquidFilter.set(slotId - 1, null);
@@ -61,7 +61,7 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
             if(this.mergeItemStack(this.getSlot(index).getStack(), 10, this.inventorySlots.size(), true))
                 this.getSlot(index).putStack(ItemStack.EMPTY);
         }else if(index >= 1 && index <= 9){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.liquidFilter.set(index - 1, null);
@@ -73,7 +73,7 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
                 tile.dataChanged();
             }
         }else if(index >= 10 && !this.getSlot(index).getStack().isEmpty() && this.getSlot(0).getStack().isEmpty() && this.getSlot(0).isItemValid(this.getSlot(index).getStack())){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 this.getSlot(0).putStack(this.getSlot(index).getStack());
                 this.getSlot(index).putStack(ItemStack.EMPTY);
@@ -88,7 +88,7 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                TrashCanTile tile = LiquidTrashCanContainer.this.getTileOrClose();
+                TrashCanTile tile = LiquidTrashCanContainer.this.getObjectOrClose();
                 return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : tile.liquidFilter.get(slot).getRepresentingItem();
             }
         };
