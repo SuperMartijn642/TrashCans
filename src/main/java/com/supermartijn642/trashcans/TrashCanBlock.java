@@ -1,6 +1,7 @@
 package com.supermartijn642.trashcans;
 
-import net.minecraft.block.Block;
+import com.supermartijn642.core.ToolType;
+import com.supermartijn642.core.block.BaseBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -28,22 +29,17 @@ import java.util.function.Supplier;
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanBlock extends Block {
+public class TrashCanBlock extends BaseBlock {
 
     private final Supplier<? extends TileEntity> tileProvider;
     private final int guiId;
 
     public TrashCanBlock(String registryName, Supplier<? extends TileEntity> tileProvider, int guiId){
-        super(Material.IRON, MapColor.GRAY);
-        this.setRegistryName(registryName);
-        this.setUnlocalizedName(TrashCans.MODID + ":" + registryName);
+        super(registryName, false, Properties.create(Material.IRON, MapColor.GRAY).hardnessAndResistance(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
         this.tileProvider = tileProvider;
         this.guiId = guiId;
 
         this.setCreativeTab(CreativeTabs.SEARCH);
-        this.setHardness(1.5f);
-        this.setResistance(6);
-        this.setHarvestLevel("pickaxe", 1);
         this.setSoundType(SoundType.STONE);
     }
 

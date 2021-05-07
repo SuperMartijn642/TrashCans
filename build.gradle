@@ -55,6 +55,9 @@ dependencies {
     provided "mezz.jei:jei_1.12.2:4.16.1.301:api"
     // at runtime, use the full JEI jar
     compile "mezz.jei:jei_1.12.2:4.16.1.301"
+
+    // Core Lib
+    compile "curse.maven:supermartijn642s-core-lib:3300627"
 }
 
 processResources {

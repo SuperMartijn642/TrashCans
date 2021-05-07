@@ -1,38 +1,26 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.supermartijn642.core.gui.TileEntityBaseContainer;
 import com.supermartijn642.trashcans.TrashCanTile;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
-public abstract class TrashCanContainer extends Container {
+public abstract class TrashCanContainer extends TileEntityBaseContainer<TrashCanTile> {
 
-    public final EntityPlayer player;
-    public final World world;
-    public final BlockPos pos;
     public final int width, height;
 
     public TrashCanContainer(EntityPlayer player, BlockPos pos, int width, int height){
-        this.player = player;
-        this.world = player.world;
-        this.pos = pos;
+        super(player, player.world, pos);
         this.width = width;
         this.height = height;
 
-        TrashCanTile tile = this.getTileOrClose();
-        if(tile == null)
-            return;
-        this.addSlots(tile, player);
+        this.addSlots();
         this.addPlayerSlots();
     }
-
-    protected abstract void addSlots(TrashCanTile tile, EntityPlayer player);
 
     private void addPlayerSlots(){
         // player
@@ -52,14 +40,12 @@ public abstract class TrashCanContainer extends Container {
         return true;
     }
 
-    public TrashCanTile getTileOrClose(){
-        if(this.world != null && this.pos != null){
-            TileEntity tile = this.world.getTileEntity(this.pos);
-            if(tile instanceof TrashCanTile)
-                return (TrashCanTile)tile;
-        }
-        this.player.closeScreen();
-        return null;
+    @Override
+    public TrashCanTile getObjectOrClose(){
+        return super.getObjectOrClose();
     }
 
+    public BlockPos getTilePos(){
+        return this.tilePos;
+    }
 }

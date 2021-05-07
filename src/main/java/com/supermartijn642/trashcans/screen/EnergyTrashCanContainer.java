@@ -16,7 +16,7 @@ public class EnergyTrashCanContainer extends TrashCanContainer {
     }
 
     @Override
-    protected void addSlots(TrashCanTile tile, EntityPlayer player){
+    protected void addSlots(EntityPlayer player, TrashCanTile tile){
         this.addSlotToContainer(new SlotItemHandler(tile.ENERGY_ITEM_HANDLER, 0, 93, 25));
     }
 
@@ -26,7 +26,7 @@ public class EnergyTrashCanContainer extends TrashCanContainer {
             if(this.mergeItemStack(this.getSlot(index).getStack(), 1, this.inventorySlots.size(), true))
                 this.getSlot(index).putStack(ItemStack.EMPTY);
         }else if(!this.getSlot(index).getStack().isEmpty() && this.getSlot(0).getStack().isEmpty() && this.getSlot(0).isItemValid(this.getSlot(index).getStack())){
-            TrashCanTile tile = this.getTileOrClose();
+            TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
                 this.getSlot(0).putStack(this.getSlot(index).getStack());
                 this.getSlot(index).putStack(ItemStack.EMPTY);

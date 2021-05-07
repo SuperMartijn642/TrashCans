@@ -1,16 +1,12 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.block.BaseTileEntity;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
@@ -32,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanTile extends TileEntity implements ITickable {
+public class TrashCanTile extends BaseTileEntity implements ITickable {
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
@@ -360,8 +356,6 @@ public class TrashCanTile extends TileEntity implements ITickable {
     public boolean useEnergyLimit = false;
     public ItemStack energyItem = ItemStack.EMPTY;
 
-    private boolean dataChanged = false;
-
     public TrashCanTile(boolean items, boolean liquids, boolean energy){
         super();
         this.items = items;
@@ -377,28 +371,26 @@ public class TrashCanTile extends TileEntity implements ITickable {
     @Override
     public void update(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-            if(this.liquidItem.getItem() instanceof ItemBucket)
-                this.liquidItem = new ItemStack(Items.BUCKET);
-            else{
-                if(this.liquidItem.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)){
-                    IFluidHandlerItem fluidHandler = this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-                    if(fluidHandler != null){
-                        IFluidTankProperties[] properties = fluidHandler.getTankProperties();
-                        if(properties != null){
-                            boolean changed = false;
-                            for(IFluidTankProperties property : properties)
-                                if(property.getContents() != null && property.canDrain() && property.getContents().amount > 0){
-                                    fluidHandler.drain(property.getContents(), true);
-                                    changed = true;
-                                }
-                            if(changed)
-                                TrashCanTile.this.dataChanged();
+            if(this.liquidItem.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)){
+                IFluidHandlerItem fluidHandler = this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                if(fluidHandler != null){
+                    IFluidTankProperties[] properties = fluidHandler.getTankProperties();
+                    if(properties != null){
+                        boolean changed = false;
+                        for(IFluidTankProperties property : properties)
+                            if(property.getContents() != null && property.canDrain() && property.getContents().amount > 0){
+                                fluidHandler.drain(property.getContents(), true);
+                                changed = true;
+                            }
+                        if(changed){
+                            this.liquidItem = fluidHandler.getContainer();
+                            this.dataChanged();
                         }
                     }
                 }
-                if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
-                    this.dataChanged();
             }
+            if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
+                this.dataChanged();
         }
         if(this.energy && !this.energyItem.isEmpty() && this.energyItem.hasCapability(CapabilityEnergy.ENERGY, null)){
             IEnergyStorage energyStorage = this.energyItem.getCapability(CapabilityEnergy.ENERGY, null);
@@ -434,23 +426,8 @@ public class TrashCanTile extends TileEntity implements ITickable {
         return super.getCapability(cap, facing);
     }
 
-    public void dataChanged(){
-        if(this.world.isRemote)
-            return;
-        this.dataChanged = true;
-        IBlockState blockState = this.world.getBlockState(this.pos);
-        this.world.notifyBlockUpdate(this.pos, blockState, blockState, 2);
-    }
-
-    private NBTTagCompound getChangedData(){
-        if(this.dataChanged){
-            this.dataChanged = false;
-            return this.getData();
-        }
-        return null;
-    }
-
-    private NBTTagCompound getData(){
+    @Override
+    protected NBTTagCompound writeData(){
         NBTTagCompound tag = new NBTTagCompound();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
@@ -474,7 +451,8 @@ public class TrashCanTile extends TileEntity implements ITickable {
         return tag;
     }
 
-    private void handleData(NBTTagCompound tag){
+    @Override
+    protected void readData(NBTTagCompound tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
                 this.itemFilter.set(i, tag.hasKey("itemFilter" + i) ? new ItemStack(tag.getCompoundTag("itemFilter" + i)) : ItemStack.EMPTY);
@@ -491,43 +469,5 @@ public class TrashCanTile extends TileEntity implements ITickable {
             this.energyLimit = tag.hasKey("energyLimit") ? tag.getInteger("energyLimit") : DEFAULT_ENERGY_LIMIT;
             this.energyItem = tag.hasKey("energyItem") ? new ItemStack(tag.getCompoundTag("energyItem")) : ItemStack.EMPTY;
         }
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound){
-        super.writeToNBT(compound);
-        compound.setTag("data", this.getData());
-        return compound;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound){
-        super.readFromNBT(compound);
-        this.handleData(compound.getCompoundTag("data"));
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag(){
-        NBTTagCompound tag = super.getUpdateTag();
-        tag.setTag("data", this.getData());
-        return tag;
-    }
-
-    @Override
-    public void handleUpdateTag(NBTTagCompound tag){
-        super.handleUpdateTag(tag);
-        this.handleData(tag.getCompoundTag("data"));
-    }
-
-    @Nullable
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket(){
-        NBTTagCompound tag = this.getChangedData();
-        return tag == null || tag.hasNoTags() ? null : new SPacketUpdateTileEntity(this.pos, 0, tag);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
-        this.handleData(pkt.getNbtCompound());
     }
 }

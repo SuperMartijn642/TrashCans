@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
@@ -13,19 +14,17 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
     private WhitelistButton whitelistButton;
 
     public ItemTrashCanScreen(ItemTrashCanContainer container){
-        super(container, "gui.item_trash_can.title");
+        super(container, "trashcans.gui.item_trash_can.title");
     }
 
     @Override
-    protected void addButtons(TrashCanTile tile){
-        this.whitelistButton = this.addButton(new WhitelistButton(0, this.guiLeft + 175, this.guiTop + this.ySize - 118, () -> TrashCans.channel.sendToServer(new PacketToggleItemWhitelist(this.container.pos))));
+    protected void addWidgets(TrashCanTile tile){
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 118, () -> TrashCans.channel.sendToServer(new PacketToggleItemWhitelist(this.container.getTilePos()))));
         this.whitelistButton.update(tile.itemFilterWhitelist);
     }
 
     @Override
-    protected void drawToolTips(TrashCanTile tile, int mouseX, int mouseY){
-        if(this.whitelistButton.isMouseOver())
-            this.renderToolTip(true, "gui.whitelist." + (this.whitelistButton.white ? "on" : "off"), mouseX, mouseY);
+    protected void renderTooltips(int mouseX, int mouseY, TrashCanTile tile){
     }
 
     @Override
@@ -40,6 +39,6 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
 
     @Override
     protected void drawText(TrashCanTile tile){
-        this.drawString(new TextComponentTranslation("gui.item_trash_can.filter"), 8, 52);
+        ScreenUtils.drawString(new TextComponentTranslation("trashcans.gui.item_trash_can.filter"), 8, 52);
     }
 }

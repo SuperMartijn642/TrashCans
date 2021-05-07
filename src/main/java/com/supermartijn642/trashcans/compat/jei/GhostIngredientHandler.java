@@ -41,7 +41,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanS
 
                     @Override
                     public void accept(I ingredient){
-                        TrashCanTile tile = ((TrashCanContainer)screen.inventorySlots).getTileOrClose();
+                        TrashCanTile tile = ((TrashCanContainer)screen.inventorySlots).getObjectOrClose();
                         if(tile != null){
                             tile.itemFilter.set(filterSlotNum, (ItemStack)ingredient);
                             TrashCans.channel.sendToServer(new PacketChangeItemFilter(tile.getPos(), filterSlotNum, (ItemStack)ingredient));
@@ -70,7 +70,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanS
                         public void accept(I ingredient){
                             ItemFilter filter = LiquidTrashCanFilters.createFilter(finalrepitem);
                             if(filter != null){
-                                TrashCanTile tile = ((TrashCanContainer)screen.inventorySlots).getTileOrClose();
+                                TrashCanTile tile = ((TrashCanContainer)screen.inventorySlots).getObjectOrClose();
                                 if(tile != null){
                                     tile.liquidFilter.set(filterSlotNum, filter);
                                     TrashCans.channel.sendToServer(new PacketChangeLiquidFilter(tile.getPos(), filterSlotNum, filter));

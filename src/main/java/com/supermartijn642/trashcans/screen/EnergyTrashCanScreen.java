@@ -1,6 +1,7 @@
 package com.supermartijn642.trashcans.screen;
 
 import com.google.common.collect.Lists;
+import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
@@ -10,9 +11,6 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
-
-import java.io.IOException;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -25,44 +23,42 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     private boolean shift, control;
 
     public EnergyTrashCanScreen(EnergyTrashCanContainer container){
-        super(container, "gui.energy_trash_can.title");
+        super(container, "trashcans.gui.energy_trash_can.title");
     }
 
     @Override
-    protected void addButtons(TrashCanTile tile){
-        this.checkBox = this.addButton(new CheckBox(0, this.guiLeft + 21, this.guiTop + 66, () -> TrashCans.channel.sendToServer(new PacketToggleEnergyLimit(this.container.pos))));
+    protected void addWidgets(TrashCanTile tile){
+        this.checkBox = this.addWidget(new CheckBox(21, 66, () -> TrashCans.channel.sendToServer(new PacketToggleEnergyLimit(this.container.getTilePos()))));
         this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow = this.addButton(new ArrowButton(1, this.guiLeft + 49, this.guiTop + 66, true, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.pos, this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
-        this.leftArrow.enabled = tile.useEnergyLimit;
-        this.rightArrow = this.addButton(new ArrowButton(2, this.guiLeft + 170, this.guiTop + 66, false, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.pos, this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
-        this.rightArrow.enabled = tile.useEnergyLimit;
+        this.leftArrow = this.addWidget(new ArrowButton(49, 66, true, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.getTilePos(), this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
+        this.leftArrow.active = tile.useEnergyLimit;
+        this.rightArrow = this.addWidget(new ArrowButton(170, 66, false, () -> TrashCans.channel.sendToServer(new PacketChangeEnergyLimit(this.container.getTilePos(), this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
+        this.rightArrow.active = tile.useEnergyLimit;
     }
 
     @Override
-    protected void drawToolTips(TrashCanTile tile, int mouseX, int mouseY){
-        if(this.checkBox.isMouseOver())
-            this.renderToolTip(true, "gui.energy_trash_can.check." + (this.checkBox.checked ? "on" : "off"), mouseX, mouseY);
-        if(this.leftArrow.isMouseOver() && this.leftArrow.enabled)
+    protected void renderTooltips(int mouseX, int mouseY, TrashCanTile tile){
+        if(this.leftArrow.isHovered() && this.leftArrow.active)
             this.renderToolTip(Lists.newArrayList(
                 new TextComponentString("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TextComponentTranslation("gui.energy_trash_can.limit.change1", "-100").setStyle(new Style().setColor(TextFormatting.AQUA)),
-                new TextComponentTranslation("gui.energy_trash_can.limit.change2", "-10000").setStyle(new Style().setColor(TextFormatting.AQUA)),
-                new TextComponentTranslation("gui.energy_trash_can.limit.change3", "-1").setStyle(new Style().setColor(TextFormatting.AQUA))),
+                new TextComponentTranslation("trashcans.gui.energy_trash_can.limit.change1", "-100").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("trashcans.gui.energy_trash_can.limit.change2", "-10000").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("trashcans.gui.energy_trash_can.limit.change3", "-1").setStyle(new Style().setColor(TextFormatting.AQUA))),
                 mouseX, mouseY);
-        if(this.rightArrow.isMouseOver() && this.rightArrow.enabled)
+        if(this.rightArrow.isHovered() && this.rightArrow.active)
             this.renderToolTip(Lists.newArrayList(
                 new TextComponentString("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TextComponentTranslation("gui.energy_trash_can.limit.change1", "+100").setStyle(new Style().setColor(TextFormatting.AQUA)),
-                new TextComponentTranslation("gui.energy_trash_can.limit.change2", "+10000").setStyle(new Style().setColor(TextFormatting.AQUA)),
-                new TextComponentTranslation("gui.energy_trash_can.limit.change3", "+1").setStyle(new Style().setColor(TextFormatting.AQUA))),
+                new TextComponentTranslation("trashcans.gui.energy_trash_can.limit.change1", "+100").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("trashcans.gui.energy_trash_can.limit.change2", "+10000").setStyle(new Style().setColor(TextFormatting.AQUA)),
+                new TextComponentTranslation("trashcans.gui.energy_trash_can.limit.change3", "+1").setStyle(new Style().setColor(TextFormatting.AQUA))),
                 mouseX, mouseY);
     }
 
     @Override
     protected void tick(TrashCanTile tile){
         this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow.enabled = tile.useEnergyLimit;
-        this.rightArrow.enabled = tile.useEnergyLimit;
+        this.leftArrow.active = tile.useEnergyLimit;
+        this.rightArrow.active = tile.useEnergyLimit;
     }
 
     @Override
@@ -72,16 +68,25 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
 
     @Override
     protected void drawText(TrashCanTile tile){
-        this.drawString(new TextComponentTranslation("gui.energy_trash_can.limit"), 8, 52);
-        this.drawCenteredString(I18n.format("gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit), 114, 71);
+        ScreenUtils.drawString(new TextComponentTranslation("trashcans.gui.energy_trash_can.limit"), 8, 52);
+        ScreenUtils.drawCenteredString(new TextComponentString(I18n.format("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
     }
 
     @Override
-    public void handleKeyboardInput() throws IOException{
-        if(Keyboard.getEventKey() == 42)
-            this.shift = Keyboard.getEventKeyState();
-        if(Keyboard.getEventKey() == 29)
-            this.control = Keyboard.getEventKeyState();
-        super.handleKeyboardInput();
+    public boolean keyPressed(int keyCode){
+        if(keyCode == 42)
+            this.shift = true;
+        else if(keyCode == 29)
+            this.control = true;
+        return super.keyPressed(keyCode);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode){
+        if(keyCode == 42)
+            this.shift = false;
+        else if(keyCode == 29)
+            this.control = false;
+        return super.keyReleased(keyCode);
     }
 }
