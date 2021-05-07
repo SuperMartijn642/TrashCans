@@ -51,3 +51,10 @@ description='''Trash Cans adds Trash Cans which can be used to void items, liqui
     versionRange="[1.16.4,1.17)"
     ordering="NONE"
     side="BOTH"
+# Here's another dependency
+[[dependencies.trashcans]]
+    modId="supermartijn642corelib"
+    mandatory=true
+    versionRange="[1.0.3,1.1.0)"
+    ordering="NONE"
+    side="BOTH"
