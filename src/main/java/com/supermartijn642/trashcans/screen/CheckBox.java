@@ -30,7 +30,7 @@ public class CheckBox extends AbstractButtonWidget implements IHoverTextWidget {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
         ScreenUtils.bindTexture(BUTTONS);
         RenderSystem.color4f(1, 1, 1, 1);
-        ScreenUtils.drawTexture(matrixStack, this.x, this.y - 3, this.width, this.height, this.checked ? 0 : 0.5f, (this.active ? this.hovered ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
+        ScreenUtils.drawTexture(matrixStack, this.x, this.y - 3, this.width + 3, this.height + 3, this.checked ? 0 : 0.5f, (this.active ? this.hovered ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
     }
 
     @Override
