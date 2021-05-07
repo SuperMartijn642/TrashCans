@@ -21,12 +21,13 @@ import net.minecraftforge.fml.relauncher.Side;
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
-@Mod(modid = TrashCans.MODID, name = TrashCans.NAME, version = TrashCans.VERSION)
+@Mod(modid = TrashCans.MODID, name = TrashCans.NAME, version = TrashCans.VERSION, dependencies = TrashCans.DEPENDENCIES)
 public class TrashCans {
 
     public static final String MODID = "trashcans";
     public static final String NAME = "Trash Cans";
     public static final String VERSION = "1.0.9";
+    public static final String DEPENDENCIES = "required-after:supermartijn642corelib@[1.0.3,1.1.0)";
 
     @Mod.Instance
     public static TrashCans instance;

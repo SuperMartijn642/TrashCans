@@ -17,6 +17,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
 
     public TrashCanScreen(T container, String title){
         super(container, new TextComponentTranslation(title));
+        this.setDrawSlots(false);
     }
 
     @Override
