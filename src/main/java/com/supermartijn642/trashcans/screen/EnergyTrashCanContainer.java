@@ -22,15 +22,15 @@ public class EnergyTrashCanContainer extends TrashCanContainer {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
         if(index == 0){
-            if(this.mergeItemStack(this.getSlot(index).getStack(), 1, this.inventorySlots.size(), true))
-                this.getSlot(index).putStack(ItemStack.EMPTY);
-        }else if(!this.getSlot(index).getStack().isEmpty() && this.getSlot(0).getStack().isEmpty() && this.getSlot(0).isItemValid(this.getSlot(index).getStack())){
+            if(this.moveItemStackTo(this.getSlot(index).getItem(), 1, this.slots.size(), true))
+                this.getSlot(index).set(ItemStack.EMPTY);
+        }else if(!this.getSlot(index).getItem().isEmpty() && this.getSlot(0).getItem().isEmpty() && this.getSlot(0).mayPlace(this.getSlot(index).getItem())){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                this.getSlot(0).putStack(this.getSlot(index).getStack());
-                this.getSlot(index).putStack(ItemStack.EMPTY);
+                this.getSlot(0).set(this.getSlot(index).getItem());
+                this.getSlot(index).set(ItemStack.EMPTY);
                 tile.dataChanged();
             }
         }

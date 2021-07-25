@@ -52,7 +52,7 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate){
             for(ItemStack filter : TrashCanTile.this.itemFilter){
-                if(!filter.isEmpty() && ItemStack.areItemsEqual(stack, filter))
+                if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
                     return TrashCanTile.this.itemFilterWhitelist ? ItemStack.EMPTY : stack;
             }
             return TrashCanTile.this.itemFilterWhitelist ? stack : ItemStack.EMPTY;
@@ -72,7 +72,7 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack){
             for(ItemStack filter : TrashCanTile.this.itemFilter){
-                if(!filter.isEmpty() && ItemStack.areItemsEqual(stack, filter))
+                if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
                     return TrashCanTile.this.itemFilterWhitelist;
             }
             return !TrashCanTile.this.itemFilterWhitelist;
@@ -360,7 +360,7 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
         CompoundNBT tag = new CompoundNBT();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                tag.put("itemFilter" + i, this.itemFilter.get(i).write(new CompoundNBT()));
+                tag.put("itemFilter" + i, this.itemFilter.get(i).save(new CompoundNBT()));
             tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
         }
         if(this.liquids){
@@ -369,13 +369,13 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
                     tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i)));
             tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                tag.put("liquidItem", this.liquidItem.write(new CompoundNBT()));
+                tag.put("liquidItem", this.liquidItem.save(new CompoundNBT()));
         }
         if(this.energy){
             tag.putBoolean("useEnergyLimit", this.useEnergyLimit);
             tag.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                tag.put("energyItem", this.energyItem.write(new CompoundNBT()));
+                tag.put("energyItem", this.energyItem.save(new CompoundNBT()));
         }
         return tag;
     }
@@ -384,19 +384,19 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
     protected void readData(CompoundNBT tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.read(tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);
+                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.of(tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);
             this.itemFilterWhitelist = tag.contains("itemFilterWhitelist") && tag.getBoolean("itemFilterWhitelist");
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
                 this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i)) : null);
             this.liquidFilterWhitelist = tag.contains("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
-            this.liquidItem = tag.contains("liquidItem") ? ItemStack.read(tag.getCompound("liquidItem")) : ItemStack.EMPTY;
+            this.liquidItem = tag.contains("liquidItem") ? ItemStack.of(tag.getCompound("liquidItem")) : ItemStack.EMPTY;
         }
         if(this.energy){
             this.useEnergyLimit = tag.contains("useEnergyLimit") && tag.getBoolean("useEnergyLimit");
             this.energyLimit = tag.contains("energyLimit") ? tag.getInt("energyLimit") : DEFAULT_ENERGY_LIMIT;
-            this.energyItem = tag.contains("energyItem") ? ItemStack.read(tag.getCompound("energyItem")) : ItemStack.EMPTY;
+            this.energyItem = tag.contains("energyItem") ? ItemStack.of(tag.getCompound("energyItem")) : ItemStack.EMPTY;
         }
     }
 }

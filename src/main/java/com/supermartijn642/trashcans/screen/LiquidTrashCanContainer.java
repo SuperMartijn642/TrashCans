@@ -30,21 +30,21 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.itemHandler(), column, 8 + column * 18, 64) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn){
+                public boolean mayPickup(PlayerEntity playerIn){
                     return false;
                 }
             });
     }
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 1 && slotId <= 9){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.liquidFilter.set(slotId - 1, null);
                 else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getItemStack());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
                     if(filter != null)
                         tile.liquidFilter.set(slotId - 1, filter);
                 }
@@ -52,31 +52,31 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
             }
             return ItemStack.EMPTY;
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
+        return super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
         if(index == 0){
-            if(this.mergeItemStack(this.getSlot(index).getStack(), 10, this.inventorySlots.size(), true))
-                this.getSlot(index).putStack(ItemStack.EMPTY);
+            if(this.moveItemStackTo(this.getSlot(index).getItem(), 10, this.slots.size(), true))
+                this.getSlot(index).set(ItemStack.EMPTY);
         }else if(index >= 1 && index <= 9){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.liquidFilter.set(index - 1, null);
                 else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getItemStack());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
                     if(filter != null)
                         tile.liquidFilter.set(index - 1, filter);
                 }
                 tile.dataChanged();
             }
-        }else if(index >= 10 && !this.getSlot(index).getStack().isEmpty() && this.getSlot(0).getStack().isEmpty() && this.getSlot(0).isItemValid(this.getSlot(index).getStack())){
+        }else if(index >= 10 && !this.getSlot(index).getItem().isEmpty() && this.getSlot(0).getItem().isEmpty() && this.getSlot(0).mayPlace(this.getSlot(index).getItem())){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                this.getSlot(0).putStack(this.getSlot(index).getStack());
-                this.getSlot(index).putStack(ItemStack.EMPTY);
+                this.getSlot(0).set(this.getSlot(index).getItem());
+                this.getSlot(index).set(ItemStack.EMPTY);
                 tile.dataChanged();
             }
         }

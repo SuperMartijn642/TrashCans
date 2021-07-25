@@ -91,18 +91,18 @@ public class TrashCans {
 
         @SubscribeEvent
         public static void onTileRegistry(final RegistryEvent.Register<TileEntityType<?>> e){
-            e.getRegistry().register(TileEntityType.Builder.create(() -> new TrashCanTile(item_trash_can_tile, true, false, false), item_trash_can).build(null).setRegistryName("item_trash_can_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(() -> new TrashCanTile(liquid_trash_can_tile, false, true, false), liquid_trash_can).build(null).setRegistryName("liquid_trash_can_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(() -> new TrashCanTile(energy_trash_can_tile, false, false, true), energy_trash_can).build(null).setRegistryName("energy_trash_can_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(() -> new TrashCanTile(ultimate_trash_can_tile, true, true, true), ultimate_trash_can).build(null).setRegistryName("ultimate_trash_can_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(() -> new TrashCanTile(item_trash_can_tile, true, false, false), item_trash_can).build(null).setRegistryName("item_trash_can_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(() -> new TrashCanTile(liquid_trash_can_tile, false, true, false), liquid_trash_can).build(null).setRegistryName("liquid_trash_can_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(() -> new TrashCanTile(energy_trash_can_tile, false, false, true), energy_trash_can).build(null).setRegistryName("energy_trash_can_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(() -> new TrashCanTile(ultimate_trash_can_tile, true, true, true), ultimate_trash_can).build(null).setRegistryName("ultimate_trash_can_tile"));
         }
 
         @SubscribeEvent
         public static void onItemRegistry(final RegistryEvent.Register<Item> e){
-            e.getRegistry().register(new BlockItem(item_trash_can, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName("item_trash_can"));
-            e.getRegistry().register(new BlockItem(liquid_trash_can, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName("liquid_trash_can"));
-            e.getRegistry().register(new BlockItem(energy_trash_can, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName("energy_trash_can"));
-            e.getRegistry().register(new BlockItem(ultimate_trash_can, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName("ultimate_trash_can"));
+            e.getRegistry().register(new BlockItem(item_trash_can, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("item_trash_can"));
+            e.getRegistry().register(new BlockItem(liquid_trash_can, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("liquid_trash_can"));
+            e.getRegistry().register(new BlockItem(energy_trash_can, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("energy_trash_can"));
+            e.getRegistry().register(new BlockItem(ultimate_trash_can, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("ultimate_trash_can"));
         }
 
         @SubscribeEvent

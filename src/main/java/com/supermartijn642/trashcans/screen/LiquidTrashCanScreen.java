@@ -20,7 +20,7 @@ public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer
 
     @Override
     protected void addWidgets(TrashCanTile tile){
-        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleLiquidWhitelist(this.container.getTilePos()))));
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleLiquidWhitelist(this.menu.getTilePos()))));
         this.whitelistButton.update(tile.liquidFilterWhitelist);
     }
 

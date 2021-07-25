@@ -23,12 +23,12 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
 
     @Override
     protected int sizeX(TrashCanTile trashCanTile){
-        return this.container.width;
+        return this.menu.width;
     }
 
     @Override
     protected int sizeY(TrashCanTile trashCanTile){
-        return this.container.height;
+        return this.menu.height;
     }
 
     protected abstract String getBackground();
@@ -42,7 +42,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
     @Override
     protected void renderForeground(MatrixStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
         ScreenUtils.drawCenteredString(matrixStack, this.title, this.sizeX() / 2f, 6);
-        ScreenUtils.drawString(matrixStack, this.playerInventory.getDisplayName(), 21, this.sizeY() - 94);
+        ScreenUtils.drawString(matrixStack, this.inventory.getDisplayName(), 21, this.sizeY() - 94);
 
         this.drawText(matrixStack, tile);
     }

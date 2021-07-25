@@ -25,14 +25,14 @@ public class PacketChangeItemFilter extends TrashCanPacket {
     public void encode(PacketBuffer buffer){
         super.encode(buffer);
         buffer.writeInt(this.filterSlot);
-        buffer.writeItemStack(this.stack);
+        buffer.writeItem(this.stack);
     }
 
     @Override
     protected void decodeBuffer(PacketBuffer buffer){
         super.decodeBuffer(buffer);
         this.filterSlot = buffer.readInt();
-        this.stack = buffer.readItemStack();
+        this.stack = buffer.readItem();
     }
 
     public static PacketChangeItemFilter decode(PacketBuffer buffer){
