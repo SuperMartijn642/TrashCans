@@ -4,12 +4,13 @@ import com.supermartijn642.core.block.BaseTileEntity;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity {
+public class TrashCanTile extends BaseTileEntity {
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
@@ -299,8 +300,8 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
     public boolean useEnergyLimit = false;
     public ItemStack energyItem = ItemStack.EMPTY;
 
-    public TrashCanTile(TileEntityType<?> tileEntityTypeIn, boolean items, boolean liquids, boolean energy){
-        super(tileEntityTypeIn);
+    public TrashCanTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, boolean items, boolean liquids, boolean energy){
+        super(tileEntityTypeIn, pos, state);
         this.items = items;
         this.liquids = liquids;
         this.energy = energy;
@@ -311,7 +312,6 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
         }
     }
 
-    @Override
     public void tick(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
             this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(fluidHandler -> {
@@ -356,11 +356,11 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT tag = new CompoundNBT();
+    protected CompoundTag writeData(){
+        CompoundTag tag = new CompoundTag();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                tag.put("itemFilter" + i, this.itemFilter.get(i).save(new CompoundNBT()));
+                tag.put("itemFilter" + i, this.itemFilter.get(i).save(new CompoundTag()));
             tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
         }
         if(this.liquids){
@@ -369,19 +369,19 @@ public class TrashCanTile extends BaseTileEntity implements ITickableTileEntity 
                     tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i)));
             tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                tag.put("liquidItem", this.liquidItem.save(new CompoundNBT()));
+                tag.put("liquidItem", this.liquidItem.save(new CompoundTag()));
         }
         if(this.energy){
             tag.putBoolean("useEnergyLimit", this.useEnergyLimit);
             tag.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                tag.put("energyItem", this.energyItem.save(new CompoundNBT()));
+                tag.put("energyItem", this.energyItem.save(new CompoundTag()));
         }
         return tag;
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
                 this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.of(tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);

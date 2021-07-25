@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans.filter;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -16,7 +16,7 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundNBT compound){
+    public ItemFilter readFilter(CompoundTag compound){
         return new FluidFilter(compound);
     }
 
@@ -29,7 +29,7 @@ public class FluidFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public FluidFilter(CompoundNBT compound){
+        public FluidFilter(CompoundTag compound){
             this.stack = FluidStack.loadFluidStackFromNBT(compound);
         }
 
@@ -46,8 +46,8 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         @Override
-        public CompoundNBT write(){
-            return this.stack.writeToNBT(new CompoundNBT());
+        public CompoundTag write(){
+            return this.stack.writeToNBT(new CompoundTag());
         }
 
         @Override

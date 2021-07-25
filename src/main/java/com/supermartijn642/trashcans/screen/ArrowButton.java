@@ -1,19 +1,19 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/arrow_buttons.png");
+    private static final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/arrow_buttons.png");
 
     private final boolean left;
 
@@ -23,14 +23,14 @@ public class ArrowButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int i, int i1, float v){
+    public void render(PoseStack matrixStack, int i, int i1, float v){
         ScreenUtils.bindTexture(BUTTONS);
-        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.left ? 0.5f : 0, (this.active ? this.hovered ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return new TranslationTextComponent("trashcans.gui.arrow." + (this.left ? "left" : "right"));
+    protected Component getNarrationMessage(){
+        return new TranslatableComponent("trashcans.gui.arrow." + (this.left ? "left" : "right"));
     }
 }

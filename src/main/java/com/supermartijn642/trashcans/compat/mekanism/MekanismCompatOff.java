@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
 import com.supermartijn642.trashcans.filter.ItemFilter;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 
 import java.util.ArrayList;

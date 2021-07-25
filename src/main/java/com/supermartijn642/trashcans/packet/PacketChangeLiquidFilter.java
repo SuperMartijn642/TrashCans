@@ -3,10 +3,10 @@ package com.supermartijn642.trashcans.packet;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 public class PacketChangeLiquidFilter extends TrashCanPacket {
     private int filterSlot;
@@ -18,30 +18,30 @@ public class PacketChangeLiquidFilter extends TrashCanPacket {
         this.filter = filter;
     }
 
-    public PacketChangeLiquidFilter(PacketBuffer buffer){
+    public PacketChangeLiquidFilter(FriendlyByteBuf buffer){
         super(buffer);
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
+    public void encode(FriendlyByteBuf buffer){
         super.encode(buffer);
         buffer.writeInt(this.filterSlot);
         buffer.writeNbt(LiquidTrashCanFilters.write(this.filter));
     }
 
     @Override
-    protected void decodeBuffer(PacketBuffer buffer){
+    protected void decodeBuffer(FriendlyByteBuf buffer){
         super.decodeBuffer(buffer);
         this.filterSlot = buffer.readInt();
         this.filter = LiquidTrashCanFilters.read(buffer.readNbt());
     }
 
-    public static PacketChangeLiquidFilter decode(PacketBuffer buffer){
+    public static PacketChangeLiquidFilter decode(FriendlyByteBuf buffer){
         return new PacketChangeLiquidFilter(buffer);
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, TrashCanTile tile){
+    protected void handle(Player player, Level world, TrashCanTile tile){
         if(tile.liquids){
             tile.liquidFilter.set(this.filterSlot, this.filter);
             tile.dataChanged();

@@ -1,6 +1,6 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
@@ -8,9 +8,9 @@ import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -45,7 +45,7 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
+    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
         if(this.leftArrow.isHovered() && this.leftArrow.active)
             this.renderToolTip(matrixStack, false, "" + (this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000), mouseX, mouseY);
         if(this.rightArrow.isHovered() && this.rightArrow.active)
@@ -53,7 +53,7 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected void tick(TrashCanTile tile){
+    protected void containerTick(TrashCanTile tile){
         this.itemWhitelistButton.update(tile.itemFilterWhitelist);
 
         this.liquidWhitelistButton.update(tile.liquidFilterWhitelist);
@@ -69,13 +69,13 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected void drawText(MatrixStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("trashcans.gui.ultimate_trash_can.item_filter"), 8, 53);
+    protected void drawText(PoseStack matrixStack, TrashCanTile tile){
+        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.ultimate_trash_can.item_filter"), 8, 53);
 
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("trashcans.gui.ultimate_trash_can.liquid_filter"), 8, 83);
+        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.ultimate_trash_can.liquid_filter"), 8, 83);
 
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("trashcans.gui.ultimate_trash_can.energy_limit"), 8, 113);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 132);
+        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.ultimate_trash_can.energy_limit"), 8, 113);
+        ScreenUtils.drawCenteredString(matrixStack, new TextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 132);
     }
 
     @Override

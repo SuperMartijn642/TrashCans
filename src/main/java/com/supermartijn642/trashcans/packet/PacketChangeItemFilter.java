@@ -1,11 +1,11 @@
 package com.supermartijn642.trashcans.packet;
 
 import com.supermartijn642.trashcans.TrashCanTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class PacketChangeItemFilter extends TrashCanPacket {
     private int filterSlot;
@@ -17,30 +17,30 @@ public class PacketChangeItemFilter extends TrashCanPacket {
         this.stack = stack;
     }
 
-    public PacketChangeItemFilter(PacketBuffer buffer){
+    public PacketChangeItemFilter(FriendlyByteBuf buffer){
         super(buffer);
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
+    public void encode(FriendlyByteBuf buffer){
         super.encode(buffer);
         buffer.writeInt(this.filterSlot);
         buffer.writeItem(this.stack);
     }
 
     @Override
-    protected void decodeBuffer(PacketBuffer buffer){
+    protected void decodeBuffer(FriendlyByteBuf buffer){
         super.decodeBuffer(buffer);
         this.filterSlot = buffer.readInt();
         this.stack = buffer.readItem();
     }
 
-    public static PacketChangeItemFilter decode(PacketBuffer buffer){
+    public static PacketChangeItemFilter decode(FriendlyByteBuf buffer){
         return new PacketChangeItemFilter(buffer);
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, TrashCanTile tile){
+    protected void handle(Player player, Level world, TrashCanTile tile){
         if(tile.items){
             tile.itemFilter.set(this.filterSlot, this.stack);
             tile.dataChanged();

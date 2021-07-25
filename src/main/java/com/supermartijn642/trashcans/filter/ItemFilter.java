@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans.filter;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -23,7 +23,7 @@ public abstract class ItemFilter {
 
     public abstract ItemStack getRepresentingItem();
 
-    public abstract CompoundNBT write();
+    public abstract CompoundTag write();
 
     public abstract boolean isValid();
 

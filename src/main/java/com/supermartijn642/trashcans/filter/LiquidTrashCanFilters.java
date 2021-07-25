@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans.filter;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,14 +28,14 @@ public class LiquidTrashCanFilters {
         return null;
     }
 
-    public static CompoundNBT write(ItemFilter filter){
-        CompoundNBT compound = new CompoundNBT();
+    public static CompoundTag write(ItemFilter filter){
+        CompoundTag compound = new CompoundTag();
         compound.putString("id", filter.getId());
         compound.put("filter", filter.write());
         return compound;
     }
 
-    public static ItemFilter read(CompoundNBT compound){
+    public static ItemFilter read(CompoundTag compound){
         String id = compound.getString("id");
         if(managers.containsKey(id)){
             ItemFilter filter = managers.get(id).readFilter(compound.getCompound("filter"));

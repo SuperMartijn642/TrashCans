@@ -1,11 +1,11 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -25,11 +25,11 @@ public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
+    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
     }
 
     @Override
-    protected void tick(TrashCanTile tile){
+    protected void containerTick(TrashCanTile tile){
         this.whitelistButton.update(tile.liquidFilterWhitelist);
     }
 
@@ -39,7 +39,7 @@ public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer
     }
 
     @Override
-    protected void drawText(MatrixStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("trashcans.gui.liquid_trash_can.filter"), 8, 52);
+    protected void drawText(PoseStack matrixStack, TrashCanTile tile){
+        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.liquid_trash_can.filter"), 8, 52);
     }
 }

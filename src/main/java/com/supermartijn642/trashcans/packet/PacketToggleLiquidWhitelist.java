@@ -1,10 +1,10 @@
 package com.supermartijn642.trashcans.packet;
 
 import com.supermartijn642.trashcans.TrashCanTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
@@ -15,16 +15,16 @@ public class PacketToggleLiquidWhitelist extends TrashCanPacket {
         super(pos);
     }
 
-    public PacketToggleLiquidWhitelist(PacketBuffer buffer){
+    public PacketToggleLiquidWhitelist(FriendlyByteBuf buffer){
         super(buffer);
     }
 
-    public static PacketToggleLiquidWhitelist decode(PacketBuffer buffer){
+    public static PacketToggleLiquidWhitelist decode(FriendlyByteBuf buffer){
         return new PacketToggleLiquidWhitelist(buffer);
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, TrashCanTile tile){
+    protected void handle(Player player, Level world, TrashCanTile tile){
         if(tile.liquids){
             tile.liquidFilterWhitelist = !tile.liquidFilterWhitelist;
             tile.dataChanged();

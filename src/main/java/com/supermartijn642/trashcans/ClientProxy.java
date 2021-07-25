@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans;
 
 import com.supermartijn642.trashcans.screen.*;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -9,10 +9,10 @@ import net.minecraft.client.gui.ScreenManager;
 public class ClientProxy {
 
     public static void registerScreen(){
-        ScreenManager.register(TrashCans.item_trash_can_container, (ScreenManager.IScreenFactory<ItemTrashCanContainer,ItemTrashCanScreen>)((container, player, title) -> new ItemTrashCanScreen(container)));
-        ScreenManager.register(TrashCans.liquid_trash_can_container, (ScreenManager.IScreenFactory<LiquidTrashCanContainer,LiquidTrashCanScreen>)((container, player, title) -> new LiquidTrashCanScreen(container)));
-        ScreenManager.register(TrashCans.energy_trash_can_container, (ScreenManager.IScreenFactory<EnergyTrashCanContainer,EnergyTrashCanScreen>)((container, player, title) -> new EnergyTrashCanScreen(container)));
-        ScreenManager.register(TrashCans.ultimate_trash_can_container, (ScreenManager.IScreenFactory<UltimateTrashCanContainer,UltimateTrashCanScreen>)((container, player, title) -> new UltimateTrashCanScreen(container)));
+        MenuScreens.register(TrashCans.item_trash_can_container, (MenuScreens.ScreenConstructor<ItemTrashCanContainer,ItemTrashCanScreen>)((container, player, title) -> new ItemTrashCanScreen(container)));
+        MenuScreens.register(TrashCans.liquid_trash_can_container, (MenuScreens.ScreenConstructor<LiquidTrashCanContainer,LiquidTrashCanScreen>)((container, player, title) -> new LiquidTrashCanScreen(container)));
+        MenuScreens.register(TrashCans.energy_trash_can_container, (MenuScreens.ScreenConstructor<EnergyTrashCanContainer,EnergyTrashCanScreen>)((container, player, title) -> new EnergyTrashCanScreen(container)));
+        MenuScreens.register(TrashCans.ultimate_trash_can_container, (MenuScreens.ScreenConstructor<UltimateTrashCanContainer,UltimateTrashCanScreen>)((container, player, title) -> new UltimateTrashCanScreen(container)));
     }
 
 }

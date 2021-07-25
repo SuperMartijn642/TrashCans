@@ -1,13 +1,13 @@
 package com.supermartijn642.trashcans.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public interface TrashCanContainerProvider {
 
-    Container createContainer(int windowId, PlayerEntity player, BlockPos pos);
+    AbstractContainerMenu createContainer(int windowId, Player player, BlockPos pos);
 }

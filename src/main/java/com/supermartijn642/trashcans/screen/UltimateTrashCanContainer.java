@@ -4,10 +4,10 @@ import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -19,12 +19,12 @@ import javax.annotation.Nonnull;
  */
 public class UltimateTrashCanContainer extends TrashCanContainer {
 
-    public UltimateTrashCanContainer(int id, PlayerEntity player, BlockPos pos){
+    public UltimateTrashCanContainer(int id, Player player, BlockPos pos){
         super(TrashCans.ultimate_trash_can_container, id, player, pos, 202, 247);
     }
 
     @Override
-    protected void addSlots(PlayerEntity player, TrashCanTile tile){
+    protected void addSlots(Player player, TrashCanTile tile){
         this.addSlot(new SlotItemHandler(tile.ITEM_HANDLER, 0, 63, 25));
         this.addSlot(new SlotItemHandler(tile.LIQUID_ITEM_HANDLER, 0, 93, 25));
         this.addSlot(new SlotItemHandler(tile.ENERGY_ITEM_HANDLER, 0, 123, 25));
@@ -33,7 +33,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.itemFilterHandler(), column, 8 + column * 18, 64) {
                 @Override
-                public boolean mayPickup(PlayerEntity playerIn){
+                public boolean mayPickup(Player playerIn){
                     return false;
                 }
             });
@@ -42,56 +42,56 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.liquidFilterHandler(), column, 8 + column * 18, 94) {
                 @Override
-                public boolean mayPickup(PlayerEntity playerIn){
+                public boolean mayPickup(Player playerIn){
                     return false;
                 }
             });
     }
 
     @Override
-    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player){
         if(slotId >= 3 && slotId <= 11){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
+                if(this.getCarried().isEmpty())
                     tile.itemFilter.set(slotId - 3, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getCarried().copy();
+                    ItemStack stack = this.getCarried().copy();
                     stack.setCount(1);
                     tile.itemFilter.set(slotId - 3, stack);
                 }
                 tile.dataChanged();
             }
-            return ItemStack.EMPTY;
+            return;
         }else if(slotId >= 12 && slotId <= 20){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
+                if(this.getCarried().isEmpty())
                     tile.liquidFilter.set(slotId - 12, null);
                 else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(this.getCarried());
                     if(filter != null)
                         tile.liquidFilter.set(slotId - 12, filter);
                 }
                 tile.dataChanged();
             }
-            return ItemStack.EMPTY;
+            return;
         }
-        return super.clicked(slotId, dragType, clickTypeIn, player);
+        super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(Player playerIn, int index){
         if(index == 1 || index == 2){
             if(this.moveItemStackTo(this.getSlot(index).getItem(), 21, this.slots.size(), true))
                 this.getSlot(index).set(ItemStack.EMPTY);
         }else if(index >= 3 && index <= 11){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
+                if(this.getCarried().isEmpty())
                     tile.itemFilter.set(index - 3, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getCarried().copy();
+                    ItemStack stack = this.getCarried().copy();
                     stack.setCount(1);
                     tile.itemFilter.set(index - 3, stack);
                 }
@@ -100,10 +100,10 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         }else if(index >= 12 && index <= 20){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
+                if(this.getCarried().isEmpty())
                     tile.liquidFilter.set(index - 12, null);
                 else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(this.getCarried());
                     if(filter != null)
                         tile.liquidFilter.set(index - 12, filter);
                 }

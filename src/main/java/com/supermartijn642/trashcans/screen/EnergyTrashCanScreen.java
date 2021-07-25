@@ -1,16 +1,16 @@
 package com.supermartijn642.trashcans.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -37,25 +37,25 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
+    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
         if(this.leftArrow.isHovered() && this.leftArrow.active)
             this.renderToolTip(matrixStack, Lists.newArrayList(
-                new StringTextComponent("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change1", "-100").withStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change2", "-10000").withStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change3", "-1").withStyle(TextFormatting.AQUA)),
+                new TextComponent("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
+                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change1", "-100").withStyle(ChatFormatting.AQUA),
+                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change2", "-10000").withStyle(ChatFormatting.AQUA),
+                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change3", "-1").withStyle(ChatFormatting.AQUA)),
                 mouseX, mouseY);
         if(this.rightArrow.isHovered() && this.rightArrow.active)
             this.renderToolTip(matrixStack, Lists.newArrayList(
-                new StringTextComponent("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change1", "+100").withStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change2", "+10000").withStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change3", "+1").withStyle(TextFormatting.AQUA)),
+                new TextComponent("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
+                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change1", "+100").withStyle(ChatFormatting.AQUA),
+                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change2", "+10000").withStyle(ChatFormatting.AQUA),
+                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change3", "+1").withStyle(ChatFormatting.AQUA)),
                 mouseX, mouseY);
     }
 
     @Override
-    protected void tick(TrashCanTile tile){
+    protected void containerTick(TrashCanTile tile){
         this.checkBox.update(tile.useEnergyLimit);
         this.leftArrow.active = tile.useEnergyLimit;
         this.rightArrow.active = tile.useEnergyLimit;
@@ -67,9 +67,9 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected void drawText(MatrixStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("trashcans.gui.energy_trash_can.limit"), 8, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
+    protected void drawText(PoseStack matrixStack, TrashCanTile tile){
+        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.energy_trash_can.limit"), 8, 52);
+        ScreenUtils.drawCenteredString(matrixStack, new TextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
     }
 
     @Override
