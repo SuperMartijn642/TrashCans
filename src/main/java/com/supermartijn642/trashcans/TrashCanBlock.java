@@ -34,7 +34,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -56,7 +55,7 @@ public class TrashCanBlock extends BaseBlock implements EntityBlock, SimpleWater
     private final TrashCanContainerProvider containerProvider;
 
     public TrashCanBlock(String registryName, BiFunction<BlockPos,BlockState,? extends BlockEntity> tileProvider, TrashCanContainerProvider containerProvider){
-        super(registryName, false, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).strength(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
+        super(registryName, false, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).strength(1.5f, 6).requiresCorrectToolForDrops());
         this.tileProvider = tileProvider;
         this.containerProvider = containerProvider;
 
