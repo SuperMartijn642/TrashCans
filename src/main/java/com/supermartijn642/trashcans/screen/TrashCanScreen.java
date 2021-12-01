@@ -54,6 +54,6 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
     }
 
     public void renderToolTip(PoseStack matrixStack, List<Component> text, int x, int y){
-        super.renderComponentToolTip(matrixStack, text, x, y, this.font);
+        super.renderComponentTooltip(matrixStack, text, x, y, this.font);
     }
 }
