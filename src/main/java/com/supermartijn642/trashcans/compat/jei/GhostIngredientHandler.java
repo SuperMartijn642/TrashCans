@@ -27,14 +27,14 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanS
     @Override
     public <I> List<Target<I>> getTargets(TrashCanScreen<?> screen, I ingredient, boolean doStart){
         List<Target<I>> targets = new ArrayList<>();
-        for(Slot slot : screen.getContainer().inventorySlots){
-            Rectangle2d bounds = new Rectangle2d(screen.getGuiLeft() + slot.xPos, screen.getGuiTop() + slot.yPos, 17, 17);
+        for(Slot slot : screen.getMenu().slots){
+            Rectangle2d bounds = new Rectangle2d(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 17, 17);
 
-            boolean isItemFilterSlot = (screen instanceof ItemTrashCanScreen && slot.slotNumber >= 1 && slot.slotNumber <= 9) || (screen instanceof UltimateTrashCanScreen && slot.slotNumber >= 3 && slot.slotNumber <= 11);
-            boolean isFluidFilterSlot = (screen instanceof LiquidTrashCanScreen && slot.slotNumber >= 1 && slot.slotNumber <= 9) || (screen instanceof UltimateTrashCanScreen && slot.slotNumber >= 12 && slot.slotNumber <= 20);
+            boolean isItemFilterSlot = (screen instanceof ItemTrashCanScreen && slot.index >= 1 && slot.index <= 9) || (screen instanceof UltimateTrashCanScreen && slot.index >= 3 && slot.index <= 11);
+            boolean isFluidFilterSlot = (screen instanceof LiquidTrashCanScreen && slot.index >= 1 && slot.index <= 9) || (screen instanceof UltimateTrashCanScreen && slot.index >= 12 && slot.index <= 20);
 
             if(isItemFilterSlot && ingredient instanceof ItemStack){
-                int filterSlotNum = screen instanceof ItemTrashCanScreen ? slot.slotNumber - 1 : slot.slotNumber - 3;
+                int filterSlotNum = screen instanceof ItemTrashCanScreen ? slot.index - 1 : slot.index - 3;
                 targets.add(new Target<I>() {
                     @Override
                     public Rectangle2d getArea(){
@@ -43,10 +43,10 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanS
 
                     @Override
                     public void accept(I ingredient){
-                        TrashCanTile tile = screen.getContainer().getObjectOrClose();
+                        TrashCanTile tile = screen.getMenu().getObjectOrClose();
                         if(tile != null){
                             tile.itemFilter.set(filterSlotNum, (ItemStack)ingredient);
-                            TrashCans.CHANNEL.sendToServer(new PacketChangeItemFilter(tile.getPos(), filterSlotNum, (ItemStack)ingredient));
+                            TrashCans.CHANNEL.sendToServer(new PacketChangeItemFilter(tile.getBlockPos(), filterSlotNum, (ItemStack)ingredient));
                         }
                     }
                 });
@@ -55,13 +55,13 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanS
                 if(ingredient instanceof ItemStack && isValidFluidItem((ItemStack)ingredient)){
                     repitem = (ItemStack)ingredient;
                 }else if(ingredient instanceof FluidStack){
-                    repitem = new ItemStack(((FluidStack)ingredient).getFluid().getFilledBucket());
+                    repitem = new ItemStack(((FluidStack)ingredient).getFluid().getBucket());
                 }else if(Compatibility.MEKANISM.isGasStack(ingredient)){
                     repitem = Compatibility.MEKANISM.getChemicalTankForGasStack(ingredient);
                 }
                 if(!repitem.isEmpty()){
                     ItemStack finalrepitem = repitem;
-                    int filterSlotNum = screen instanceof LiquidTrashCanScreen ? slot.slotNumber - 1 : slot.slotNumber - 12;
+                    int filterSlotNum = screen instanceof LiquidTrashCanScreen ? slot.index - 1 : slot.index - 12;
                     targets.add(new Target<I>() {
                         @Override
                         public Rectangle2d getArea(){
@@ -72,10 +72,10 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanS
                         public void accept(I ingredient){
                             ItemFilter filter = LiquidTrashCanFilters.createFilter(finalrepitem);
                             if(filter != null){
-                                TrashCanTile tile = screen.getContainer().getObjectOrClose();
+                                TrashCanTile tile = screen.getMenu().getObjectOrClose();
                                 if(tile != null){
                                     tile.liquidFilter.set(filterSlotNum, filter);
-                                    TrashCans.CHANNEL.sendToServer(new PacketChangeLiquidFilter(tile.getPos(), filterSlotNum, filter));
+                                    TrashCans.CHANNEL.sendToServer(new PacketChangeLiquidFilter(tile.getBlockPos(), filterSlotNum, filter));
                                 }
                             }
                         }

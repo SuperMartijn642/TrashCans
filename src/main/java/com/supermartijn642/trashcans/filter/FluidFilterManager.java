@@ -42,7 +42,7 @@ public class FluidFilterManager implements IFilterManager {
 
         @Override
         public ItemStack getRepresentingItem(){
-            return new ItemStack(this.stack.getFluid().getFilledBucket());
+            return new ItemStack(this.stack.getFluid().getBucket());
         }
 
         @Override

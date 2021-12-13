@@ -19,7 +19,7 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
 
     @Override
     protected void addWidgets(TrashCanTile tile){
-        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getTilePos()))));
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.menu.getTilePos()))));
         this.whitelistButton.update(tile.itemFilterWhitelist);
     }
 

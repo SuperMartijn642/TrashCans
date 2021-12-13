@@ -26,14 +26,14 @@ public class PacketChangeLiquidFilter extends TrashCanPacket {
     public void encode(PacketBuffer buffer){
         super.encode(buffer);
         buffer.writeInt(this.filterSlot);
-        buffer.writeCompoundTag(LiquidTrashCanFilters.write(this.filter));
+        buffer.writeNbt(LiquidTrashCanFilters.write(this.filter));
     }
 
     @Override
     protected void decodeBuffer(PacketBuffer buffer){
         super.decodeBuffer(buffer);
         this.filterSlot = buffer.readInt();
-        this.filter = LiquidTrashCanFilters.read(buffer.readCompoundTag());
+        this.filter = LiquidTrashCanFilters.read(buffer.readNbt());
     }
 
     public static PacketChangeLiquidFilter decode(PacketBuffer buffer){

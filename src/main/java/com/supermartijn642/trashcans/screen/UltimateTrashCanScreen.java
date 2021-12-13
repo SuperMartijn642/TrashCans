@@ -29,17 +29,17 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
 
     @Override
     protected void addWidgets(TrashCanTile tile){
-        this.itemWhitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 185, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getTilePos()))));
+        this.itemWhitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 185, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.menu.getTilePos()))));
         this.itemWhitelistButton.update(tile.itemFilterWhitelist);
 
-        this.liquidWhitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 155, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleLiquidWhitelist(this.container.getTilePos()))));
+        this.liquidWhitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 155, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleLiquidWhitelist(this.menu.getTilePos()))));
         this.liquidWhitelistButton.update(tile.liquidFilterWhitelist);
 
-        this.checkBox = this.addWidget(new CheckBox(21, 127, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.container.getTilePos()))));
+        this.checkBox = this.addWidget(new CheckBox(21, 127, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.menu.getTilePos()))));
         this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow = this.addWidget(new ArrowButton(49, 127, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getTilePos(), this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000))));
+        this.leftArrow = this.addWidget(new ArrowButton(49, 127, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.menu.getTilePos(), this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000))));
         this.leftArrow.active = tile.useEnergyLimit;
-        this.rightArrow = this.addWidget(new ArrowButton(170, 127, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getTilePos(), this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000))));
+        this.rightArrow = this.addWidget(new ArrowButton(170, 127, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.menu.getTilePos(), this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000))));
         this.rightArrow.active = tile.useEnergyLimit;
     }
 
@@ -74,7 +74,7 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
         ScreenUtils.drawString(new TranslationTextComponent("trashcans.gui.ultimate_trash_can.liquid_filter"), 8, 83);
 
         ScreenUtils.drawString(new TranslationTextComponent("trashcans.gui.ultimate_trash_can.energy_limit"), 8, 113);
-        ScreenUtils.drawCenteredString(new StringTextComponent(I18n.format("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 132);
+        ScreenUtils.drawCenteredString(new StringTextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 132);
     }
 
     @Override
