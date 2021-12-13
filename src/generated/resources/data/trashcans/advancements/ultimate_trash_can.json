@@ -1,0 +1,35 @@
+{
+  "parent": "trashcans:trash_can",
+  "display": {
+    "icon": {
+      "item": "trashcans:ultimate_trash_can"
+    },
+    "title": {
+      "translate": "trashcans.advancement.ultimate_trash_can.title"
+    },
+    "description": {
+      "translate": "trashcans.advancement.ultimate_trash_can.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_trash_can": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "trashcans:ultimate_trash_can"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_trash_can"
+    ]
+  ]
+}
