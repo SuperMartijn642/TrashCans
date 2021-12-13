@@ -22,12 +22,12 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
 
     @Override
     protected int sizeX(TrashCanTile trashCanTile){
-        return this.container.width;
+        return this.menu.width;
     }
 
     @Override
     protected int sizeY(TrashCanTile trashCanTile){
-        return this.container.height;
+        return this.menu.height;
     }
 
     protected abstract String getBackground();
@@ -41,7 +41,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
     @Override
     protected void renderForeground(int mouseX, int mouseY, TrashCanTile tile){
         ScreenUtils.drawCenteredString(this.title, this.sizeX() / 2f, 6);
-        ScreenUtils.drawString(this.playerInventory.getDisplayName(), 21, this.sizeY() - 94);
+        ScreenUtils.drawString(this.inventory.getDisplayName(), 21, this.sizeY() - 94);
 
         this.drawText(tile);
     }
@@ -49,10 +49,10 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEn
     protected abstract void drawText(TrashCanTile tile);
 
     public void renderToolTip(List<ITextComponent> text, int x, int y){
-        super.renderTooltip(text.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), x, y);
+        super.renderTooltip(text.stream().map(ITextComponent::getColoredString).collect(Collectors.toList()), x, y);
     }
 
     public void renderToolTip(boolean translate, String string, int x, int y){
-        super.renderTooltip(translate ? new TranslationTextComponent(string).getFormattedText() : string, x, y);
+        super.renderTooltip(translate ? new TranslationTextComponent(string).getColoredString() : string, x, y);
     }
 }

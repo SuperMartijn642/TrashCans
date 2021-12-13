@@ -27,11 +27,11 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
 
     @Override
     protected void addWidgets(TrashCanTile tile){
-        this.checkBox = this.addWidget(new CheckBox(21, 66, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.container.getTilePos()))));
+        this.checkBox = this.addWidget(new CheckBox(21, 66, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.menu.getTilePos()))));
         this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow = this.addWidget(new ArrowButton(49, 66, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getTilePos(), this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
+        this.leftArrow = this.addWidget(new ArrowButton(49, 66, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.menu.getTilePos(), this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
         this.leftArrow.active = tile.useEnergyLimit;
-        this.rightArrow = this.addWidget(new ArrowButton(170, 66, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getTilePos(), this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
+        this.rightArrow = this.addWidget(new ArrowButton(170, 66, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.menu.getTilePos(), this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
         this.rightArrow.active = tile.useEnergyLimit;
     }
 
@@ -40,16 +40,16 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
         if(this.leftArrow.isHovered() && this.leftArrow.active)
             this.renderToolTip(Lists.newArrayList(
                 new StringTextComponent("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change1", "-100").applyTextStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change2", "-10000").applyTextStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change3", "-1").applyTextStyle(TextFormatting.AQUA)),
+                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change1", "-100").withStyle(TextFormatting.AQUA),
+                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change2", "-10000").withStyle(TextFormatting.AQUA),
+                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change3", "-1").withStyle(TextFormatting.AQUA)),
                 mouseX, mouseY);
         if(this.rightArrow.isHovered() && this.rightArrow.active)
             this.renderToolTip(Lists.newArrayList(
                 new StringTextComponent("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change1", "+100").applyTextStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change2", "+10000").applyTextStyle(TextFormatting.AQUA),
-                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change3", "+1").applyTextStyle(TextFormatting.AQUA)),
+                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change1", "+100").withStyle(TextFormatting.AQUA),
+                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change2", "+10000").withStyle(TextFormatting.AQUA),
+                new TranslationTextComponent("trashcans.gui.energy_trash_can.limit.change3", "+1").withStyle(TextFormatting.AQUA)),
                 mouseX, mouseY);
     }
 
@@ -68,7 +68,7 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     @Override
     protected void drawText(TrashCanTile tile){
         ScreenUtils.drawString(new TranslationTextComponent("trashcans.gui.energy_trash_can.limit"), 8, 52);
-        ScreenUtils.drawCenteredString(new StringTextComponent(I18n.format("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
+        ScreenUtils.drawCenteredString(new StringTextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
     }
 
     @Override

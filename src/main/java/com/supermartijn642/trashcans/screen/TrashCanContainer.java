@@ -15,7 +15,7 @@ public abstract class TrashCanContainer extends TileEntityBaseContainer<TrashCan
     public final int width, height;
 
     public TrashCanContainer(ContainerType<?> type, int id, PlayerEntity player, BlockPos pos, int width, int height){
-        super(type, id, player, player.world, pos);
+        super(type, id, player, player.level, pos);
         this.width = width;
         this.height = height;
 
@@ -37,7 +37,7 @@ public abstract class TrashCanContainer extends TileEntityBaseContainer<TrashCan
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn){
+    public boolean stillValid(PlayerEntity playerIn){
         return true;
     }
 

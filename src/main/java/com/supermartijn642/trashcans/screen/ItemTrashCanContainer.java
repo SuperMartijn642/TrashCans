@@ -28,21 +28,21 @@ public class ItemTrashCanContainer extends TrashCanContainer {
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.itemHandler(), column, 8 + column * 18, 64) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn){
+                public boolean mayPickup(PlayerEntity playerIn){
                     return false;
                 }
             });
     }
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 1 && slotId <= 9){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.itemFilter.set(slotId - 1, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
+                    ItemStack stack = player.inventory.getCarried().copy();
                     stack.setCount(1);
                     tile.itemFilter.set(slotId - 1, stack);
                 }
@@ -50,25 +50,25 @@ public class ItemTrashCanContainer extends TrashCanContainer {
             }
             return ItemStack.EMPTY;
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
+        return super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
         if(index >= 1 && index <= 9){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.itemFilter.set(index - 1, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
+                    ItemStack stack = player.inventory.getCarried().copy();
                     stack.setCount(1);
                     tile.itemFilter.set(index - 1, stack);
                 }
                 tile.dataChanged();
             }
-        }else if(index >= 10 && this.getSlot(0).isItemValid(this.getSlot(index).getStack()))
-            this.getSlot(index).putStack(ItemStack.EMPTY);
+        }else if(index >= 10 && this.getSlot(0).mayPlace(this.getSlot(index).getItem()))
+            this.getSlot(index).set(ItemStack.EMPTY);
         return ItemStack.EMPTY;
     }
 

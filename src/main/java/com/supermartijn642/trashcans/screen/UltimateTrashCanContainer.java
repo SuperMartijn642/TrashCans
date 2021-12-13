@@ -33,7 +33,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.itemFilterHandler(), column, 8 + column * 18, 64) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn){
+                public boolean mayPickup(PlayerEntity playerIn){
                     return false;
                 }
             });
@@ -42,21 +42,21 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.liquidFilterHandler(), column, 8 + column * 18, 94) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn){
+                public boolean mayPickup(PlayerEntity playerIn){
                     return false;
                 }
             });
     }
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 3 && slotId <= 11){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.itemFilter.set(slotId - 3, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
+                    ItemStack stack = player.inventory.getCarried().copy();
                     stack.setCount(1);
                     tile.itemFilter.set(slotId - 3, stack);
                 }
@@ -66,10 +66,10 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         }else if(slotId >= 12 && slotId <= 20){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.liquidFilter.set(slotId - 12, null);
                 else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getItemStack());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
                     if(filter != null)
                         tile.liquidFilter.set(slotId - 12, filter);
                 }
@@ -77,21 +77,21 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             }
             return ItemStack.EMPTY;
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
+        return super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
         if(index == 1 || index == 2){
-            if(this.mergeItemStack(this.getSlot(index).getStack(), 21, this.inventorySlots.size(), true))
-                this.getSlot(index).putStack(ItemStack.EMPTY);
+            if(this.moveItemStackTo(this.getSlot(index).getItem(), 21, this.slots.size(), true))
+                this.getSlot(index).set(ItemStack.EMPTY);
         }else if(index >= 3 && index <= 11){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.itemFilter.set(index - 3, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
+                    ItemStack stack = player.inventory.getCarried().copy();
                     stack.setCount(1);
                     tile.itemFilter.set(index - 3, stack);
                 }
@@ -100,33 +100,33 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
         }else if(index >= 12 && index <= 20){
             TrashCanTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getCarried().isEmpty())
                     tile.liquidFilter.set(index - 12, null);
                 else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getItemStack());
+                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
                     if(filter != null)
                         tile.liquidFilter.set(index - 12, filter);
                 }
                 tile.dataChanged();
             }
-        }else if(index >= 21 && !this.getSlot(index).getStack().isEmpty()){
-            ItemStack stack = this.getSlot(index).getStack();
-            if(this.getSlot(1).getStack().isEmpty() && this.getSlot(1).isItemValid(stack)){
+        }else if(index >= 21 && !this.getSlot(index).getItem().isEmpty()){
+            ItemStack stack = this.getSlot(index).getItem();
+            if(this.getSlot(1).getItem().isEmpty() && this.getSlot(1).mayPlace(stack)){
                 TrashCanTile tile = this.getObjectOrClose();
                 if(tile != null){
-                    this.getSlot(1).putStack(stack);
-                    this.getSlot(index).putStack(ItemStack.EMPTY);
+                    this.getSlot(1).set(stack);
+                    this.getSlot(index).set(ItemStack.EMPTY);
                     tile.dataChanged();
                 }
-            }else if(this.getSlot(2).getStack().isEmpty() && this.getSlot(2).isItemValid(stack)){
+            }else if(this.getSlot(2).getItem().isEmpty() && this.getSlot(2).mayPlace(stack)){
                 TrashCanTile tile = this.getObjectOrClose();
                 if(tile != null){
-                    this.getSlot(2).putStack(stack);
-                    this.getSlot(index).putStack(ItemStack.EMPTY);
+                    this.getSlot(2).set(stack);
+                    this.getSlot(index).set(ItemStack.EMPTY);
                     tile.dataChanged();
                 }
-            }else if(this.getSlot(0).isItemValid(stack))
-                this.getSlot(index).putStack(ItemStack.EMPTY);
+            }else if(this.getSlot(0).mayPlace(stack))
+                this.getSlot(index).set(ItemStack.EMPTY);
         }
         return ItemStack.EMPTY;
     }
