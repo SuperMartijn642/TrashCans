@@ -1,84 +1,80 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = 'https://plugins.gradle.org/m2'}
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath group: 'com.wynprice.cursemaven', name: 'CurseMaven', version: '2.1.4'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'com.wynprice.cursemaven'
+apply plugin: 'net.minecraftforge.gradle'
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'eclipse'
 
-version = "1.0.10-mc1.12"
-group = "com.supermartijn642.trashcans" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "trashcans"
+version = '1.0.10-mc1.12'
+group = 'com.supermartijn642.trashcans' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'trashcans'
 
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    version = "1.12.2-14.23.5.2847"
-    runDir = "run"
-
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20171003"
+    mappings channel: 'snapshot', version: '20171003-1.12'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            mods {
+                trashcans {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            mods {
+                trashcans {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 repositories {
     maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.k-4u.nl"
+        url "https://www.cursemaven.com"
     }
 }
 
 dependencies {
-    compile "curse.maven:mekanism:2835175"
-
-    // compile against the JEI API but do not include it at runtime
-    provided "mezz.jei:jei_1.12.2:4.16.1.301:api"
-    // at runtime, use the full JEI jar
-    compile "mezz.jei:jei_1.12.2:4.16.1.301"
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2855'
 
     // Core Lib
-    compile "curse.maven:supermartijn642s-core-lib:3300627"
+    implementation fg.deobf('curse.maven:supermartijn642s-core-lib-454372:3543822')
+    // Config Lib
+    implementation fg.deobf('curse.maven:supermartijn642s-config-lib-438332:3413933')
+
+    // Mekanism
+    implementation fg.deobf('curse.maven:mekanism-268560:2835175')
+    // Just Enough Items
+    implementation fg.deobf('curse.maven:jei-238222:3043174')
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-
-    // copy everything else except the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+sourceSets {
+    main {
+        resources {srcDir 'src/generated/resources'}
+        output.resourcesDir = output.classesDirs.asPath
     }
 }
-
-//sourceSets {
-//    main { output.resourcesDir = output.classesDir }
-//}
