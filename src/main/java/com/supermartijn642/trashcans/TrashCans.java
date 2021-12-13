@@ -1,6 +1,7 @@
 package com.supermartijn642.trashcans;
 
 import com.supermartijn642.trashcans.compat.Compatibility;
+import com.supermartijn642.trashcans.data.TrashCansAdvancementProvider;
 import com.supermartijn642.trashcans.filter.FluidFilterManager;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.*;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ObjectHolder;
@@ -112,6 +114,11 @@ public class TrashCans {
             e.getRegistry().register(IForgeMenuType.create((windowId, inv, data) -> new LiquidTrashCanContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("liquid_trash_can_container"));
             e.getRegistry().register(IForgeMenuType.create((windowId, inv, data) -> new EnergyTrashCanContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("energy_trash_can_container"));
             e.getRegistry().register(IForgeMenuType.create((windowId, inv, data) -> new UltimateTrashCanContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("ultimate_trash_can_container"));
+        }
+
+        @SubscribeEvent
+        public static void onGatherData(GatherDataEvent e){
+            e.getGenerator().addProvider(new TrashCansAdvancementProvider(e));
         }
     }
 
