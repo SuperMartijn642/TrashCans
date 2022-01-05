@@ -2,8 +2,12 @@
 **Trash Cans** adds Trash Cans which can be used to void items, liquids and energy!
 Items and Liquids can be whitelisted or blacklisted and an energy transfer limit can be set!
 
+---
+
 ### CurseForge
 For more info and downloads, check out the project on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/trash-cans)
+
+---
 
 ### Content:
 
@@ -24,6 +28,8 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 - Filters for items and liquids
 - Limit for energy transfer
 
+---
+
 ### FAQ
 Is there a limit on how much can be voided?  
 No, you can void items, liquids and energy as much and as fast as you want  
@@ -32,4 +38,4 @@ Yes, feel free to use my mod in your modpack
 
 ### Discord
 For future content, upcoming mods, and discussion, feel free to join the SuperMartijn642 discord server!  
-[<img width='200' src='https://snrclan.com/wp-content/uploads/2020/02/join-discord-png-13.png'>](https://discord.gg/QEbGyUYB2e)
+[<img width='400' src='https://discord.com/assets/cb48d2a8d4991281d7a6a95d2f58195e.svg'>](https://discord.gg/QEbGyUYB2e)
