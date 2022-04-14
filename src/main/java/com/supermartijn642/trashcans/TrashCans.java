@@ -26,7 +26,7 @@ public class TrashCans {
 
     public static final String MODID = "trashcans";
     public static final String NAME = "Trash Cans";
-    public static final String VERSION = "1.0.13";
+    public static final String VERSION = "1.0.14";
     public static final String DEPENDENCIES = "required-after:supermartijn642corelib@[1.0.16,1.1.0)";
 
     @Mod.Instance
