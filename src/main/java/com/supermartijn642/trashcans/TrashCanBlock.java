@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.trashcans.util.TrashCanContainerProvider;
 import net.minecraft.block.Block;
@@ -7,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -15,6 +17,7 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -28,6 +31,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -35,6 +39,7 @@ import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -115,5 +120,11 @@ public class TrashCanBlock extends BaseBlock implements IWaterLoggable {
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder){
         builder.add(BlockStateProperties.WATERLOGGED);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader level, List<ITextComponent> text, ITooltipFlag flag){
+        text.add(TextComponents.translation("trashcans." + this.getRegistryName().getPath() + ".info").color(TextFormatting.GRAY).get());
+        super.appendHoverText(stack, level, text, flag);
     }
 }
