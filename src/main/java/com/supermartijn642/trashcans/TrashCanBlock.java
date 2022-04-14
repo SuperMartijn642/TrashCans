@@ -1,7 +1,9 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.trashcans.util.TrashCanContainerProvider;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -12,6 +14,8 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -37,6 +41,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.BiFunction;
 
 /**
@@ -121,5 +126,11 @@ public class TrashCanBlock extends BaseBlock implements EntityBlock, SimpleWater
             entityType == TrashCans.liquid_trash_can_tile ||
             entityType == TrashCans.energy_trash_can_tile ?
             (world2, pos, state2, blockEntity) -> ((TrashCanTile)blockEntity).tick() : null;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, BlockGetter level, List<Component> text, TooltipFlag flag){
+        text.add(TextComponents.translation("trashcans." + this.getRegistryName().getPath() + ".info").color(ChatFormatting.GRAY).get());
+        super.appendHoverText(stack, level, text, flag);
     }
 }
