@@ -1,6 +1,6 @@
 ![Trash Cans](https://imgur.com/nJsqdbd.png)  
-**Trash Cans** adds Trash Cans which can be used to void items, liquids and energy!
-Items and Liquids can be whitelisted or blacklisted and an energy transfer limit can be set!
+**Trash Cans** adds Trash Cans which can be used to void items, fluids and energy!
+Items and Fluids can be whitelisted or blacklisted and an energy transfer limit can be set!
 
 ---
 
@@ -15,16 +15,16 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 - The Item Trash Can can void items!
 - Items can be filtered inside the GUI
 
-#### Liquid Trash Can
-- The Liquid Trash Can can void liquids!
-- Liquids can be filtered inside the GUI
+#### Fluid Trash Can
+- The Fluid Trash Can can void liquids and gasses!
+- Fluids can be filtered inside the GUI
 
 #### Energy Trash Can
 - The Energy Trash Can can void energy!
 - A transfer limit can be set inside the GUI
 
 #### Ultimate Trash Can
-- The Liquid Trash Can can void items, liquids and energy!
+- The Liquid Trash Can can void items, fluids and energy!
 - Filters for items and liquids
 - Limit for energy transfer
 
@@ -32,7 +32,7 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 
 ### FAQ
 Is there a limit on how much can be voided?  
-No, you can void items, liquids and energy as much and as fast as you want  
+No, you can void items, fluids and energy as much and as fast as you want  
 Can I use your mod in my modpack?  
 Yes, feel free to use my mod in your modpack
 
