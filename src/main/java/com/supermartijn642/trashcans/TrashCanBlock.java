@@ -58,11 +58,13 @@ public class TrashCanBlock extends BaseBlock implements EntityBlock, SimpleWater
 
     private final BiFunction<BlockPos,BlockState,? extends BlockEntity> tileProvider;
     private final TrashCanContainerProvider containerProvider;
+    private final String registryName;
 
     public TrashCanBlock(String registryName, BiFunction<BlockPos,BlockState,? extends BlockEntity> tileProvider, TrashCanContainerProvider containerProvider){
         super(registryName, false, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).strength(1.5f, 6).requiresCorrectToolForDrops());
         this.tileProvider = tileProvider;
         this.containerProvider = containerProvider;
+        this.registryName = registryName;
 
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false));
     }
@@ -73,7 +75,7 @@ public class TrashCanBlock extends BaseBlock implements EntityBlock, SimpleWater
             NetworkHooks.openGui((ServerPlayer)player, new MenuProvider() {
                 @Override
                 public Component getDisplayName(){
-                    return null;
+                    return TextComponents.empty().get();
                 }
 
                 @Nullable
@@ -130,7 +132,7 @@ public class TrashCanBlock extends BaseBlock implements EntityBlock, SimpleWater
 
     @Override
     public void appendHoverText(ItemStack stack, BlockGetter level, List<Component> text, TooltipFlag flag){
-        text.add(TextComponents.translation("trashcans." + this.getRegistryName().getPath() + ".info").color(ChatFormatting.GRAY).get());
+        text.add(TextComponents.translation("trashcans." + this.registryName + ".info").color(ChatFormatting.GRAY).get());
         super.appendHoverText(stack, level, text, flag);
     }
 }

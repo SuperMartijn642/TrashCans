@@ -1,11 +1,11 @@
 package com.supermartijn642.trashcans.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
-import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -40,6 +40,6 @@ public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer
 
     @Override
     protected void drawText(PoseStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.liquid_trash_can.filter"), 8, 52);
+        ScreenUtils.drawString(matrixStack, TextComponents.translation("trashcans.gui.liquid_trash_can.filter").get(), 8, 52);
     }
 }

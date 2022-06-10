@@ -2,6 +2,7 @@ package com.supermartijn642.trashcans.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanTile;
 import com.supermartijn642.trashcans.TrashCans;
@@ -9,8 +10,6 @@ import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -40,17 +39,17 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
         if(this.leftArrow.isHovered() && this.leftArrow.active)
             this.renderToolTip(matrixStack, Lists.newArrayList(
-                new TextComponent("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change1", "-100").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change2", "-10000").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change3", "-1").withStyle(ChatFormatting.AQUA)),
+                    TextComponents.string("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "-100").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "-10000").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change3", "-1").color(ChatFormatting.AQUA).get()),
                 mouseX, mouseY);
         if(this.rightArrow.isHovered() && this.rightArrow.active)
             this.renderToolTip(matrixStack, Lists.newArrayList(
-                new TextComponent("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change1", "+100").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change2", "+10000").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change3", "+1").withStyle(ChatFormatting.AQUA)),
+                    TextComponents.string("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "+100").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "+10000").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change3", "+1").color(ChatFormatting.AQUA).get()),
                 mouseX, mouseY);
     }
 
@@ -68,8 +67,8 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
 
     @Override
     protected void drawText(PoseStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.energy_trash_can.limit"), 8, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new TextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
+        ScreenUtils.drawString(matrixStack, TextComponents.translation("trashcans.gui.energy_trash_can.limit").get(), 8, 52);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)).get(), 114, 71);
     }
 
     @Override

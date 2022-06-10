@@ -1,23 +1,6 @@
 {
-  "display": {
-    "icon": {
-      "item": "trashcans:item_trash_can"
-    },
-    "title": {
-      "translate": "trashcans.advancement.trash_can.title"
-    },
-    "description": {
-      "translate": "trashcans.advancement.trash_can.description"
-    },
-    "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false,
-    "background": "minecraft:textures/block/cobblestone.png"
-  },
   "criteria": {
     "has_trash_can": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -26,10 +9,10 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     },
     "has_trash_can2": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -38,10 +21,10 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
     },
     "has_trash_can3": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -50,7 +33,24 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "minecraft:textures/block/cobblestone.png",
+    "description": {
+      "translate": "trashcans.advancement.trash_can.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "trashcans:item_trash_can"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "trashcans.advancement.trash_can.title"
     }
   },
   "requirements": [

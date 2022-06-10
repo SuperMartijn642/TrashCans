@@ -2,11 +2,11 @@ package com.supermartijn642.trashcans.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -40,6 +40,6 @@ public class WhitelistButton extends AbstractButtonWidget implements IHoverTextW
 
     @Override
     public Component getHoverText(){
-        return new TranslatableComponent("trashcans.gui.whitelist." + (this.white ? "on" : "off"));
+        return TextComponents.translation("trashcans.gui.whitelist." + (this.white ? "on" : "off")).get();
     }
 }

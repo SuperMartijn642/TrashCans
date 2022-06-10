@@ -2,10 +2,10 @@ package com.supermartijn642.trashcans.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -31,6 +31,6 @@ public class ArrowButton extends AbstractButtonWidget {
 
     @Override
     protected Component getNarrationMessage(){
-        return new TranslatableComponent("trashcans.gui.arrow." + (this.left ? "left" : "right"));
+        return TextComponents.translation("trashcans.gui.arrow." + (this.left ? "left" : "right")).get();
     }
 }
