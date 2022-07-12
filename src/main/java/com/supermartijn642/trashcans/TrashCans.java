@@ -18,12 +18,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -96,7 +96,7 @@ public class TrashCans {
                 onTileRegistry(Objects.requireNonNull(e.getForgeRegistry()));
             else if(e.getRegistryKey().equals(ForgeRegistries.Keys.ITEMS))
                 onItemRegistry(Objects.requireNonNull(e.getForgeRegistry()));
-            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.CONTAINER_TYPES))
+            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.MENU_TYPES))
                 onContainerRegistry(Objects.requireNonNull(e.getForgeRegistry()));
         }
 

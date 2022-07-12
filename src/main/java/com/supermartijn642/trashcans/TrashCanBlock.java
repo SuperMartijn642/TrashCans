@@ -72,7 +72,7 @@ public class TrashCanBlock extends BaseBlock implements EntityBlock, SimpleWater
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult p_225533_6_){
         if(!worldIn.isClientSide)
-            NetworkHooks.openGui((ServerPlayer)player, new MenuProvider() {
+            NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                 @Override
                 public Component getDisplayName(){
                     return TextComponents.empty().get();
