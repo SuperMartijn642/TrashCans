@@ -61,7 +61,7 @@ public class GasFilterManager implements IFilterManager {
         }
 
         private static GasStack getGas(ItemStack stack){
-            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).orElse(null);
+            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS_HANDLER).orElse(null);
             return gasHandler == null || gasHandler.getTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
         }
     }

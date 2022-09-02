@@ -30,12 +30,12 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
     @Override
     public Capability<?> getGasHandlerCapability(){
-        return Capabilities.GAS_HANDLER_CAPABILITY;
+        return Capabilities.GAS_HANDLER;
     }
 
     @Override
     public boolean doesItemHaveGasStored(ItemStack stack){
-        return stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).filter(handler -> {
+        return stack.getCapability(Capabilities.GAS_HANDLER).filter(handler -> {
             for(int i = 0; i < handler.getTanks(); i++)
                 if(!handler.getChemicalInTank(i).isEmpty())
                     return true;
@@ -45,7 +45,7 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
     @Override
     public boolean drainGasFromItem(ItemStack stack){
-        return stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).map(handler -> {
+        return stack.getCapability(Capabilities.GAS_HANDLER).map(handler -> {
             boolean changed = false;
             for(int tank = 0; tank < handler.getTanks(); tank++)
                 if(!handler.getChemicalInTank(tank).isEmpty()){
@@ -112,7 +112,7 @@ public class MekanismCompatOn extends MekanismCompatOff {
     @Override
     public ItemStack getChemicalTankForGasStack(Object gasStack){
         ItemStack stack = new ItemStack(MekanismBlocks.CREATIVE_CHEMICAL_TANK);
-        stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).ifPresent(handler -> {
+        stack.getCapability(Capabilities.GAS_HANDLER).ifPresent(handler -> {
             GasStack gas = ((GasStack)gasStack).copy();
             gas.setAmount(handler.getTankCapacity(0));
             handler.setChemicalInTank(0, gas);
