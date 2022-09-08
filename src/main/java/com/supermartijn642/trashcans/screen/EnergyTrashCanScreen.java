@@ -2,15 +2,14 @@ package com.supermartijn642.trashcans.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -22,43 +21,45 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
 
     private boolean shift, control;
 
-    public EnergyTrashCanScreen(EnergyTrashCanContainer container){
-        super(container, "trashcans.gui.energy_trash_can.title");
+    public EnergyTrashCanScreen(){
+        super("trashcans.gui.energy_trash_can.title");
     }
 
     @Override
-    protected void addWidgets(TrashCanTile tile){
-        this.checkBox = this.addWidget(new CheckBox(21, 66, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.menu.getTilePos()))));
-        this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow = this.addWidget(new ArrowButton(49, 66, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.menu.getTilePos(), this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
-        this.leftArrow.active = tile.useEnergyLimit;
-        this.rightArrow = this.addWidget(new ArrowButton(170, 66, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.menu.getTilePos(), this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
-        this.rightArrow.active = tile.useEnergyLimit;
+    protected void addWidgets(TrashCanBlockEntity entity){
+        this.checkBox = this.addWidget(new CheckBox(21, 66, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.container.getBlockEntityPos()))));
+        this.checkBox.update(entity.useEnergyLimit);
+        this.leftArrow = this.addWidget(new ArrowButton(49, 66, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getBlockEntityPos(), this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
+        this.leftArrow.setActive(entity.useEnergyLimit);
+        this.rightArrow = this.addWidget(new ArrowButton(170, 66, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getBlockEntityPos(), this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
+        this.rightArrow.setActive(entity.useEnergyLimit);
     }
 
     @Override
-    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
-        if(this.leftArrow.isHovered() && this.leftArrow.active)
-            this.renderToolTip(matrixStack, Lists.newArrayList(
-                new TextComponent("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change1", "-100").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change2", "-10000").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change3", "-1").withStyle(ChatFormatting.AQUA)),
+    protected void renderTooltips(PoseStack poseStack, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderTooltips(poseStack, mouseX, mouseY, entity);
+        if(this.leftArrow.isFocused() && this.leftArrow.isActive())
+            ScreenUtils.drawTooltip(poseStack, Lists.newArrayList(
+                    TextComponents.string("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "-100").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "-10000").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change3", "-1").color(ChatFormatting.AQUA).get()),
                 mouseX, mouseY);
-        if(this.rightArrow.isHovered() && this.rightArrow.active)
-            this.renderToolTip(matrixStack, Lists.newArrayList(
-                new TextComponent("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change1", "+100").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change2", "+10000").withStyle(ChatFormatting.AQUA),
-                new TranslatableComponent("trashcans.gui.energy_trash_can.limit.change3", "+1").withStyle(ChatFormatting.AQUA)),
+        if(this.rightArrow.isFocused() && this.rightArrow.isActive())
+            ScreenUtils.drawTooltip(poseStack, Lists.newArrayList(
+                    TextComponents.string("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "+100").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "+10000").color(ChatFormatting.AQUA).get(),
+                    TextComponents.translation("trashcans.gui.energy_trash_can.limit.change3", "+1").color(ChatFormatting.AQUA).get()),
                 mouseX, mouseY);
     }
 
     @Override
-    protected void containerTick(TrashCanTile tile){
-        this.checkBox.update(tile.useEnergyLimit);
-        this.leftArrow.active = tile.useEnergyLimit;
-        this.rightArrow.active = tile.useEnergyLimit;
+    protected void update(TrashCanBlockEntity entity){
+        super.update(entity);
+        this.checkBox.update(entity.useEnergyLimit);
+        this.leftArrow.setActive(entity.useEnergyLimit);
+        this.rightArrow.setActive(entity.useEnergyLimit);
     }
 
     @Override
@@ -67,26 +68,26 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected void drawText(PoseStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, new TranslatableComponent("trashcans.gui.energy_trash_can.limit"), 8, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new TextComponent(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + tile.energyLimit)), 114, 71);
+    protected void drawText(PoseStack poseStack, TrashCanBlockEntity entity){
+        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.energy_trash_can.limit").get(), 8, 52);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 71);
     }
 
     @Override
-    public boolean keyPressed(int keyCode){
+    protected boolean keyPressed(int keyCode, boolean hasBeenHandled, TrashCanBlockEntity object){
         if(keyCode == 340)
             this.shift = true;
         else if(keyCode == 341)
             this.control = true;
-        return super.keyPressed(keyCode);
+        return super.keyPressed(keyCode, hasBeenHandled, object);
     }
 
     @Override
-    public boolean keyReleased(int keyCode){
+    protected boolean keyReleased(int keyCode, boolean hasBeenHandled, TrashCanBlockEntity object){
         if(keyCode == 340)
             this.shift = false;
         else if(keyCode == 341)
             this.control = false;
-        return super.keyReleased(keyCode);
+        return super.keyReleased(keyCode, hasBeenHandled, object);
     }
 }
