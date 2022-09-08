@@ -1,6 +1,0 @@
-{
-  "parent": "trashcans:trash_can",
-  "textures": {
-    "all": "trashcans:trash_can_ultimate"
-  }
-}

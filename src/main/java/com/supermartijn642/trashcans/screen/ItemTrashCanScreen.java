@@ -3,7 +3,7 @@ package com.supermartijn642.trashcans.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
 
@@ -14,23 +14,20 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
 
     private WhitelistButton whitelistButton;
 
-    public ItemTrashCanScreen(ItemTrashCanContainer container){
-        super(container, "trashcans.gui.item_trash_can.title");
+    public ItemTrashCanScreen(){
+        super("trashcans.gui.item_trash_can.title");
     }
 
     @Override
-    protected void addWidgets(TrashCanTile tile){
-        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.sizeY() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.menu.getTilePos()))));
-        this.whitelistButton.update(tile.itemFilterWhitelist);
+    protected void addWidgets(TrashCanBlockEntity entity){
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getBlockEntityPos()))));
+        this.whitelistButton.update(entity.itemFilterWhitelist);
     }
 
     @Override
-    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, TrashCanTile tile){
-    }
-
-    @Override
-    protected void containerTick(TrashCanTile tile){
-        this.whitelistButton.update(tile.itemFilterWhitelist);
+    protected void update(TrashCanBlockEntity entity){
+        super.update(entity);
+        this.whitelistButton.update(entity.itemFilterWhitelist);
     }
 
     @Override
@@ -39,7 +36,7 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
     }
 
     @Override
-    protected void drawText(PoseStack matrixStack, TrashCanTile tile){
-        ScreenUtils.drawString(matrixStack, TextComponents.translation("trashcans.gui.item_trash_can.filter").get(), 8, 52);
+    protected void drawText(PoseStack poseStack, TrashCanBlockEntity entity){
+        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.item_trash_can.filter").get(), 8, 52);
     }
 }

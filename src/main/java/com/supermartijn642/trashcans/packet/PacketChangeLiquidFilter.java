@@ -1,14 +1,14 @@
 package com.supermartijn642.trashcans.packet;
 
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.core.network.BlockEntityBasePacket;
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
-public class PacketChangeLiquidFilter extends TrashCanPacket {
+public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
     private int filterSlot;
     private ItemFilter filter;
 
@@ -18,33 +18,33 @@ public class PacketChangeLiquidFilter extends TrashCanPacket {
         this.filter = filter;
     }
 
-    public PacketChangeLiquidFilter(FriendlyByteBuf buffer){
-        super(buffer);
+    public PacketChangeLiquidFilter(){
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer){
-        super.encode(buffer);
+    public void write(FriendlyByteBuf buffer){
+        super.write(buffer);
         buffer.writeInt(this.filterSlot);
         buffer.writeNbt(LiquidTrashCanFilters.write(this.filter));
     }
 
     @Override
-    protected void decodeBuffer(FriendlyByteBuf buffer){
-        super.decodeBuffer(buffer);
+    public void read(FriendlyByteBuf buffer){
+        super.read(buffer);
         this.filterSlot = buffer.readInt();
         this.filter = LiquidTrashCanFilters.read(buffer.readNbt());
     }
 
-    public static PacketChangeLiquidFilter decode(FriendlyByteBuf buffer){
-        return new PacketChangeLiquidFilter(buffer);
+    @Override
+    public boolean verify(PacketContext context){
+        return this.filterSlot >= 0 && this.filterSlot < 9;
     }
 
     @Override
-    protected void handle(Player player, Level world, TrashCanTile tile){
-        if(tile.liquids){
-            tile.liquidFilter.set(this.filterSlot, this.filter);
-            tile.dataChanged();
+    protected void handle(TrashCanBlockEntity entity, PacketContext context){
+        if(entity.liquids){
+            entity.liquidFilter.set(this.filterSlot, this.filter);
+            entity.dataChanged();
         }
     }
 }

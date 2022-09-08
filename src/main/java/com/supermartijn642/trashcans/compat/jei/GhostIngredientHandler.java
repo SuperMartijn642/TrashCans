@@ -1,98 +1,117 @@
 package com.supermartijn642.trashcans.compat.jei;
 
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.PacketChangeItemFilter;
 import com.supermartijn642.trashcans.packet.PacketChangeLiquidFilter;
-import com.supermartijn642.trashcans.screen.ItemTrashCanScreen;
-import com.supermartijn642.trashcans.screen.LiquidTrashCanScreen;
-import com.supermartijn642.trashcans.screen.TrashCanScreen;
-import com.supermartijn642.trashcans.screen.UltimateTrashCanScreen;
+import com.supermartijn642.trashcans.screen.*;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanScreen<?>> {
+public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanWidgetContainerScreen> {
 
     @Override
-    public <I> List<Target<I>> getTargets(TrashCanScreen<?> screen, I ingredient, boolean doStart){
+    public <I> List<Target<I>> getTargets(TrashCanWidgetContainerScreen screen, I ingredient, boolean doStart){
+        // Get the widget and container from the screen
+        TrashCanScreen<?> widget = screen.getWidget();
+        TrashCanContainer container = screen.getContainer();
+
+        // Get the slots for the item and fluid filters
+        List<Slot> itemFilterSlots = new ArrayList<>(), fluidFilterSlots = new ArrayList<>();
+        if(widget instanceof ItemTrashCanScreen){
+            for(int slot = 1; slot <= 9; slot++)
+                itemFilterSlots.add(container.getSlot(slot));
+        }else if(widget instanceof LiquidTrashCanScreen){
+            for(int slot = 1; slot <= 9; slot++)
+                fluidFilterSlots.add(container.getSlot(slot));
+        }else if(widget instanceof UltimateTrashCanScreen){
+            for(int slot = 3; slot <= 11; slot++)
+                itemFilterSlots.add(container.getSlot(slot));
+            for(int slot = 12; slot <= 20; slot++)
+                fluidFilterSlots.add(container.getSlot(slot));
+        }
+
+        // Now create all the targets
         List<Target<I>> targets = new ArrayList<>();
-        for(Slot slot : screen.getMenu().slots){
-            Rect2i bounds = new Rect2i(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 17, 17);
 
-            boolean isItemFilterSlot = (screen instanceof ItemTrashCanScreen && slot.index >= 1 && slot.index <= 9) || (screen instanceof UltimateTrashCanScreen && slot.index >= 3 && slot.index <= 11);
-            boolean isFluidFilterSlot = (screen instanceof LiquidTrashCanScreen && slot.index >= 1 && slot.index <= 9) || (screen instanceof UltimateTrashCanScreen && slot.index >= 12 && slot.index <= 20);
+        // Add a target for each item filter slot
+        if(ingredient instanceof ItemStack){
+            for(int i = 0; i < itemFilterSlots.size(); i++){
+                int index = i;
+                Slot slot = itemFilterSlots.get(i);
+                Rect2i bounds = new Rect2i(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 17, 17);
 
-            if(isItemFilterSlot && ingredient instanceof ItemStack){
-                int filterSlotNum = screen instanceof ItemTrashCanScreen ? slot.index - 1 : slot.index - 3;
-                targets.add(new Target<I>() {
-                    @Override
-                    public Rect2i getArea(){
-                        return bounds;
-                    }
-
-                    @Override
-                    public void accept(I ingredient){
-                        TrashCanTile tile = screen.getMenu().getObjectOrClose();
-                        if(tile != null){
-                            tile.itemFilter.set(filterSlotNum, (ItemStack)ingredient);
-                            TrashCans.CHANNEL.sendToServer(new PacketChangeItemFilter(tile.getBlockPos(), filterSlotNum, (ItemStack)ingredient));
-                        }
+                // Create the target
+                Target<I> target = createTarget(bounds, input -> {
+                    TrashCanBlockEntity entity = container.getBlockEntity();
+                    if(entity != null){
+                        entity.itemFilter.set(index, (ItemStack)input);
+                        TrashCans.CHANNEL.sendToServer(new PacketChangeItemFilter(container.getBlockEntityPos(), index, (ItemStack)input));
                     }
                 });
-            }else if(isFluidFilterSlot){
-                ItemStack repitem = ItemStack.EMPTY;
-                if(ingredient instanceof ItemStack && isValidFluidItem((ItemStack)ingredient)){
-                    repitem = (ItemStack)ingredient;
-                }else if(ingredient instanceof FluidStack){
-                    repitem = new ItemStack(((FluidStack)ingredient).getFluid().getBucket());
-                }else if(Compatibility.MEKANISM.isGasStack(ingredient)){
-                    repitem = Compatibility.MEKANISM.getChemicalTankForGasStack(ingredient);
-                }
-                if(!repitem.isEmpty()){
-                    ItemStack finalrepitem = repitem;
-                    int filterSlotNum = screen instanceof LiquidTrashCanScreen ? slot.index - 1 : slot.index - 12;
-                    targets.add(new Target<I>() {
-                        @Override
-                        public Rect2i getArea(){
-                            return bounds;
-                        }
-
-                        @Override
-                        public void accept(I ingredient){
-                            ItemFilter filter = LiquidTrashCanFilters.createFilter(finalrepitem);
-                            if(filter != null){
-                                TrashCanTile tile = screen.getMenu().getObjectOrClose();
-                                if(tile != null){
-                                    tile.liquidFilter.set(filterSlotNum, filter);
-                                    TrashCans.CHANNEL.sendToServer(new PacketChangeLiquidFilter(tile.getBlockPos(), filterSlotNum, filter));
-                                }
-                            }
-                        }
-                    });
-                }
+                targets.add(target);
             }
         }
+
+        // Get an item stack as representation for the ingredient
+        ItemStack ingredientStack = ItemStack.EMPTY;
+        if(ingredient instanceof ItemStack)
+            ingredientStack = (ItemStack)ingredient;
+        else if(ingredient instanceof FluidStack)
+            ingredientStack = ((FluidStack)ingredient).getRawFluid().getBucket().getDefaultInstance();
+        else if(Compatibility.MEKANISM.isGasStack(ingredient))
+            ingredientStack = Compatibility.MEKANISM.getChemicalTankForGasStack(ingredient);
+
+        // Check whether the ingredient is applicable to a fluid filter
+        ItemFilter filter = LiquidTrashCanFilters.createFilter(ingredientStack);
+        if(filter != null){
+            // Add a target for each fluid filter slot
+            for(int i = 0; i < fluidFilterSlots.size(); i++){
+                int index = i;
+                Slot slot = fluidFilterSlots.get(i);
+                Rect2i bounds = new Rect2i(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 17, 17);
+
+                // Create the target
+                Target<I> target = createTarget(bounds, input -> {
+                    TrashCanBlockEntity entity = container.getBlockEntity();
+                    if(entity != null){
+                        entity.liquidFilter.set(index, filter);
+                        TrashCans.CHANNEL.sendToServer(new PacketChangeLiquidFilter(container.getBlockEntityPos(), index, filter));
+                    }
+                });
+                targets.add(target);
+            }
+        }
+
+        // Finally, return all created targets
         return targets;
+    }
+
+    private static <I> Target<I> createTarget(Rect2i bounds, Consumer<I> acceptor){
+        return new Target<>() {
+            @Override
+            public Rect2i getArea(){
+                return bounds;
+            }
+
+            @Override
+            public void accept(I ingredient){
+                acceptor.accept(ingredient);
+            }
+        };
     }
 
     @Override
     public void onComplete(){
-    } // NO-OP
-
-    private boolean isValidFluidItem(ItemStack stack){
-        if(Compatibility.MEKANISM.doesItemHaveGasStored(stack)) return true;
-        IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
-        return fluidHandler != null && fluidHandler.getTanks() == 1 && !fluidHandler.getFluidInTank(0).isEmpty();
     }
 }
