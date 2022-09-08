@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "display": {
+    "icon": {
+      "item": "trashcans:item_trash_can"
+    },
+    "title": {
+      "translate": "trashcans.advancement.recipes/search/item_trash_can.title"
+    },
+    "description": {
+      "translate": "trashcans.advancement.recipes/search/item_trash_can.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "can_unlock_recipe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:chests/wooden"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "trashcans:item_trash_can"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "can_unlock_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "trashcans:item_trash_can"
+    ]
+  }
+}

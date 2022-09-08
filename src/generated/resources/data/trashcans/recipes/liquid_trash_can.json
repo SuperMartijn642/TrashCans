@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:stone"
+    },
+    "B": {
+      "item": "minecraft:bucket"
+    },
+    "C": {
+      "tag": "forge:chests/wooden"
+    }
+  },
+  "result": {
+    "item": "trashcans:liquid_trash_can"
+  }
+}

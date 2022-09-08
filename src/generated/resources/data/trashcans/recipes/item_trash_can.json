@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:stone"
+    },
+    "B": {
+      "tag": "forge:cobblestone"
+    },
+    "C": {
+      "tag": "forge:chests/wooden"
+    }
+  },
+  "result": {
+    "item": "trashcans:item_trash_can"
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "trashcans:energy_trash_can",
-    "trashcans:item_trash_can",
-    "trashcans:liquid_trash_can",
-    "trashcans:ultimate_trash_can"
-  ]
-}
