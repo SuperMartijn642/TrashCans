@@ -10,10 +10,10 @@
       "tag": "forge:stone"
     },
     "B": {
-      "item": "minecraft:bucket"
+      "tag": "forge:cobblestone"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "item": "minecraft:bucket"
     }
   },
   "result": {
