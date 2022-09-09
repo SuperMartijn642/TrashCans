@@ -16,7 +16,7 @@
     "hidden": false
   },
   "criteria": {
-    "has_trash_can": {
+    "has_ultimate_trash_can": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -29,7 +29,7 @@
   },
   "requirements": [
     [
-      "has_trash_can"
+      "has_ultimate_trash_can"
     ]
   ]
 }

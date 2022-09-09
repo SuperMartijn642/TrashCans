@@ -1,108 +1,85 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.block.BaseBlock;
-import com.supermartijn642.trashcans.util.TrashCanContainerProvider;
+import com.supermartijn642.core.block.*;
+import com.supermartijn642.core.registry.Registries;
+import com.supermartijn642.trashcans.screen.TrashCanContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-public class TrashCanBlock extends BaseBlock implements IWaterLoggable {
+public class TrashCanBlock extends BaseBlock implements EntityHoldingBlock, IWaterLoggable {
 
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    private static final VoxelShape SHAPE =
-        VoxelShapes.or(VoxelShapes.box(3 / 16d, 0 / 16d, 3 / 16d, 13 / 16d, 12 / 16d, 13 / 16d),
-            VoxelShapes.box(2 / 16d, 12 / 16d, 2 / 16d, 14 / 16d, 13 / 16d, 14 / 16d),
-            VoxelShapes.box(3 / 16d, 12.5 / 16d, 3 / 16d, 13 / 16d, 13.5 / 16d, 13 / 16d));
+    private static final BlockShape SHAPE = BlockShape.or(
+        BlockShape.create(3 / 16d, 0 / 16d, 3 / 16d, 13 / 16d, 12 / 16d, 13 / 16d),
+        BlockShape.create(2 / 16d, 12 / 16d, 2 / 16d, 14 / 16d, 13 / 16d, 14 / 16d),
+        BlockShape.create(3 / 16d, 12.5 / 16d, 3 / 16d, 13 / 16d, 13.5 / 16d, 13 / 16d)
+    );
 
-    private final Supplier<? extends TileEntity> tileProvider;
-    private final TrashCanContainerProvider containerProvider;
+    private final Supplier<BaseBlockEntityType<?>> blockEntityType;
+    private final BiFunction<PlayerEntity,BlockPos,TrashCanContainer> containerProvider;
 
-    public TrashCanBlock(String registryName, Supplier<? extends TileEntity> tileProvider, TrashCanContainerProvider containerProvider){
-        super(registryName, false, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).strength(1.5f, 6).harvestLevel(1).harvestTool(ToolType.PICKAXE));
-        this.tileProvider = tileProvider;
+    public TrashCanBlock(Supplier<BaseBlockEntityType<?>> blockEntityType, BiFunction<PlayerEntity,BlockPos,TrashCanContainer> containerProvider){
+        super(false, BlockProperties.create(Material.METAL, MaterialColor.COLOR_GRAY).destroyTime(1.5f).explosionResistance(6).requiresCorrectTool());
+        this.blockEntityType = blockEntityType;
         this.containerProvider = containerProvider;
 
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false));
     }
 
     @Override
-    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
-        if(!worldIn.isClientSide)
-            NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
-                @Override
-                public ITextComponent getDisplayName(){
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Container createMenu(int windowId, PlayerInventory inventory, PlayerEntity player){
-                    return TrashCanBlock.this.containerProvider.createContainer(windowId, player, pos);
-                }
-            }, pos);
-        return ActionResultType.SUCCESS;
+    protected InteractionFeedback interact(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide, Vec3d hitLocation){
+        if(!level.isClientSide)
+            CommonUtils.openContainer(this.containerProvider.apply(player, pos));
+        return InteractionFeedback.SUCCESS;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context){
-        IFluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-        return this.defaultBlockState().setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
+        IFluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
+        return this.defaultBlockState().setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
-        return SHAPE;
+        return SHAPE.getUnderlying();
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state){
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world){
-        return this.tileProvider.get();
+    public TileEntity createNewBlockEntity(){
+        return this.blockEntityType.get().create();
     }
 
     @Override
@@ -123,8 +100,7 @@ public class TrashCanBlock extends BaseBlock implements IWaterLoggable {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader level, List<ITextComponent> text, ITooltipFlag flag){
-        text.add(TextComponents.translation("trashcans." + this.getRegistryName().getPath() + ".info").color(TextFormatting.GRAY).get());
-        super.appendHoverText(stack, level, text, flag);
+    protected void appendItemInformation(ItemStack stack, IBlockReader level, Consumer<ITextComponent> info, boolean advanced){
+        info.accept(TextComponents.translation("trashcans." + Registries.BLOCKS.getIdentifier(this).getPath() + ".info").color(TextFormatting.GRAY).get());
     }
 }
