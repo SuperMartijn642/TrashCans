@@ -30,8 +30,8 @@ public class TrashCansRecipeGenerator extends RecipeGenerator {
             .pattern("BCB")
             .pattern("BBB")
             .input('A', Tags.Items.STONE)
-            .input('B', Items.BUCKET)
-            .input('C', Tags.Items.CHESTS_WOODEN)
+            .input('B', Tags.Items.COBBLESTONE)
+            .input('C', Items.BUCKET)
             .unlockedBy(Items.BUCKET);
         this.shaped(TrashCans.energy_trash_can)
             .pattern("AAA")
