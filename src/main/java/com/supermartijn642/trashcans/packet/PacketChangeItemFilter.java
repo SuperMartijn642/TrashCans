@@ -1,13 +1,14 @@
 package com.supermartijn642.trashcans.packet;
 
-import com.supermartijn642.trashcans.TrashCanTile;
-import net.minecraft.entity.player.PlayerEntity;
+import com.supermartijn642.core.network.BlockEntityBasePacket;
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public class PacketChangeItemFilter extends TrashCanPacket {
+public class PacketChangeItemFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
+
     private int filterSlot;
     private ItemStack stack;
 
@@ -17,33 +18,33 @@ public class PacketChangeItemFilter extends TrashCanPacket {
         this.stack = stack;
     }
 
-    public PacketChangeItemFilter(PacketBuffer buffer){
-        super(buffer);
+    public PacketChangeItemFilter(){
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
-        super.encode(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.filterSlot);
         buffer.writeItem(this.stack);
     }
 
     @Override
-    protected void decodeBuffer(PacketBuffer buffer){
-        super.decodeBuffer(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.filterSlot = buffer.readInt();
         this.stack = buffer.readItem();
     }
 
-    public static PacketChangeItemFilter decode(PacketBuffer buffer){
-        return new PacketChangeItemFilter(buffer);
+    @Override
+    public boolean verify(PacketContext context){
+        return this.filterSlot >= 0 && this.filterSlot < 9;
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, TrashCanTile tile){
-        if(tile.items){
-            tile.itemFilter.set(this.filterSlot, this.stack);
-            tile.dataChanged();
+    protected void handle(TrashCanBlockEntity entity, PacketContext context){
+        if(entity.items){
+            entity.itemFilter.set(this.filterSlot, this.stack);
+            entity.dataChanged();
         }
     }
 }

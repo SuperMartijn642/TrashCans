@@ -1,58 +1,67 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.core.gui.widget.ObjectBaseContainerWidget;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
-public abstract class TrashCanScreen<T extends TrashCanContainer> extends TileEntityBaseContainerScreen<TrashCanTile,T> {
+public abstract class TrashCanScreen<T extends TrashCanContainer> extends ObjectBaseContainerWidget<TrashCanBlockEntity,T> {
 
-    public TrashCanScreen(T container, String title){
-        super(container, new TranslationTextComponent(title));
-        this.setDrawSlots(false);
+    private final ITextComponent title;
+
+    public TrashCanScreen(String title){
+        super(0, 0, 1, 1);
+        this.title = TextComponents.translation(title).get();
     }
 
     @Override
-    protected int sizeX(TrashCanTile trashCanTile){
-        return this.menu.width;
+    protected ITextComponent getNarrationMessage(TrashCanBlockEntity object){
+        return this.title;
     }
 
     @Override
-    protected int sizeY(TrashCanTile trashCanTile){
-        return this.menu.height;
+    protected TrashCanBlockEntity getObject(TrashCanBlockEntity oldObject){
+        return this.container.getBlockEntity();
+    }
+
+    @Override
+    protected boolean validateObject(TrashCanBlockEntity object){
+        return object != null && !object.isRemoved();
+    }
+
+    @Override
+    protected int width(TrashCanBlockEntity object){
+        return this.container.width;
+    }
+
+    @Override
+    protected int height(TrashCanBlockEntity object){
+        return this.container.height;
     }
 
     protected abstract String getBackground();
 
     @Override
-    protected void renderBackground(int mouseX, int mouseY, TrashCanTile tile){
+    protected void renderBackground(int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderBackground(mouseX, mouseY, entity);
         ScreenUtils.bindTexture(new ResourceLocation("trashcans", "textures/" + this.getBackground()));
-        ScreenUtils.drawTexture(0, 0, this.sizeX(), this.sizeY());
+        ScreenUtils.drawTexture(0, 0, this.width(), this.height());
     }
 
     @Override
-    protected void renderForeground(int mouseX, int mouseY, TrashCanTile tile){
-        ScreenUtils.drawCenteredString(this.title, this.sizeX() / 2f, 6);
-        ScreenUtils.drawString(this.inventory.getDisplayName(), 21, this.sizeY() - 94);
+    protected void renderForeground(int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderForeground(mouseX, mouseY, entity);
+        ScreenUtils.drawCenteredString(this.title, this.width() / 2f, 6);
+        ScreenUtils.drawString(ClientUtils.getPlayer().inventory.getName(), 21, this.height() - 94);
 
-        this.drawText(tile);
+        this.drawText(entity);
     }
 
-    protected abstract void drawText(TrashCanTile tile);
-
-    public void renderToolTip(List<ITextComponent> text, int x, int y){
-        super.renderTooltip(text.stream().map(ITextComponent::getColoredString).collect(Collectors.toList()), x, y);
-    }
-
-    public void renderToolTip(boolean translate, String string, int x, int y){
-        super.renderTooltip(translate ? new TranslationTextComponent(string).getColoredString() : string, x, y);
-    }
+    protected abstract void drawText(TrashCanBlockEntity entity);
 }
