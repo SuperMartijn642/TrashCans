@@ -1,14 +1,15 @@
 package com.supermartijn642.trashcans.packet;
 
-import com.supermartijn642.trashcans.TrashCanTile;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import com.supermartijn642.core.network.BlockEntityBasePacket;
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class PacketChangeItemFilter extends TrashCanPacket<PacketChangeItemFilter> {
+public class PacketChangeItemFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
+
     private int filterSlot;
     private ItemStack stack;
 
@@ -22,24 +23,29 @@ public class PacketChangeItemFilter extends TrashCanPacket<PacketChangeItemFilte
     }
 
     @Override
-    public void encode(ByteBuf buffer){
-        super.encode(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.filterSlot);
         ByteBufUtils.writeItemStack(buffer, this.stack);
     }
 
     @Override
-    protected void decodeBuffer(ByteBuf buffer){
-        super.decodeBuffer(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.filterSlot = buffer.readInt();
         this.stack = ByteBufUtils.readItemStack(buffer);
     }
 
     @Override
-    protected void handle(PacketChangeItemFilter message, EntityPlayer player, World world, TrashCanTile tile){
-        if(tile.items){
-            tile.itemFilter.set(this.filterSlot, this.stack);
-            tile.dataChanged();
+    public boolean verify(PacketContext context){
+        return this.filterSlot >= 0 && this.filterSlot < 9;
+    }
+
+    @Override
+    protected void handle(TrashCanBlockEntity entity, PacketContext context){
+        if(entity.items){
+            entity.itemFilter.set(this.filterSlot, this.stack);
+            entity.dataChanged();
         }
     }
 }

@@ -1,0 +1,28 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "AAA",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "A": [
+      {
+        "type": "minecraft:item",
+        "item": "minecraft:stone",
+        "data": 0
+      }
+    ],
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  },
+  "result": {
+    "item": "trashcans:energy_trash_can"
+  }
+}

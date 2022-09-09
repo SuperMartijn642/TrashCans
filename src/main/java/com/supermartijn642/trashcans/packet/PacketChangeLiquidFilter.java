@@ -1,15 +1,16 @@
 package com.supermartijn642.trashcans.packet;
 
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.core.network.BlockEntityBasePacket;
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class PacketChangeLiquidFilter extends TrashCanPacket<PacketChangeLiquidFilter> {
+public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
+
     private int filterSlot;
     private ItemFilter filter;
 
@@ -23,24 +24,29 @@ public class PacketChangeLiquidFilter extends TrashCanPacket<PacketChangeLiquidF
     }
 
     @Override
-    public void encode(ByteBuf buffer){
-        super.encode(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.filterSlot);
         ByteBufUtils.writeTag(buffer, LiquidTrashCanFilters.write(this.filter));
     }
 
     @Override
-    protected void decodeBuffer(ByteBuf buffer){
-        super.decodeBuffer(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.filterSlot = buffer.readInt();
         this.filter = LiquidTrashCanFilters.read(ByteBufUtils.readTag(buffer));
     }
 
     @Override
-    protected void handle(PacketChangeLiquidFilter message, EntityPlayer player, World world, TrashCanTile tile){
-        if(tile.liquids){
-            tile.liquidFilter.set(this.filterSlot, this.filter);
-            tile.dataChanged();
+    public boolean verify(PacketContext context){
+        return this.filterSlot >= 0 && this.filterSlot < 9;
+    }
+
+    @Override
+    protected void handle(TrashCanBlockEntity entity, PacketContext context){
+        if(entity.liquids){
+            entity.liquidFilter.set(this.filterSlot, this.filter);
+            entity.dataChanged();
         }
     }
 }

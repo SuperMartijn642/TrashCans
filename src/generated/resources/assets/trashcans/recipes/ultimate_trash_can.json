@@ -1,0 +1,26 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    [
+      {
+        "type": "minecraft:item",
+        "item": "trashcans:item_trash_can"
+      }
+    ],
+    [
+      {
+        "type": "minecraft:item",
+        "item": "trashcans:liquid_trash_can"
+      }
+    ],
+    [
+      {
+        "type": "minecraft:item",
+        "item": "trashcans:energy_trash_can"
+      }
+    ]
+  ],
+  "result": {
+    "item": "trashcans:ultimate_trash_can"
+  }
+}

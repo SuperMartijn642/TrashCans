@@ -1,14 +1,14 @@
 package com.supermartijn642.trashcans.packet;
 
-import com.supermartijn642.trashcans.TrashCanTile;
-import net.minecraft.entity.player.EntityPlayer;
+import com.supermartijn642.core.network.BlockEntityBasePacket;
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
  */
-public class PacketToggleEnergyLimit extends TrashCanPacket<PacketToggleEnergyLimit> {
+public class PacketToggleEnergyLimit extends BlockEntityBasePacket<TrashCanBlockEntity> {
 
     public PacketToggleEnergyLimit(BlockPos pos){
         super(pos);
@@ -18,10 +18,10 @@ public class PacketToggleEnergyLimit extends TrashCanPacket<PacketToggleEnergyLi
     }
 
     @Override
-    protected void handle(PacketToggleEnergyLimit message, EntityPlayer player, World world, TrashCanTile tile){
-        if(tile.energy){
-            tile.useEnergyLimit = !tile.useEnergyLimit;
-            tile.dataChanged();
+    protected void handle(TrashCanBlockEntity entity, PacketContext context){
+        if(entity.energy){
+            entity.useEnergyLimit = !entity.useEnergyLimit;
+            entity.dataChanged();
         }
     }
 }

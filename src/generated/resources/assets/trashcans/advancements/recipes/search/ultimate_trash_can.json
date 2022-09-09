@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "display": {
+    "icon": {
+      "item": "trashcans:ultimate_trash_can"
+    },
+    "title": {
+      "translate": "trashcans.advancement.recipes/search/ultimate_trash_can.title"
+    },
+    "description": {
+      "translate": "trashcans.advancement.recipes/search/ultimate_trash_can.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "can_unlock_recipe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "trashcans:item_trash_can",
+            "data": 0
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "trashcans:ultimate_trash_can"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "can_unlock_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "trashcans:ultimate_trash_can"
+    ]
+  }
+}

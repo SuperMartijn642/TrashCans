@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "normal": {
+      "type": "supermartijn642corelib:any_model_location",
+      "model": "trashcans:item_trash_can"
+    }
+  }
+}
