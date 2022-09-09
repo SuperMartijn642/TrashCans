@@ -1,6 +1,6 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.supermartijn642.trashcans.TrashCanTile;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
@@ -19,13 +19,13 @@ import javax.annotation.Nonnull;
  */
 public class LiquidTrashCanContainer extends TrashCanContainer {
 
-    public LiquidTrashCanContainer(int id, PlayerEntity player, BlockPos pos){
-        super(TrashCans.liquid_trash_can_container, id, player, pos, 202, 180);
+    public LiquidTrashCanContainer(PlayerEntity player, BlockPos pos){
+        super(TrashCans.liquid_trash_can_container, player, pos, 202, 180);
     }
 
     @Override
-    protected void addSlots(PlayerEntity player, TrashCanTile tile){
-        this.addSlot(new SlotItemHandler(tile.LIQUID_ITEM_HANDLER, 0, 93, 25));
+    protected void addSlots(PlayerEntity player, TrashCanBlockEntity entity){
+        this.addSlot(new SlotItemHandler(entity.LIQUID_ITEM_HANDLER, 0, 93, 25));
 
         for(int column = 0; column < 9; column++)
             this.addSlot(new SlotItemHandler(this.itemHandler(), column, 8 + column * 18, 64) {
@@ -38,18 +38,18 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
 
     @Override
     public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+        if(!this.validateObjectOrClose())
+            return ItemStack.EMPTY;
+
         if(slotId >= 1 && slotId <= 9){
-            TrashCanTile tile = this.getObjectOrClose();
-            if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
-                    tile.liquidFilter.set(slotId - 1, null);
-                else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
-                    if(filter != null)
-                        tile.liquidFilter.set(slotId - 1, filter);
-                }
-                tile.dataChanged();
+            if(this.player.inventory.getCarried().isEmpty())
+                this.object.liquidFilter.set(slotId - 1, null);
+            else{
+                ItemFilter filter = LiquidTrashCanFilters.createFilter(this.player.inventory.getCarried());
+                if(filter != null)
+                    this.object.liquidFilter.set(slotId - 1, filter);
             }
+            this.object.dataChanged();
             return ItemStack.EMPTY;
         }
         return super.clicked(slotId, dragType, clickTypeIn, player);
@@ -57,28 +57,25 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
 
     @Override
     public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
+        if(!this.validateObjectOrClose())
+            return ItemStack.EMPTY;
+
         if(index == 0){
             if(this.moveItemStackTo(this.getSlot(index).getItem(), 10, this.slots.size(), true))
                 this.getSlot(index).set(ItemStack.EMPTY);
         }else if(index >= 1 && index <= 9){
-            TrashCanTile tile = this.getObjectOrClose();
-            if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
-                    tile.liquidFilter.set(index - 1, null);
-                else{
-                    ItemFilter filter = LiquidTrashCanFilters.createFilter(player.inventory.getCarried());
-                    if(filter != null)
-                        tile.liquidFilter.set(index - 1, filter);
-                }
-                tile.dataChanged();
+            if(this.player.inventory.getCarried().isEmpty())
+                this.object.liquidFilter.set(index - 1, null);
+            else{
+                ItemFilter filter = LiquidTrashCanFilters.createFilter(this.player.inventory.getCarried());
+                if(filter != null)
+                    this.object.liquidFilter.set(index - 1, filter);
             }
+            this.object.dataChanged();
         }else if(index >= 10 && !this.getSlot(index).getItem().isEmpty() && this.getSlot(0).getItem().isEmpty() && this.getSlot(0).mayPlace(this.getSlot(index).getItem())){
-            TrashCanTile tile = this.getObjectOrClose();
-            if(tile != null){
-                this.getSlot(0).set(this.getSlot(index).getItem());
-                this.getSlot(index).set(ItemStack.EMPTY);
-                tile.dataChanged();
-            }
+            this.getSlot(0).set(this.getSlot(index).getItem());
+            this.getSlot(index).set(ItemStack.EMPTY);
+            this.object.dataChanged();
         }
         return ItemStack.EMPTY;
     }
@@ -88,8 +85,8 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                TrashCanTile tile = LiquidTrashCanContainer.this.getObjectOrClose();
-                return tile == null || tile.liquidFilter.get(slot) == null ? ItemStack.EMPTY : tile.liquidFilter.get(slot).getRepresentingItem();
+                TrashCanBlockEntity entity = LiquidTrashCanContainer.this.object;
+                return entity == null || entity.liquidFilter.get(slot) == null ? ItemStack.EMPTY : entity.liquidFilter.get(slot).getRepresentingItem();
             }
         };
     }

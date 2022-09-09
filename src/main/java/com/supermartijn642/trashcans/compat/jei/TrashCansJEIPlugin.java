@@ -1,6 +1,6 @@
 package com.supermartijn642.trashcans.compat.jei;
 
-import com.supermartijn642.trashcans.screen.TrashCanScreen;
+import com.supermartijn642.trashcans.screen.TrashCanWidgetContainerScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -9,10 +9,9 @@ import net.minecraft.util.ResourceLocation;
 @JeiPlugin
 public class TrashCansJEIPlugin implements IModPlugin {
 
-    @SuppressWarnings("unchecked")
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration){
-        registration.addGhostIngredientHandler((Class)TrashCanScreen.class, new GhostIngredientHandler());
+        registration.addGhostIngredientHandler(TrashCanWidgetContainerScreen.class, new GhostIngredientHandler());
     }
 
     @Override
