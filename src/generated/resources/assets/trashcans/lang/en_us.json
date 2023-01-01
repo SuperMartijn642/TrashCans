@@ -27,8 +27,8 @@
   "trashcans.advancement.ultimate_trash_can.title": "The Ultimate Trash Can",
   "trashcans.gui.energy_trash_can.limit.change2": "CTRL %s",
   "trashcans.gui.energy_trash_can.limit.change1": "SHIFT %s",
-  "trashcans.advancement.trash_can.title": "Don\u0027t forget to recycle",
-  "trashcans.gui.energy_trash_can.limit.change3": "CTRL \u0026 SHIFT %s",
+  "trashcans.advancement.trash_can.title": "Don't forget to recycle",
+  "trashcans.gui.energy_trash_can.limit.change3": "CTRL & SHIFT %s",
   "trashcans.gui.item_trash_can.filter": "Filter",
   "trashcans.block.liquid_trash_can": "Fluid Trash Can"
 }
