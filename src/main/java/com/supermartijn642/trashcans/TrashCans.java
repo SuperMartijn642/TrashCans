@@ -4,6 +4,7 @@ import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.gui.BaseContainerType;
 import com.supermartijn642.core.item.BaseBlockItem;
+import com.supermartijn642.core.item.CreativeItemGroup;
 import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.core.network.PacketChannel;
 import com.supermartijn642.core.registry.GeneratorRegistrationHandler;
@@ -15,7 +16,6 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.generators.*;
 import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.*;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -93,10 +93,10 @@ public class TrashCans {
         handler.registerBlockEntityType("ultimate_trash_can_tile", () -> BaseBlockEntityType.create((pos, state) -> new TrashCanBlockEntity(ultimate_trash_can_tile, pos, state, true, true, true), ultimate_trash_can));
 
         // Items
-        handler.registerItem("item_trash_can", () -> new BaseBlockItem(item_trash_can, ItemProperties.create().group(CreativeModeTab.TAB_SEARCH)));
-        handler.registerItem("liquid_trash_can", () -> new BaseBlockItem(liquid_trash_can, ItemProperties.create().group(CreativeModeTab.TAB_SEARCH)));
-        handler.registerItem("energy_trash_can", () -> new BaseBlockItem(energy_trash_can, ItemProperties.create().group(CreativeModeTab.TAB_SEARCH)));
-        handler.registerItem("ultimate_trash_can", () -> new BaseBlockItem(ultimate_trash_can, ItemProperties.create().group(CreativeModeTab.TAB_SEARCH)));
+        handler.registerItem("item_trash_can", () -> new BaseBlockItem(item_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("liquid_trash_can", () -> new BaseBlockItem(liquid_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("energy_trash_can", () -> new BaseBlockItem(energy_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("ultimate_trash_can", () -> new BaseBlockItem(ultimate_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
 
         // Container types
         handler.registerMenuType("item_trash_can_container", BaseContainerType.create((container, buffer) -> buffer.writeBlockPos(container.getBlockEntityPos()), (player, buffer) -> new ItemTrashCanContainer(player, buffer.readBlockPos())));
