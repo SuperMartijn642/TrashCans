@@ -93,10 +93,10 @@ public class TrashCans {
         handler.registerBlockEntityType("ultimate_trash_can_tile", () -> BaseBlockEntityType.create(() -> new TrashCanBlockEntity(ultimate_trash_can_tile, true, true, true), ultimate_trash_can));
 
         // Items
-        handler.registerItem("item_trash_can", () -> new BaseBlockItem(item_trash_can, ItemProperties.create().group(CreativeItemGroup.getSearch())));
-        handler.registerItem("liquid_trash_can", () -> new BaseBlockItem(liquid_trash_can, ItemProperties.create().group(CreativeItemGroup.getSearch())));
-        handler.registerItem("energy_trash_can", () -> new BaseBlockItem(energy_trash_can, ItemProperties.create().group(CreativeItemGroup.getSearch())));
-        handler.registerItem("ultimate_trash_can", () -> new BaseBlockItem(ultimate_trash_can, ItemProperties.create().group(CreativeItemGroup.getSearch())));
+        handler.registerItem("item_trash_can", () -> new BaseBlockItem(item_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("liquid_trash_can", () -> new BaseBlockItem(liquid_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("energy_trash_can", () -> new BaseBlockItem(energy_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("ultimate_trash_can", () -> new BaseBlockItem(ultimate_trash_can, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
 
         // Container types
         handler.registerMenuType("item_trash_can_container", BaseContainerType.create((container, buffer) -> buffer.writeBlockPos(container.getBlockEntityPos()), (player, buffer) -> new ItemTrashCanContainer(player, buffer.readBlockPos())));
