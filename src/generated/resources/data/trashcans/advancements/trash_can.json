@@ -10,7 +10,7 @@
       "translate": "trashcans.advancement.trash_can.description"
     },
     "frame": "task",
-    "background": "minecraft:block/cobblestone",
+    "background": "minecraft:textures/block/cobblestone.png",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false
