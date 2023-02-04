@@ -1,0 +1,5 @@
+// 1.19.3	2023-02-04T19:52:47.7132625	Trash Cans/Trash Cans Loot Table Generator
+de1f61844e0a930a0f5d8358cab5a2bbbcbcbb96 data\trashcans\loot_tables\blocks\energy_trash_can.json
+98fbbd109899cb7cf06e36a3f45306f62e544426 data\trashcans\loot_tables\blocks\ultimate_trash_can.json
+e0179e63b0738e7200857328484fded79dac53f3 data\trashcans\loot_tables\blocks\item_trash_can.json
+ba56aebb2367fe7136d1a389ad9ca12c5fd5ecdd data\trashcans\loot_tables\blocks\liquid_trash_can.json

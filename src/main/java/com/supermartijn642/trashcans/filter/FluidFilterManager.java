@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -60,13 +59,11 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         private static FluidVariant getFluid(ItemStack stack){
-            Storage<FluidVariant> fluidHandler = FluidStorage.ITEM.find(stack, ContainerItemContext.withInitial(stack));
+            Storage<FluidVariant> fluidHandler = FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
             if(fluidHandler != null){
-                try(Transaction transaction = Transaction.openOuter()){
-                    for(StorageView<FluidVariant> slot : fluidHandler.iterable(transaction)){
-                        if(!slot.isResourceBlank())
-                            return slot.getResource();
-                    }
+                for(StorageView<FluidVariant> slot : fluidHandler){
+                    if(!slot.isResourceBlank())
+                        return slot.getResource();
                 }
             }
             return FluidVariant.blank();

@@ -39,7 +39,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
     public final Storage<ItemVariant> ITEM_HANDLER = new Storage<>() {
-        private static final Supplier<Iterator<? extends StorageView<ItemVariant>>> ITERATOR = List.of(new BlankVariantView<>(ItemVariant.blank(), Integer.MAX_VALUE))::iterator;
+        private static final Supplier<Iterator<StorageView<ItemVariant>>> ITERATOR = List.<StorageView<ItemVariant>>of(new BlankVariantView<>(ItemVariant.blank(), Integer.MAX_VALUE))::iterator;
 
         @Override
         public long insert(ItemVariant resource, long maxAmount, TransactionContext transaction){
@@ -54,7 +54,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         }
 
         @Override
-        public Iterator<? extends StorageView<ItemVariant>> iterator(TransactionContext transaction){
+        public Iterator<StorageView<ItemVariant>> iterator(){
             return ITERATOR.get();
         }
 
@@ -68,7 +68,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     };
 
     public final Storage<FluidVariant> FLUID_HANDLER = new Storage<>() {
-        private static final Supplier<Iterator<? extends StorageView<FluidVariant>>> ITERATOR = List.of(new BlankVariantView<>(FluidVariant.blank(), Integer.MAX_VALUE))::iterator;
+        private static final Supplier<Iterator<StorageView<FluidVariant>>> ITERATOR = List.<StorageView<FluidVariant>>of(new BlankVariantView<>(FluidVariant.blank(), Integer.MAX_VALUE))::iterator;
 
         @Override
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction){
@@ -83,7 +83,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         }
 
         @Override
-        public Iterator<? extends StorageView<FluidVariant>> iterator(TransactionContext transaction){
+        public Iterator<StorageView<FluidVariant>> iterator(){
             return ITERATOR.get();
         }
 
@@ -140,14 +140,12 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             if(!filtered)
                 return false;
 
-            Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, ContainerItemContext.withInitial(stack));
+            Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
             if(storage == null || !storage.supportsExtraction())
                 return false;
-            try(Transaction transaction = Transaction.openOuter()){
-                for(StorageView<FluidVariant> slot : storage.iterable(transaction)){
-                    if(!slot.isResourceBlank())
-                        return true;
-                }
+            for(StorageView<FluidVariant> slot : storage){
+                if(!slot.isResourceBlank())
+                    return true;
             }
             return false;
         }
@@ -246,12 +244,12 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     @Override
     public void update(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-            ContainerItemContext context = ContainerItemContext.withInitial(this.liquidItem);
+            ContainerItemContext context = ContainerItemContext.withConstant(this.liquidItem);
             Storage<FluidVariant> storage = context.find(FluidStorage.ITEM);
             if(storage != null && storage.supportsExtraction()){
                 try(Transaction transaction = Transaction.openOuter()){
                     boolean changed = false;
-                    for(StorageView<FluidVariant> slot : storage.iterable(transaction)){
+                    for(StorageView<FluidVariant> slot : storage){
                         if(!slot.isResourceBlank() && slot.getAmount() > 0 && slot.extract(slot.getResource(), slot.getAmount(), transaction) > 0)
                             changed = true;
                     }
@@ -264,7 +262,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             }
         }
         if(this.energy && !this.energyItem.isEmpty()){
-            ContainerItemContext context = ContainerItemContext.withInitial(this.energyItem);
+            ContainerItemContext context = ContainerItemContext.withConstant(this.energyItem);
             EnergyStorage storage = context.find(EnergyStorage.ITEM);
             if(storage != null && storage.supportsExtraction() && storage.getAmount() > 0){
                 try(Transaction transaction = Transaction.openOuter()){

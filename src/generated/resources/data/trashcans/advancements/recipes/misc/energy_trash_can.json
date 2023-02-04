@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "trashcans:liquid_trash_can"
+      "item": "trashcans:energy_trash_can"
     },
     "title": {
-      "translate": "trashcans.advancement.recipes/decorations/liquid_trash_can.title"
+      "translate": "trashcans.advancement.recipes/misc/energy_trash_can.title"
     },
     "description": {
-      "translate": "trashcans.advancement.recipes/decorations/liquid_trash_can.description"
+      "translate": "trashcans.advancement.recipes/misc/energy_trash_can.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "trashcans:liquid_trash_can"
+        "recipe": "trashcans:energy_trash_can"
       }
     },
     "recipe_condition": {
@@ -27,9 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:bucket"
-            ]
+            "tag": "c:redstone_dusts"
           }
         ]
       }
@@ -43,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "trashcans:liquid_trash_can"
+      "trashcans:energy_trash_can"
     ]
   }
 }
