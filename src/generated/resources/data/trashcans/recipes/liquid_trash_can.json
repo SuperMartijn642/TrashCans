@@ -7,10 +7,10 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:stone"
+      "item": "minecraft:stone"
     },
     "B": {
-      "tag": "forge:cobblestone"
+      "item": "minecraft:cobblestone"
     },
     "C": {
       "item": "minecraft:bucket"

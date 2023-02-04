@@ -16,17 +16,12 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.generators.*;
 import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.fabricmc.api.ModInitializer;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
-@Mod("trashcans")
-public class TrashCans {
+public class TrashCans implements ModInitializer {
 
     public static final PacketChannel CHANNEL = PacketChannel.create("trashcans");
 
@@ -58,8 +53,6 @@ public class TrashCans {
     public static BaseContainerType<TrashCanContainer> ultimate_trash_can_container;
 
     public TrashCans(){
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-
         CHANNEL.registerMessage(PacketToggleItemWhitelist.class, PacketToggleItemWhitelist::new, true);
         CHANNEL.registerMessage(PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist::new, true);
         CHANNEL.registerMessage(PacketToggleEnergyLimit.class, PacketToggleEnergyLimit::new, true);
@@ -68,11 +61,11 @@ public class TrashCans {
         CHANNEL.registerMessage(PacketChangeLiquidFilter.class, PacketChangeLiquidFilter::new, true);
 
         register();
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> TrashCansClient::registerScreens);
         registerGenerators();
     }
 
-    public void init(FMLCommonSetupEvent e){
+    @Override
+    public void onInitialize(){
         LiquidTrashCanFilters.register(new FluidFilterManager(), "fluid");
         Compatibility.init();
     }
@@ -103,6 +96,9 @@ public class TrashCans {
         handler.registerMenuType("liquid_trash_can_container", BaseContainerType.create((container, buffer) -> buffer.writeBlockPos(container.getBlockEntityPos()), (player, buffer) -> new LiquidTrashCanContainer(player, buffer.readBlockPos())));
         handler.registerMenuType("energy_trash_can_container", BaseContainerType.create((container, buffer) -> buffer.writeBlockPos(container.getBlockEntityPos()), (player, buffer) -> new EnergyTrashCanContainer(player, buffer.readBlockPos())));
         handler.registerMenuType("ultimate_trash_can_container", BaseContainerType.create((container, buffer) -> buffer.writeBlockPos(container.getBlockEntityPos()), (player, buffer) -> new UltimateTrashCanContainer(player, buffer.readBlockPos())));
+
+        // Api providers
+        handler.registerBlockEntityTypeCallback(helper -> TrashCanBlockApiProviders.register());
     }
 
     private static void registerGenerators(){

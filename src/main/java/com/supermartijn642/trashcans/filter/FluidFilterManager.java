@@ -1,15 +1,19 @@
 package com.supermartijn642.trashcans.filter;
 
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
  */
 public class FluidFilterManager implements IFilterManager {
+
     @Override
     public ItemFilter createFilter(ItemStack stack){
         return new FluidFilter(stack);
@@ -20,24 +24,24 @@ public class FluidFilterManager implements IFilterManager {
         return new FluidFilter(compound);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private static class FluidFilter extends ItemFilter {
-        FluidStack stack;
+
+        FluidVariant stack;
 
         public FluidFilter(ItemStack stack){
             this.stack = getFluid(stack);
-            if(this.stack != null)
-                this.stack = this.stack.copy();
         }
 
         public FluidFilter(CompoundTag compound){
-            this.stack = FluidStack.loadFluidStackFromNBT(compound);
+            this.stack = FluidVariant.fromNbt(compound);
         }
 
         @Override
         public boolean matches(Object stack){
-            FluidStack fluid = stack instanceof FluidStack ? (FluidStack)stack :
+            FluidVariant fluid = stack instanceof FluidVariant ? (FluidVariant)stack :
                 stack instanceof ItemStack ? getFluid((ItemStack)stack) : null;
-            return fluid != null && fluid.isFluidEqual(this.stack);
+            return fluid != null && fluid.equals(this.stack);
         }
 
         @Override
@@ -47,17 +51,25 @@ public class FluidFilterManager implements IFilterManager {
 
         @Override
         public CompoundTag write(){
-            return this.stack.writeToNBT(new CompoundTag());
+            return this.stack.toNbt();
         }
 
         @Override
         public boolean isValid(){
-            return this.stack != null && !this.stack.isEmpty();
+            return this.stack != null && !this.stack.isBlank();
         }
 
-        private static FluidStack getFluid(ItemStack stack){
-            IFluidHandler fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
-            return fluidHandler == null || fluidHandler.getTanks() != 1 || fluidHandler.getFluidInTank(0).isEmpty() ? null : fluidHandler.getFluidInTank(0);
+        private static FluidVariant getFluid(ItemStack stack){
+            Storage<FluidVariant> fluidHandler = FluidStorage.ITEM.find(stack, ContainerItemContext.withInitial(stack));
+            if(fluidHandler != null){
+                try(Transaction transaction = Transaction.openOuter()){
+                    for(StorageView<FluidVariant> slot : fluidHandler.iterable(transaction)){
+                        if(!slot.isResourceBlank())
+                            return slot.getResource();
+                    }
+                }
+            }
+            return FluidVariant.blank();
         }
     }
 }

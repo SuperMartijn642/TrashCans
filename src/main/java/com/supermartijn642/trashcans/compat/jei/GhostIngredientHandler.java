@@ -2,17 +2,16 @@ package com.supermartijn642.trashcans.compat.jei;
 
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
-import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.PacketChangeItemFilter;
 import com.supermartijn642.trashcans.packet.PacketChangeLiquidFilter;
 import com.supermartijn642.trashcans.screen.*;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
             for(int i = 0; i < itemFilterSlots.size(); i++){
                 int index = i;
                 Slot slot = itemFilterSlots.get(i);
-                Rect2i bounds = new Rect2i(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 17, 17);
+                Rect2i bounds = new Rect2i(screen.getWidget().left() + slot.x, screen.getWidget().top() + slot.y, 17, 17);
 
                 // Create the target
                 Target<I> target = createTarget(bounds, input -> {
@@ -67,10 +66,8 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
         ItemStack ingredientStack = ItemStack.EMPTY;
         if(ingredient instanceof ItemStack)
             ingredientStack = (ItemStack)ingredient;
-        else if(ingredient instanceof FluidStack)
-            ingredientStack = ((FluidStack)ingredient).getRawFluid().getBucket().getDefaultInstance();
-        else if(Compatibility.MEKANISM.isGasStack(ingredient))
-            ingredientStack = Compatibility.MEKANISM.getChemicalTankForGasStack(ingredient);
+        else if(ingredient instanceof FluidVariant)
+            ingredientStack = ((FluidVariant)ingredient).getFluid().getBucket().getDefaultInstance();
 
         // Check whether the ingredient is applicable to a fluid filter
         ItemFilter filter = LiquidTrashCanFilters.createFilter(ingredientStack);
@@ -79,7 +76,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
             for(int i = 0; i < fluidFilterSlots.size(); i++){
                 int index = i;
                 Slot slot = fluidFilterSlots.get(i);
-                Rect2i bounds = new Rect2i(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 17, 17);
+                Rect2i bounds = new Rect2i(screen.getWidget().left() + slot.x, screen.getWidget().top() + slot.y, 17, 17);
 
                 // Create the target
                 Target<I> target = createTarget(bounds, input -> {

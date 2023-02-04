@@ -2,11 +2,17 @@ package com.supermartijn642.trashcans;
 
 import com.supermartijn642.core.registry.ClientRegistrationHandler;
 import com.supermartijn642.trashcans.screen.*;
+import net.fabricmc.api.ClientModInitializer;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
-public class TrashCansClient {
+public class TrashCansClient implements ClientModInitializer {
+
+    @Override
+    public void onInitializeClient(){
+        registerScreens();
+    }
 
     public static void registerScreens(){
         ClientRegistrationHandler handler = ClientRegistrationHandler.get("trashcans");

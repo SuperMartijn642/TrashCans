@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:dusts/redstone"
+            "tag": "c:redstone_dusts"
           }
         ]
       }
