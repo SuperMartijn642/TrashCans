@@ -1,3 +1,6 @@
+### Trash Cans 1.0.17a
+- Added a config option to allow voiding radioactive Mekanism gasses
+
 ### Trash Cans 1.0.17
 - Added Traditional Chinese translations (thanks to xMikux!)
 
