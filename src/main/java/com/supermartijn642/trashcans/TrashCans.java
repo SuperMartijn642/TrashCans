@@ -67,6 +67,8 @@ public class TrashCans {
         CHANNEL.registerMessage(PacketChangeItemFilter.class, PacketChangeItemFilter::new, true);
         CHANNEL.registerMessage(PacketChangeLiquidFilter.class, PacketChangeLiquidFilter::new, true);
 
+        TrashCansConfig.init();
+
         register();
         DistExecutor.runWhenOn(Dist.CLIENT, () -> TrashCansClient::registerScreens);
         registerGenerators();
