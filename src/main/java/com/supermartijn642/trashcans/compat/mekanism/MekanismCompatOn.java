@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
+import com.supermartijn642.trashcans.TrashCansConfig;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import mekanism.api.Action;
@@ -80,7 +81,7 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
             @Override
             public boolean isValid(int i, GasStack gasStack){
-                if(gasStack.has(GasAttributes.Radiation.class))
+                if(gasStack.has(GasAttributes.Radiation.class) && !TrashCansConfig.allowVoidingNuclearWaste.get())
                     return false;
 
                 for(ItemFilter filter : filters){
