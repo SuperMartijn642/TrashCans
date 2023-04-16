@@ -7,8 +7,10 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.PacketChangeItemFilter;
 import com.supermartijn642.trashcans.packet.PacketChangeLiquidFilter;
 import com.supermartijn642.trashcans.screen.*;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +22,7 @@ import java.util.function.Consumer;
 public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanWidgetContainerScreen> {
 
     @Override
-    public <I> List<Target<I>> getTargets(TrashCanWidgetContainerScreen screen, I ingredient, boolean doStart){
+    public <I> List<Target<I>> getTargetsTyped(TrashCanWidgetContainerScreen screen, ITypedIngredient<I> ingredient, boolean doStart){
         // Get the widget and container from the screen
         TrashCanScreen<?> widget = screen.getWidget();
         TrashCanContainer container = screen.getContainer();
@@ -44,7 +46,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
         List<Target<I>> targets = new ArrayList<>();
 
         // Add a target for each item filter slot
-        if(ingredient instanceof ItemStack){
+        if(ingredient.getType() == VanillaTypes.ITEM_STACK){
             for(int i = 0; i < itemFilterSlots.size(); i++){
                 int index = i;
                 Slot slot = itemFilterSlots.get(i);
@@ -64,10 +66,10 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
 
         // Get an item stack as representation for the ingredient
         ItemStack ingredientStack = ItemStack.EMPTY;
-        if(ingredient instanceof ItemStack)
-            ingredientStack = (ItemStack)ingredient;
-        else if(ingredient instanceof FluidVariant)
-            ingredientStack = ((FluidVariant)ingredient).getFluid().getBucket().getDefaultInstance();
+        if(ingredient.getType() == VanillaTypes.ITEM_STACK)
+            ingredientStack = ingredient.getIngredient(VanillaTypes.ITEM_STACK).get();
+        else if(ingredient.getType() == FabricTypes.FLUID_STACK)
+            ingredientStack = ingredient.getIngredient(FabricTypes.FLUID_STACK).get().getFluid().getBucket().getDefaultInstance();
 
         // Check whether the ingredient is applicable to a fluid filter
         ItemFilter filter = LiquidTrashCanFilters.createFilter(ingredientStack);
