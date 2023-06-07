@@ -279,7 +279,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     public boolean isRegularItemValid(ItemStack stack){
         for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-            if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
+            if(!filter.isEmpty() && ItemStack.isSameItem(stack, filter))
                 return TrashCanBlockEntity.this.itemFilterWhitelist;
         }
         return !TrashCanBlockEntity.this.itemFilterWhitelist;
