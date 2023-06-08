@@ -15,7 +15,7 @@ public abstract class TrashCanContainer extends BlockEntityBaseContainer<TrashCa
     public final int width, height;
 
     public TrashCanContainer(BaseContainerType<?> type, Player player, BlockPos pos, int width, int height){
-        super(type, player, player.level, pos);
+        super(type, player, player.level(), pos);
         this.width = width;
         this.height = height;
 

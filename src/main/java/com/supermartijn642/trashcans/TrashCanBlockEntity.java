@@ -13,13 +13,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -54,7 +52,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate){
             for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-                if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
+                if(!filter.isEmpty() && ItemStack.isSameItem(stack, filter))
                     return TrashCanBlockEntity.this.itemFilterWhitelist ? ItemStack.EMPTY : stack;
             }
             return TrashCanBlockEntity.this.itemFilterWhitelist ? stack : ItemStack.EMPTY;
@@ -74,7 +72,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack){
             for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-                if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
+                if(!filter.isEmpty() && ItemStack.isSameItem(stack, filter))
                     return TrashCanBlockEntity.this.itemFilterWhitelist;
             }
             return !TrashCanBlockEntity.this.itemFilterWhitelist;
@@ -191,7 +189,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             if(!filtered)
                 return false;
 
-            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).filter(handler -> {
+            return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).filter(handler -> {
                 for(int tank = 0; tank < handler.getTanks(); tank++)
                     if(!handler.getFluidInTank(tank).isEmpty())
                         return true;
@@ -285,7 +283,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack){
-            return stack.getCapability(CapabilityEnergy.ENERGY).filter(storage -> storage.canExtract() && storage.getEnergyStored() > 0).isPresent();
+            return stack.getCapability(ForgeCapabilities.ENERGY).filter(storage -> storage.canExtract() && storage.getEnergyStored() > 0).isPresent();
         }
     };
 
@@ -316,7 +314,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     @Override
     public void update(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-            this.liquidItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(fluidHandler -> {
+            this.liquidItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHandler -> {
                 boolean changed = false;
                 for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
                     if(!fluidHandler.getFluidInTank(tank).isEmpty()){
@@ -332,7 +330,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                 this.dataChanged();
         }
         if(this.energy && !this.energyItem.isEmpty()){
-            TrashCanBlockEntity.this.energyItem.getCapability(CapabilityEnergy.ENERGY).ifPresent(energyStorage -> {
+            TrashCanBlockEntity.this.energyItem.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
                 energyStorage.extractEnergy(energyStorage.getEnergyStored(), false);
                 TrashCanBlockEntity.this.dataChanged();
             });
@@ -342,17 +340,17 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
-        if(this.items && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if(this.items && cap == ForgeCapabilities.ITEM_HANDLER)
             return LazyOptional.of(() -> this.ITEM_HANDLER).cast();
         if(this.liquids){
-            if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+            if(cap == ForgeCapabilities.FLUID_HANDLER_ITEM)
                 return LazyOptional.of(() -> this.FLUID_HANDLER).cast();
             else if(Compatibility.MEKANISM.isInstalled() && cap == Compatibility.MEKANISM.getGasHandlerCapability()){
                 Object handler = Compatibility.MEKANISM.getGasHandler(this.liquidFilter, () -> TrashCanBlockEntity.this.liquidFilterWhitelist);
                 return handler == null ? LazyOptional.empty() : LazyOptional.of(() -> handler).cast();
             }
         }
-        if(this.energy && cap == CapabilityEnergy.ENERGY)
+        if(this.energy && cap == ForgeCapabilities.ENERGY)
             return LazyOptional.of(() -> this.ENERGY_STORAGE).cast();
         return LazyOptional.empty();
     }

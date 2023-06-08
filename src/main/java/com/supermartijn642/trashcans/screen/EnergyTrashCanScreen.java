@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
@@ -36,17 +37,17 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected void renderTooltips(PoseStack poseStack, int mouseX, int mouseY, TrashCanBlockEntity entity){
-        super.renderTooltips(poseStack, mouseX, mouseY, entity);
+    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderTooltips(context, mouseX, mouseY, entity);
         if(this.leftArrow.isFocused() && this.leftArrow.isActive())
-            ScreenUtils.drawTooltip(poseStack, Lists.newArrayList(
+            ScreenUtils.drawTooltip(context.poseStack(), Lists.newArrayList(
                     TextComponents.string("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "-100").color(ChatFormatting.AQUA).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "-10000").color(ChatFormatting.AQUA).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change3", "-1").color(ChatFormatting.AQUA).get()),
                 mouseX, mouseY);
         if(this.rightArrow.isFocused() && this.rightArrow.isActive())
-            ScreenUtils.drawTooltip(poseStack, Lists.newArrayList(
+            ScreenUtils.drawTooltip(context.poseStack(), Lists.newArrayList(
                     TextComponents.string("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "+100").color(ChatFormatting.AQUA).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "+10000").color(ChatFormatting.AQUA).get(),

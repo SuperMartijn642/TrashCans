@@ -2,14 +2,15 @@ package com.supermartijn642.trashcans.filter;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
  */
 public class FluidFilterManager implements IFilterManager {
+
     @Override
     public ItemFilter createFilter(ItemStack stack){
         return new FluidFilter(stack);
@@ -21,6 +22,7 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     private static class FluidFilter extends ItemFilter {
+
         FluidStack stack;
 
         public FluidFilter(ItemStack stack){
@@ -56,7 +58,7 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         private static FluidStack getFluid(ItemStack stack){
-            IFluidHandler fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
+            IFluidHandler fluidHandler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
             return fluidHandler == null || fluidHandler.getTanks() != 1 || fluidHandler.getFluidInTank(0).isEmpty() ? null : fluidHandler.getFluidInTank(0);
         }
     }

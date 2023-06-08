@@ -3,6 +3,7 @@ package com.supermartijn642.trashcans.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
@@ -44,12 +45,12 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected void renderTooltips(PoseStack poseStack, int mouseX, int mouseY, TrashCanBlockEntity entity){
-        super.renderTooltips(poseStack, mouseX, mouseY, entity);
+    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderTooltips(context, mouseX, mouseY, entity);
         if(this.leftArrow.isFocused() && this.leftArrow.isActive())
-            ScreenUtils.drawTooltip(poseStack, "" + (this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000), mouseX, mouseY);
+            ScreenUtils.drawTooltip(context.poseStack(), "" + (this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000), mouseX, mouseY);
         if(this.rightArrow.isFocused() && this.rightArrow.isActive())
-            ScreenUtils.drawTooltip(poseStack, "+" + (this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000), mouseX, mouseY);
+            ScreenUtils.drawTooltip(context.poseStack(), "+" + (this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000), mouseX, mouseY);
     }
 
     @Override

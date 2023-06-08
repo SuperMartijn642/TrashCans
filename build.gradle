@@ -39,10 +39,10 @@ dependencies {
 
     // Core library
 //    implementation fg.deobf("curse.maven:supermartijn642s-core-lib-454372:${project.core_library_file}")
-    implementation fg.deobf("com.supermartijn642:supermartijn642corelib:1.1.1-forge-mc1.19.3")
-
+    implementation fg.deobf("com.supermartijn642:supermartijn642corelib:1.1.9-forge-mc1.20")
     // Config library
-    implementation fg.deobf("curse.maven:supermartijn642s-config-lib-438332:${project.config_library_file}")
+//    implementation fg.deobf("curse.maven:supermartijn642s-config-lib-438332:${project.config_library_file}")
+    implementation fg.deobf("com.supermartijn642:supermartijn642configlib:1.1.6-forge-mc1.20")
 
     // Mekanism
     compileOnly fg.deobf("curse.maven:mekanism-268560:${project.mekanism_file}")
@@ -59,6 +59,8 @@ processResources {
     filesMatching(["META-INF/mods.toml", "modid.mixins.json", "pack.mcmeta"]) {
         expand project.properties
     }
+
+    exclude "**/*.pdn"
 
     rename "^modid.mixins.json\$", "${project.mod_id}.mixins.json"
     rename "^icon.png\$", "${project.mod_id}.png"
@@ -137,13 +139,15 @@ curseforge {
         // Point to 'changelog' setting to a the changelog file
         changelog = file("changelog.md")
         changelogType = "markdown"
-        relations {
-            // Required dependencies
-            if (!project.curseforge_required_dependency_ids.isEmpty())
-                project.curseforge_required_dependency_ids.split(" ").each it::requiredDependency
-            // Optional dependencies
-            if (!project.curseforge_optional_dependency_ids.isEmpty())
-                project.curseforge_optional_dependency_ids.split(" ").each it::optionalDependency
+        if (!project.curseforge_required_dependency_ids.isEmpty() || !project.curseforge_optional_dependency_ids.isEmpty()) {
+            relations {
+                // Required dependencies
+                if (!project.curseforge_required_dependency_ids.isEmpty())
+                    project.curseforge_required_dependency_ids.split(" ").each it::requiredDependency
+                // Optional dependencies
+                if (!project.curseforge_optional_dependency_ids.isEmpty())
+                    project.curseforge_optional_dependency_ids.split(" ").each it::optionalDependency
+            }
         }
 
         mainArtifact(jar) {
@@ -175,13 +179,15 @@ modrinth {
     changelog = file("changelog.md").text
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
     loaders = ["forge"]
-    dependencies {
-        // Required dependencies
-        if (!project.modrinth_required_dependency_ids.isEmpty())
-            project.modrinth_required_dependency_ids.split(" ").each required::project
-        // Optional dependencies
-        if (!project.modrinth_optional_dependency_ids.isEmpty())
-            project.modrinth_optional_dependency_ids.split(" ").each optional::project
+    if (!project.modrinth_required_dependency_ids.isEmpty() || !project.modrinth_optional_dependency_ids.isEmpty()) {
+        dependencies {
+            // Required dependencies
+            if (!project.modrinth_required_dependency_ids.isEmpty())
+                project.modrinth_required_dependency_ids.split(" ").each required::project
+            // Optional dependencies
+            if (!project.modrinth_optional_dependency_ids.isEmpty())
+                project.modrinth_optional_dependency_ids.split(" ").each optional::project
+        }
     }
 }
 
