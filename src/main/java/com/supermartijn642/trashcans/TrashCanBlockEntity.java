@@ -343,7 +343,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         if(this.items && cap == ForgeCapabilities.ITEM_HANDLER)
             return LazyOptional.of(() -> this.ITEM_HANDLER).cast();
         if(this.liquids){
-            if(cap == ForgeCapabilities.FLUID_HANDLER_ITEM)
+            if(cap == ForgeCapabilities.FLUID_HANDLER)
                 return LazyOptional.of(() -> this.FLUID_HANDLER).cast();
             else if(Compatibility.MEKANISM.isInstalled() && cap == Compatibility.MEKANISM.getGasHandlerCapability()){
                 Object handler = Compatibility.MEKANISM.getGasHandler(this.liquidFilter, () -> TrashCanBlockEntity.this.liquidFilterWhitelist);
