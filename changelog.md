@@ -1,3 +1,6 @@
+### Trash Cans 1.0.18a
+- Fixed fluid trash cans not interacting with pipes
+
 ### Trash Cans 1.0.18
 - Added Spanish translations (thanks to BroxyZF!)
 - Added Ukrainian translations (thanks to SKZGx!)
