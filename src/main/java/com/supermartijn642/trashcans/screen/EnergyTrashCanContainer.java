@@ -5,7 +5,7 @@ import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  * Created 7/11/2020 by SuperMartijn642

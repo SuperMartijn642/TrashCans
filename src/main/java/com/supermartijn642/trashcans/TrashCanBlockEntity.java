@@ -6,23 +6,20 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -189,13 +186,13 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             if(!filtered)
                 return false;
 
-            return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).filter(handler -> {
+            IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+            if(handler != null){
                 for(int tank = 0; tank < handler.getTanks(); tank++)
                     if(!handler.getFluidInTank(tank).isEmpty())
                         return true;
-                return false;
-            }).isPresent() ||
-                Compatibility.MEKANISM.doesItemHaveGasStored(stack);
+            }
+            return Compatibility.MEKANISM.doesItemHaveGasStored(stack);
         }
     };
 
@@ -283,7 +280,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack){
-            return stack.getCapability(ForgeCapabilities.ENERGY).filter(storage -> storage.canExtract() && storage.getEnergyStored() > 0).isPresent();
+            return stack.getCapability(Capabilities.ItemHandler.ITEM) != null;
         }
     };
 
@@ -314,7 +311,8 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     @Override
     public void update(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-            this.liquidItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHandler -> {
+            IFluidHandlerItem fluidHandler = this.liquidItem.getCapability(Capabilities.FluidHandler.ITEM);
+            if(fluidHandler != null){
                 boolean changed = false;
                 for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
                     if(!fluidHandler.getFluidInTank(tank).isEmpty()){
@@ -325,34 +323,17 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                     this.liquidItem = fluidHandler.getContainer();
                     this.dataChanged();
                 }
-            });
+            }
             if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
                 this.dataChanged();
         }
         if(this.energy && !this.energyItem.isEmpty()){
-            TrashCanBlockEntity.this.energyItem.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
+            IEnergyStorage energyStorage = this.energyItem.getCapability(Capabilities.EnergyStorage.ITEM);
+            if(energyStorage != null){
                 energyStorage.extractEnergy(energyStorage.getEnergyStored(), false);
-                TrashCanBlockEntity.this.dataChanged();
-            });
-        }
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
-        if(this.items && cap == ForgeCapabilities.ITEM_HANDLER)
-            return LazyOptional.of(() -> this.ITEM_HANDLER).cast();
-        if(this.liquids){
-            if(cap == ForgeCapabilities.FLUID_HANDLER)
-                return LazyOptional.of(() -> this.FLUID_HANDLER).cast();
-            else if(Compatibility.MEKANISM.isInstalled() && cap == Compatibility.MEKANISM.getGasHandlerCapability()){
-                Object handler = Compatibility.MEKANISM.getGasHandler(this.liquidFilter, () -> TrashCanBlockEntity.this.liquidFilterWhitelist);
-                return handler == null ? LazyOptional.empty() : LazyOptional.of(() -> handler).cast();
+                this.dataChanged();
             }
         }
-        if(this.energy && cap == ForgeCapabilities.ENERGY)
-            return LazyOptional.of(() -> this.ENERGY_STORAGE).cast();
-        return LazyOptional.empty();
     }
 
     @Override

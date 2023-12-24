@@ -2,9 +2,9 @@ package com.supermartijn642.trashcans.filter;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -58,7 +58,7 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         private static FluidStack getFluid(ItemStack stack){
-            IFluidHandler fluidHandler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+            IFluidHandler fluidHandler = stack.getCapability(Capabilities.FluidHandler.ITEM);
             return fluidHandler == null || fluidHandler.getTanks() != 1 || fluidHandler.getFluidInTank(0).isEmpty() ? null : fluidHandler.getFluidInTank(0);
         }
     }

@@ -4,8 +4,6 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.IFilterManager;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.gas.IGasHandler;
-import mekanism.common.capabilities.Capabilities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -61,8 +59,9 @@ public class GasFilterManager implements IFilterManager {
         }
 
         private static GasStack getGas(ItemStack stack){
-            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS_HANDLER).orElse(null);
-            return gasHandler == null || gasHandler.getTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
+//            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS_HANDLER);
+//            return gasHandler == null || gasHandler.getTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
+            return null; // TODO
         }
     }
 }
