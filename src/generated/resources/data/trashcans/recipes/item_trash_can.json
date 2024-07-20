@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "item": "minecraft:stone"
+      "tag": "c:stones"
     },
     "B": {
-      "item": "minecraft:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
-      "item": "minecraft:chest"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {
-    "item": "trashcans:item_trash_can"
+    "id": "trashcans:item_trash_can"
   }
 }

@@ -2,7 +2,7 @@
   "parent": "trashcans:trash_can",
   "display": {
     "icon": {
-      "item": "trashcans:ultimate_trash_can"
+      "id": "trashcans:ultimate_trash_can"
     },
     "title": {
       "translate": "trashcans.advancement.ultimate_trash_can.title"
@@ -21,9 +21,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "trashcans:ultimate_trash_can"
-            ]
+            "items": "trashcans:ultimate_trash_can"
           }
         ]
       }

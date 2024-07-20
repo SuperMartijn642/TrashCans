@@ -5,7 +5,9 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -19,11 +21,10 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundTag compound){
-        return new FluidFilter(compound);
+    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
+        return new FluidFilter(tag, provider);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private static class FluidFilter extends ItemFilter {
 
         FluidVariant stack;
@@ -32,8 +33,8 @@ public class FluidFilterManager implements IFilterManager {
             this.stack = getFluid(stack);
         }
 
-        public FluidFilter(CompoundTag compound){
-            this.stack = FluidVariant.fromNbt(compound);
+        public FluidFilter(Tag tag, HolderLookup.Provider provider){
+            this.stack = FluidVariant.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
         }
 
         @Override
@@ -49,8 +50,8 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         @Override
-        public CompoundTag write(){
-            return this.stack.toNbt();
+        public Tag write(HolderLookup.Provider provider){
+            return FluidVariant.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
         }
 
         @Override

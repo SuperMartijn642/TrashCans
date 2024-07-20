@@ -69,7 +69,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
         if(ingredient.getType() == VanillaTypes.ITEM_STACK)
             ingredientStack = ingredient.getIngredient(VanillaTypes.ITEM_STACK).get();
         else if(ingredient.getType() == FabricTypes.FLUID_STACK)
-            ingredientStack = ingredient.getIngredient(FabricTypes.FLUID_STACK).get().getFluid().getBucket().getDefaultInstance();
+            ingredientStack = ingredient.getIngredient(FabricTypes.FLUID_STACK).get().getFluidVariant().getFluid().getBucket().getDefaultInstance();
 
         // Check whether the ingredient is applicable to a fluid filter
         ItemFilter filter = LiquidTrashCanFilters.createFilter(ingredientStack);

@@ -7,6 +7,7 @@ import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
     private int filterSlot;
@@ -25,14 +26,14 @@ public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBloc
     public void write(FriendlyByteBuf buffer){
         super.write(buffer);
         buffer.writeInt(this.filterSlot);
-        buffer.writeNbt(LiquidTrashCanFilters.write(this.filter));
+        buffer.writeNbt(LiquidTrashCanFilters.write(this.filter, ((RegistryFriendlyByteBuf)buffer).registryAccess()));
     }
 
     @Override
     public void read(FriendlyByteBuf buffer){
         super.read(buffer);
         this.filterSlot = buffer.readInt();
-        this.filter = LiquidTrashCanFilters.read(buffer.readNbt());
+        this.filter = LiquidTrashCanFilters.read(buffer.readNbt(), ((RegistryFriendlyByteBuf)buffer).registryAccess());
     }
 
     @Override

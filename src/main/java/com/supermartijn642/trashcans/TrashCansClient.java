@@ -15,7 +15,7 @@ public class TrashCansClient implements ClientModInitializer {
     }
 
     public static void registerScreens(){
-        ClientRegistrationHandler handler = ClientRegistrationHandler.get("trashcans");
+        ClientRegistrationHandler handler = ClientRegistrationHandler.get("trashcans"); // TODO
         handler.registerContainerScreen(() -> TrashCans.item_trash_can_container, container -> new TrashCanWidgetContainerScreen(new ItemTrashCanScreen(), container, false));
         handler.registerContainerScreen(() -> TrashCans.liquid_trash_can_container, container -> new TrashCanWidgetContainerScreen(new LiquidTrashCanScreen(), container, false));
         handler.registerContainerScreen(() -> TrashCans.energy_trash_can_container, container -> new TrashCanWidgetContainerScreen(new EnergyTrashCanScreen(), container, false));

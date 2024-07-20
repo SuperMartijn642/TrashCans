@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "item": "minecraft:stone"
+      "tag": "c:stones"
     },
     "B": {
-      "item": "minecraft:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
-      "tag": "c:redstone_dusts"
+      "tag": "c:dusts/redstone"
     }
   },
   "result": {
-    "item": "trashcans:energy_trash_can"
+    "id": "trashcans:energy_trash_can"
   }
 }
