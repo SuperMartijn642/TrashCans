@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:stone"
+      "tag": "c:stones"
     },
     "B": {
-      "tag": "forge:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "result": {
-    "item": "trashcans:energy_trash_can"
+    "id": "trashcans:energy_trash_can"
   }
 }

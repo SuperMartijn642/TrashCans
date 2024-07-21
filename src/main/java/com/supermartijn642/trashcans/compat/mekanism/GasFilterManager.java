@@ -4,7 +4,9 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.IFilterManager;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import mekanism.api.chemical.gas.GasStack;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -18,8 +20,8 @@ public class GasFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundTag compound){
-        return new GasFilter(compound);
+    public ItemFilter readFilter(CompoundTag compound, HolderLookup.Provider provider){
+        return new GasFilter(compound, provider);
     }
 
     private static class GasFilter extends ItemFilter {
@@ -32,7 +34,7 @@ public class GasFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public GasFilter(CompoundTag compound){
+        public GasFilter(CompoundTag compound, HolderLookup.Provider provider){
             this.stack = GasStack.readFromNBT(compound);
         }
 
@@ -49,7 +51,7 @@ public class GasFilterManager implements IFilterManager {
         }
 
         @Override
-        public CompoundTag write(){
+        public Tag write(HolderLookup.Provider provider){
             return this.stack.write(new CompoundTag());
         }
 

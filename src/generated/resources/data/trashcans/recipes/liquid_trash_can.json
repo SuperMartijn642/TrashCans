@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:stone"
+      "tag": "c:stones"
     },
     "B": {
-      "tag": "forge:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
-      "item": "minecraft:bucket"
+      "tag": "c:buckets/empty"
     }
   },
   "result": {
-    "item": "trashcans:liquid_trash_can"
+    "id": "trashcans:liquid_trash_can"
   }
 }

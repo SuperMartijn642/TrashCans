@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans.filter;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -10,6 +11,6 @@ public interface IFilterManager {
 
     ItemFilter createFilter(ItemStack stack);
 
-    ItemFilter readFilter(CompoundTag compound);
+    ItemFilter readFilter(CompoundTag tag, HolderLookup.Provider provider);
 
 }

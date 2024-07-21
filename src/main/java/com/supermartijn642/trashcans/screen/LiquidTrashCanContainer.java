@@ -8,11 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -25,15 +20,24 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
 
     @Override
     protected void addSlots(Player player, TrashCanBlockEntity entity){
-        this.addSlot(new SlotItemHandler(entity.LIQUID_ITEM_HANDLER, 0, 93, 25));
+        this.addSlot(entity.LIQUID_ITEM_HANDLER.apply(0, 93, 25));
 
-        for(int column = 0; column < 9; column++)
-            this.addSlot(new SlotItemHandler(this.itemHandler(), column, 8 + column * 18, 64) {
+        // liquid filter
+        for(int column = 0; column < 9; column++){
+            int slotIndex = column;
+            this.addSlot(new DummySlot(slotIndex, 8 + column * 18, 64) {
                 @Override
                 public boolean mayPickup(Player playerIn){
                     return false;
                 }
+
+                @Override
+                public ItemStack getItem(){
+                    TrashCanBlockEntity entity = LiquidTrashCanContainer.this.object;
+                    return entity == null || entity.liquidFilter.get(slotIndex) == null ? ItemStack.EMPTY : entity.liquidFilter.get(slotIndex).getRepresentingItem();
+                }
             });
+        }
     }
 
     @Override
@@ -78,16 +82,5 @@ public class LiquidTrashCanContainer extends TrashCanContainer {
             this.object.dataChanged();
         }
         return ItemStack.EMPTY;
-    }
-
-    private IItemHandlerModifiable itemHandler(){
-        return new ItemStackHandler(9) {
-            @Nonnull
-            @Override
-            public ItemStack getStackInSlot(int slot){
-                TrashCanBlockEntity entity = LiquidTrashCanContainer.this.object;
-                return entity == null || entity.liquidFilter.get(slot) == null ? ItemStack.EMPTY : entity.liquidFilter.get(slot).getRepresentingItem();
-            }
-        };
     }
 }

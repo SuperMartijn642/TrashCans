@@ -6,11 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -23,15 +18,28 @@ public class ItemTrashCanContainer extends TrashCanContainer {
 
     @Override
     protected void addSlots(Player player, TrashCanBlockEntity entity){
-        this.addSlot(new SlotItemHandler(entity.ITEM_HANDLER, 0, 93, 25));
+        this.addSlot(new DummySlot(0, 93, 25) {
+            @Override
+            public boolean mayPlace(ItemStack stack){
+                return ItemTrashCanContainer.this.validateObjectOrClose() && ItemTrashCanContainer.this.object.isRegularItemValid(stack);
+            }
+        });
 
-        for(int column = 0; column < 9; column++)
-            this.addSlot(new SlotItemHandler(this.itemHandler(), column, 8 + column * 18, 64) {
+        // item filter
+        for(int column = 0; column < 9; column++){
+            int slotIndex = column;
+            this.addSlot(new DummySlot(slotIndex, 8 + column * 18, 64) {
                 @Override
                 public boolean mayPickup(Player playerIn){
                     return false;
                 }
+
+                @Override
+                public ItemStack getItem(){
+                    return ItemTrashCanContainer.this.validateObjectOrClose() ? ItemTrashCanContainer.this.object.itemFilter.get(slotIndex) : ItemStack.EMPTY;
+                }
             });
+        }
     }
 
     @Override
@@ -70,15 +78,5 @@ public class ItemTrashCanContainer extends TrashCanContainer {
         }else if(index >= 10 && this.getSlot(0).mayPlace(this.getSlot(index).getItem()))
             this.getSlot(index).set(ItemStack.EMPTY);
         return ItemStack.EMPTY;
-    }
-
-    private IItemHandlerModifiable itemHandler(){
-        return new ItemStackHandler(9) {
-            @Nonnull
-            @Override
-            public ItemStack getStackInSlot(int slot){
-                return ItemTrashCanContainer.this.validateObjectOrClose() ? ItemTrashCanContainer.this.object.itemFilter.get(slot) : ItemStack.EMPTY;
-            }
-        };
     }
 }

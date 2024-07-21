@@ -1,6 +1,8 @@
 package com.supermartijn642.trashcans.filter;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -17,8 +19,8 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundTag compound){
-        return new FluidFilter(compound);
+    public ItemFilter readFilter(CompoundTag tag, HolderLookup.Provider provider){
+        return new FluidFilter(tag, provider);
     }
 
     private static class FluidFilter extends ItemFilter {
@@ -31,15 +33,15 @@ public class FluidFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public FluidFilter(CompoundTag compound){
-            this.stack = FluidStack.loadFluidStackFromNBT(compound);
+        public FluidFilter(CompoundTag tag, HolderLookup.Provider provider){
+            this.stack = FluidStack.parseOptional(provider, tag);
         }
 
         @Override
         public boolean matches(Object stack){
             FluidStack fluid = stack instanceof FluidStack ? (FluidStack)stack :
                 stack instanceof ItemStack ? getFluid((ItemStack)stack) : null;
-            return fluid != null && fluid.isFluidEqual(this.stack);
+            return fluid != null && FluidStack.isSameFluidSameComponents(fluid, this.stack);
         }
 
         @Override
@@ -48,8 +50,8 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         @Override
-        public CompoundTag write(){
-            return this.stack.writeToNBT(new CompoundTag());
+        public Tag write(HolderLookup.Provider provider){
+            return this.stack.saveOptional(provider);
         }
 
         @Override

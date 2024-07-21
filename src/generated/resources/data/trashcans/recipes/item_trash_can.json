@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:stone"
+      "tag": "c:stones"
     },
     "B": {
-      "tag": "forge:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {
-    "item": "trashcans:item_trash_can"
+    "id": "trashcans:item_trash_can"
   }
 }
