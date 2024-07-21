@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/arrow_buttons.png");
+    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/arrow_buttons.png");
 
     private final boolean left;
     private boolean active = true;

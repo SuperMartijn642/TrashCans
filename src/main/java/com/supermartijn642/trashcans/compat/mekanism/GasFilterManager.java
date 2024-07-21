@@ -4,6 +4,8 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.IFilterManager;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import mekanism.api.chemical.gas.GasStack;
+import mekanism.api.chemical.gas.IGasHandler;
+import mekanism.common.capabilities.Capabilities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -35,14 +37,14 @@ public class GasFilterManager implements IFilterManager {
         }
 
         public GasFilter(CompoundTag compound, HolderLookup.Provider provider){
-            this.stack = GasStack.readFromNBT(compound);
+            this.stack = GasStack.parseOptional(provider, compound);
         }
 
         @Override
         public boolean matches(Object stack){
             GasStack fluid = stack instanceof GasStack ? (GasStack)stack :
                 stack instanceof ItemStack ? getGas((ItemStack)stack) : null;
-            return fluid != null && fluid.isTypeEqual(this.stack);
+            return fluid != null && GasStack.isSameChemical(fluid, this.stack);
         }
 
         @Override
@@ -52,7 +54,7 @@ public class GasFilterManager implements IFilterManager {
 
         @Override
         public Tag write(HolderLookup.Provider provider){
-            return this.stack.write(new CompoundTag());
+            return this.stack.saveOptional(provider);
         }
 
         @Override
@@ -61,9 +63,8 @@ public class GasFilterManager implements IFilterManager {
         }
 
         private static GasStack getGas(ItemStack stack){
-//            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS_HANDLER);
-//            return gasHandler == null || gasHandler.getTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
-            return null; // TODO
+            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS.item());
+            return gasHandler == null || gasHandler.getTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
         }
     }
 }
