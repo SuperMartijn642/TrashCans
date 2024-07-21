@@ -16,6 +16,6 @@ public class TrashCansJEIPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid(){
-        return new ResourceLocation("trashcans", "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath("trashcans", "jei_plugin");
     }
 }

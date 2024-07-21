@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  */
 public class CheckBox extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/checkmarkbox.png");
+    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/checkmarkbox.png");
 
     public boolean checked;
     private boolean active = true;
