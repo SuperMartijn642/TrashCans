@@ -2,7 +2,6 @@ package com.supermartijn642.trashcans.compat.jei;
 
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
-import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.packet.PacketChangeItemFilter;
@@ -71,8 +70,6 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
             ingredientStack = ingredient.getIngredient(VanillaTypes.ITEM_STACK).get();
         else if(ingredient.getType() == ForgeTypes.FLUID_STACK)
             ingredientStack = ingredient.getIngredient(ForgeTypes.FLUID_STACK).get().getFluid().getBucket().getDefaultInstance();
-        else if(Compatibility.MEKANISM.isGasStack(ingredient.getIngredient()))
-            ingredientStack = Compatibility.MEKANISM.getChemicalTankForGasStack(ingredient.getIngredient());
 
         // Check whether the ingredient is applicable to a fluid filter
         ItemFilter filter = LiquidTrashCanFilters.createFilter(ingredientStack);

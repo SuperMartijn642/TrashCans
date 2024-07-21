@@ -5,6 +5,7 @@ import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 public class PacketChangeItemFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
@@ -25,14 +26,14 @@ public class PacketChangeItemFilter extends BlockEntityBasePacket<TrashCanBlockE
     public void write(FriendlyByteBuf buffer){
         super.write(buffer);
         buffer.writeInt(this.filterSlot);
-        buffer.writeItem(this.stack);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf)buffer, this.stack);
     }
 
     @Override
     public void read(FriendlyByteBuf buffer){
         super.read(buffer);
         this.filterSlot = buffer.readInt();
-        this.stack = buffer.readItem();
+        this.stack = ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf)buffer);
     }
 
     @Override

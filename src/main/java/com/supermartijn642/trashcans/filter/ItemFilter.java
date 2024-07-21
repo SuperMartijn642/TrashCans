@@ -1,6 +1,7 @@
 package com.supermartijn642.trashcans.filter;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -23,7 +24,7 @@ public abstract class ItemFilter {
 
     public abstract ItemStack getRepresentingItem();
 
-    public abstract CompoundTag write();
+    public abstract Tag write(HolderLookup.Provider provider);
 
     public abstract boolean isValid();
 

@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "trashcans:energy_trash_can"
+      "id": "trashcans:energy_trash_can"
     },
     "title": {
       "translate": "trashcans.advancement.recipes/misc/energy_trash_can.title"
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:dusts/redstone"
+            "items": "#forge:dusts/redstone"
           }
         ]
       }

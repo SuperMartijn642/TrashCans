@@ -5,7 +5,6 @@ import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -18,7 +17,7 @@ public class EnergyTrashCanContainer extends TrashCanContainer {
 
     @Override
     protected void addSlots(Player player, TrashCanBlockEntity entity){
-        this.addSlot(new SlotItemHandler(entity.ENERGY_ITEM_HANDLER, 0, 93, 25));
+        this.addSlot(entity.ENERGY_ITEM_HANDLER.apply(0, 93, 25));
     }
 
     @Override

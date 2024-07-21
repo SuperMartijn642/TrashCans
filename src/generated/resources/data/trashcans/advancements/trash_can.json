@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "trashcans:item_trash_can"
+      "id": "trashcans:item_trash_can"
     },
     "title": {
       "translate": "trashcans.advancement.trash_can.title"
@@ -21,9 +21,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "trashcans:item_trash_can"
-            ]
+            "items": "trashcans:item_trash_can"
           }
         ]
       }
@@ -33,9 +31,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "trashcans:liquid_trash_can"
-            ]
+            "items": "trashcans:liquid_trash_can"
           }
         ]
       }
@@ -45,9 +41,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "trashcans:energy_trash_can"
-            ]
+            "items": "trashcans:energy_trash_can"
           }
         ]
       }
