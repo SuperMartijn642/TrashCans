@@ -3,8 +3,8 @@ package com.supermartijn642.trashcans.compat.mekanism;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.IFilterManager;
 import com.supermartijn642.trashcans.filter.ItemFilter;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.gas.IGasHandler;
+import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +28,7 @@ public class GasFilterManager implements IFilterManager {
 
     private static class GasFilter extends ItemFilter {
 
-        GasStack stack;
+        ChemicalStack stack;
 
         public GasFilter(ItemStack stack){
             this.stack = getGas(stack);
@@ -37,14 +37,14 @@ public class GasFilterManager implements IFilterManager {
         }
 
         public GasFilter(CompoundTag compound, HolderLookup.Provider provider){
-            this.stack = GasStack.parseOptional(provider, compound);
+            this.stack = ChemicalStack.parseOptional(provider, compound);
         }
 
         @Override
         public boolean matches(Object stack){
-            GasStack fluid = stack instanceof GasStack ? (GasStack)stack :
+            ChemicalStack fluid = stack instanceof ChemicalStack ? (ChemicalStack)stack :
                 stack instanceof ItemStack ? getGas((ItemStack)stack) : null;
-            return fluid != null && GasStack.isSameChemical(fluid, this.stack);
+            return fluid != null && ChemicalStack.isSameChemical(fluid, this.stack);
         }
 
         @Override
@@ -62,9 +62,9 @@ public class GasFilterManager implements IFilterManager {
             return this.stack != null && !this.stack.isEmpty();
         }
 
-        private static GasStack getGas(ItemStack stack){
-            IGasHandler gasHandler = stack.getCapability(Capabilities.GAS.item());
-            return gasHandler == null || gasHandler.getTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
+        private static ChemicalStack getGas(ItemStack stack){
+            IChemicalHandler gasHandler = stack.getCapability(Capabilities.CHEMICAL.item());
+            return gasHandler == null || gasHandler.getChemicalTanks() != 1 || gasHandler.getChemicalInTank(0).isEmpty() ? null : gasHandler.getChemicalInTank(0);
         }
     }
 }

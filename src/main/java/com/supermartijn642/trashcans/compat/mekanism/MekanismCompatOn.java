@@ -4,9 +4,9 @@ import com.supermartijn642.trashcans.TrashCansConfig;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import mekanism.api.Action;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.gas.IGasHandler;
-import mekanism.api.chemical.gas.attribute.GasAttributes;
+import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.chemical.attribute.ChemicalAttributes;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.world.item.ItemStack;
@@ -31,15 +31,15 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
     @Override
     public ItemCapability<?,Void> getGasHandlerCapability(){
-        return Capabilities.GAS.item();
+        return Capabilities.CHEMICAL.item();
     }
 
     @Override
     public boolean doesItemHaveGasStored(ItemStack stack){
-        IGasHandler handler = stack.getCapability(Capabilities.GAS.item());
+        IChemicalHandler handler = stack.getCapability(Capabilities.CHEMICAL.item());
         if(handler == null)
             return false;
-        for(int i = 0; i < handler.getTanks(); i++)
+        for(int i = 0; i < handler.getChemicalTanks(); i++)
             if(!handler.getChemicalInTank(i).isEmpty())
                 return true;
         return false;
@@ -47,11 +47,11 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
     @Override
     public boolean drainGasFromItem(ItemStack stack){
-        IGasHandler handler = stack.getCapability(Capabilities.GAS.item());
+        IChemicalHandler handler = stack.getCapability(Capabilities.CHEMICAL.item());
         if(handler == null)
             return false;
         boolean changed = false;
-        for(int tank = 0; tank < handler.getTanks(); tank++)
+        for(int tank = 0; tank < handler.getChemicalTanks(); tank++)
             if(!handler.getChemicalInTank(tank).isEmpty()){
                 handler.extractChemical(handler.getChemicalInTank(tank), Action.EXECUTE);
                 changed = true;
@@ -61,29 +61,29 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
     @Override
     public Object getGasHandler(ArrayList<ItemFilter> filters, Supplier<Boolean> whitelist){
-        return new IGasHandler() {
+        return new IChemicalHandler() {
             @Override
-            public int getTanks(){
+            public int getChemicalTanks(){
                 return 1;
             }
 
             @Override
-            public GasStack getChemicalInTank(int i){
-                return GasStack.EMPTY;
+            public ChemicalStack getChemicalInTank(int i){
+                return ChemicalStack.EMPTY;
             }
 
             @Override
-            public void setChemicalInTank(int i, GasStack gasStack){
+            public void setChemicalInTank(int i, ChemicalStack gasStack){
             }
 
             @Override
-            public long getTankCapacity(int i){
+            public long getChemicalTankCapacity(int i){
                 return Integer.MAX_VALUE;
             }
 
             @Override
-            public boolean isValid(int i, GasStack gasStack){
-                if(gasStack.has(GasAttributes.Radiation.class) && !TrashCansConfig.allowVoidingNuclearWaste.get())
+            public boolean isValid(int i, ChemicalStack gasStack){
+                if(gasStack.has(ChemicalAttributes.Radiation.class) && !TrashCansConfig.allowVoidingNuclearWaste.get())
                     return false;
 
                 for(ItemFilter filter : filters){
@@ -94,30 +94,30 @@ public class MekanismCompatOn extends MekanismCompatOff {
             }
 
             @Override
-            public GasStack insertChemical(int i, GasStack gasStack, Action action){
+            public ChemicalStack insertChemical(int i, ChemicalStack gasStack, Action action){
                 if(this.isValid(i, gasStack))
-                    return GasStack.EMPTY;
+                    return ChemicalStack.EMPTY;
                 return gasStack;
             }
 
             @Override
-            public GasStack extractChemical(int i, long l, Action action){
-                return GasStack.EMPTY;
+            public ChemicalStack extractChemical(int i, long l, Action action){
+                return ChemicalStack.EMPTY;
             }
         };
     }
 
     @Override
     public boolean isGasStack(Object obj){
-        return obj instanceof GasStack;
+        return obj instanceof ChemicalStack;
     }
 
     @Override
     public ItemStack getChemicalTankForGasStack(Object gasStack){
         ItemStack stack = new ItemStack(MekanismBlocks.CREATIVE_CHEMICAL_TANK);
-        IGasHandler handler = stack.getCapability(Capabilities.GAS.item());
-        GasStack gas = ((GasStack)gasStack).copy();
-        gas.setAmount(handler.getTankCapacity(0));
+        IChemicalHandler handler = stack.getCapability(Capabilities.CHEMICAL.item());
+        ChemicalStack gas = ((ChemicalStack)gasStack).copy();
+        gas.setAmount(handler.getChemicalTankCapacity(0));
         handler.setChemicalInTank(0, gas);
         return stack;
     }
