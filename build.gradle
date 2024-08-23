@@ -136,7 +136,7 @@ tasks.register('prepareDataResources', Sync) {
     if (matcher.find())
         copyProperties.mod_version = copyProperties.mod_version.substring(0, matcher.start()) + "+" + copyProperties.mod_version.substring(matcher.start())
 
-    filesMatching(["mcmod.info", "modid.mixins.json", "pack.mcmeta"]) {
+    filesMatching(["META-INF/mods.toml", "modid.mixins.json", "pack.mcmeta"]) {
         expand copyProperties
     }
 
