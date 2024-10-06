@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.trashcans.compat.Compatibility;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -19,6 +20,10 @@ public class TrashCanBlockApiProviders {
             event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TrashCans.ultimate_trash_can_tile, (entity, side) -> entity.FLUID_HANDLER);
             event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, TrashCans.energy_trash_can_tile, (entity, side) -> entity.ENERGY_STORAGE);
             event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, TrashCans.ultimate_trash_can_tile, (entity, side) -> entity.ENERGY_STORAGE);
+            if(Compatibility.MEKANISM.isInstalled()){
+                event.registerBlockEntity(Compatibility.MEKANISM.getGasHandlerCapability(), TrashCans.liquid_trash_can_tile, (entity, side) -> Compatibility.MEKANISM.getGasHandler(entity.liquidFilter, () -> entity.liquidFilterWhitelist));
+                event.registerBlockEntity(Compatibility.MEKANISM.getGasHandlerCapability(), TrashCans.ultimate_trash_can_tile, (entity, side) -> Compatibility.MEKANISM.getGasHandler(entity.liquidFilter, () -> entity.liquidFilterWhitelist));
+            }
         });
     }
 }

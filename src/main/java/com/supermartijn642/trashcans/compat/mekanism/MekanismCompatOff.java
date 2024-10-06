@@ -1,8 +1,9 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
 import com.supermartijn642.trashcans.filter.ItemFilter;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -16,7 +17,7 @@ public class MekanismCompatOff {
         return false;
     }
 
-    public ItemCapability<?,Void> getGasHandlerCapability(){
+    public BlockCapability<Object,Direction> getGasHandlerCapability(){
         return null;
     }
 

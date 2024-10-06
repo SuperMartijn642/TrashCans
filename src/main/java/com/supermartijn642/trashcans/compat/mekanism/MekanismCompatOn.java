@@ -9,8 +9,9 @@ import mekanism.api.chemical.IChemicalHandler;
 import mekanism.api.chemical.attribute.ChemicalAttributes;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -30,8 +31,9 @@ public class MekanismCompatOn extends MekanismCompatOff {
     }
 
     @Override
-    public ItemCapability<?,Void> getGasHandlerCapability(){
-        return Capabilities.CHEMICAL.item();
+    public BlockCapability<Object,Direction> getGasHandlerCapability(){
+        //noinspection unchecked,rawtypes
+        return (BlockCapability)Capabilities.CHEMICAL.block();
     }
 
     @Override
