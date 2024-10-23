@@ -1,6 +1,5 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
@@ -39,9 +38,7 @@ public class CheckBox extends AbstractButtonWidget {
 
     @Override
     public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.bindTexture(BUTTONS);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y - 3, this.width + 3, this.height + 3, this.checked ? 0 : 0.5f, (this.active ? this.isFocused() ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
+        ScreenUtils.drawTexture(BUTTONS, context.poseStack(), this.x, this.y - 3, this.width + 3, this.height + 3, this.checked ? 0 : 0.5f, (this.active ? this.isFocused() ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
     }
 
     @Override
