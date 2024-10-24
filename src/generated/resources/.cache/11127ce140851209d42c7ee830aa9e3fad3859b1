@@ -1,4 +1,4 @@
-// 1.21	2024-07-21T03:37:07.4677357	Core Lib Generators
+// 1.21.3	2024-10-24T13:38:46.410728	Core Lib Generators
 c4355c455d9f1442b9919cd3e173c3551a2b3162 assets/minecraft/atlases/blocks.json
 6f49ca62c58a62335067d908270c937a6e8b1509 assets/trashcans/blockstates/energy_trash_can.json
 9f2f79d801d20e01dd9bfd72552530bfdf127756 assets/trashcans/blockstates/item_trash_can.json
@@ -13,7 +13,7 @@ f971054af0427ed1334267e24af665d7dcc1e52a assets/trashcans/models/item/liquid_tra
 9403a6f933c03110621dbd7ef2ad71efc7ed04d6 assets/trashcans/models/item_trash_can.json
 4b24adfd65b42f52e7b93fccc8df65cf2f234608 assets/trashcans/models/liquid_trash_can.json
 c32d937ffb4e7b9905990120501d19ad3995aecb assets/trashcans/models/ultimate_trash_can.json
-1fc557dba2d2b70b363b4265d27de443e7817490 data/minecraft/tags/block/mineable/pickaxe.json
+107c6cfa626876d7056f2223864de90129f500be data/minecraft/tags/block/mineable/pickaxe.json
 7ff0f846eb2686d2af55b3cc6d784a9135145807 data/trashcans/advancement/recipes/misc/energy_trash_can.json
 1eecb213a2a31d5b98908477c50dd071e20b77b2 data/trashcans/advancement/recipes/misc/item_trash_can.json
 2b953aad9423dc883d37cb8ebf6da2882afafc65 data/trashcans/advancement/recipes/misc/liquid_trash_can.json
@@ -24,7 +24,7 @@ c32d937ffb4e7b9905990120501d19ad3995aecb assets/trashcans/models/ultimate_trash_
 ace2f426e91c7b708fafc521be08a891d3b75863 data/trashcans/loot_table/blocks/item_trash_can.json
 7ff4bf749fe152dd5e67da9bdc27eeb0027870e4 data/trashcans/loot_table/blocks/liquid_trash_can.json
 a45c7a91f9d62cd51f2542e1f91013cb38a7d597 data/trashcans/loot_table/blocks/ultimate_trash_can.json
-dadc763e80e21a0f82567a6b0fdd3812dcc18ef5 data/trashcans/recipe/energy_trash_can.json
-6985c53e6514f85fca385865206b519ef9387e99 data/trashcans/recipe/item_trash_can.json
-942bc94a2145099bf13b036bba42f726c114aa0a data/trashcans/recipe/liquid_trash_can.json
-a73dd1510e319e36c500d123b22ad9ec404d306d data/trashcans/recipe/ultimate_trash_can.json
+ae97fee989ba1d292526c3aac0e95633fa41e7f6 data/trashcans/recipe/energy_trash_can.json
+7d7b1f5acb9731a2312f9b7b305f28d80d2d5558 data/trashcans/recipe/item_trash_can.json
+0b3a2be0571827e268265de1ad9aa5cf7a57b535 data/trashcans/recipe/liquid_trash_can.json
+7d8a25a5ac663c4b5bced9c65cea8c6a3cc86761 data/trashcans/recipe/ultimate_trash_can.json

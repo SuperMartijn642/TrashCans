@@ -6,15 +6,9 @@
     "BBB"
   ],
   "key": {
-    "A": {
-      "tag": "c:stones"
-    },
-    "B": {
-      "tag": "c:cobblestones"
-    },
-    "C": {
-      "tag": "c:buckets/empty"
-    }
+    "A": "#c:stones",
+    "B": "#c:cobblestones",
+    "C": "#c:buckets/empty"
   },
   "result": {
     "id": "trashcans:liquid_trash_can"

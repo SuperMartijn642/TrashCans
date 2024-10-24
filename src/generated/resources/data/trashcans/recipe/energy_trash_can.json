@@ -6,15 +6,9 @@
     "BBB"
   ],
   "key": {
-    "A": {
-      "tag": "c:stones"
-    },
-    "B": {
-      "tag": "c:cobblestones"
-    },
-    "C": {
-      "tag": "c:dusts/redstone"
-    }
+    "A": "#c:stones",
+    "B": "#c:cobblestones",
+    "C": "#c:dusts/redstone"
   },
   "result": {
     "id": "trashcans:energy_trash_can"

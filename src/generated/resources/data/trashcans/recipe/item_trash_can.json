@@ -6,15 +6,9 @@
     "BBB"
   ],
   "key": {
-    "A": {
-      "tag": "c:stones"
-    },
-    "B": {
-      "tag": "c:cobblestones"
-    },
-    "C": {
-      "tag": "c:chests/wooden"
-    }
+    "A": "#c:stones",
+    "B": "#c:cobblestones",
+    "C": "#c:chests/wooden"
   },
   "result": {
     "id": "trashcans:item_trash_can"
