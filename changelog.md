@@ -1,3 +1,6 @@
+### Trash Cans 1.0.18c
+- Fixed crash when breaking a trash can block which uses an enchanted item in its filter
+
 ### Trash Cans 1.0.18b
 - Fixed trash cans not connecting to Mekanism gas pipes
 
