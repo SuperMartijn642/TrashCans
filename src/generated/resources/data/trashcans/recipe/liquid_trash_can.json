@@ -6,15 +6,9 @@
     "BBB"
   ],
   "key": {
-    "A": {
-      "tag": "forge:stone"
-    },
-    "B": {
-      "tag": "forge:cobblestone"
-    },
-    "C": {
-      "item": "minecraft:bucket"
-    }
+    "A": "#c:stones",
+    "B": "#c:cobblestones",
+    "C": "minecraft:bucket"
   },
   "result": {
     "id": "trashcans:liquid_trash_can"

@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 public abstract class TrashCanScreen<T extends TrashCanContainer> extends ObjectBaseContainerWidget<TrashCanBlockEntity,T> {
 
+    private final ResourceLocation background = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/" + this.getBackground());
     private final Component title;
 
     public TrashCanScreen(String title){
@@ -52,8 +53,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Object
     @Override
     protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
         super.renderBackground(context, mouseX, mouseY, entity);
-        ScreenUtils.bindTexture(ResourceLocation.fromNamespaceAndPath("trashcans", "textures/" + this.getBackground()));
-        ScreenUtils.drawTexture(context.poseStack(), 0, 0, this.width(), this.height());
+        ScreenUtils.drawTexture(this.background, context.poseStack(), 0, 0, this.width(), this.height());
     }
 
     @Override
