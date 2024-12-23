@@ -112,6 +112,7 @@ public class TrashCans {
         handler.addGenerator(TrashCansAdvancementGenerator::new);
         handler.addGenerator(TrashCansModelGenerator::new);
         handler.addGenerator(TrashCansBlockStateGenerator::new);
+        handler.addGenerator(TrashCansItemInfoGenerator::new);
         handler.addGenerator(TrashCansLanguageGenerator::new);
         handler.addGenerator(TrashCansLootTableGenerator::new);
         handler.addGenerator(TrashCansRecipeGenerator::new);
