@@ -8,6 +8,9 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBlockEntity> {
     private int filterSlot;
@@ -26,14 +29,16 @@ public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBloc
     public void write(FriendlyByteBuf buffer){
         super.write(buffer);
         buffer.writeInt(this.filterSlot);
-        buffer.writeNbt(LiquidTrashCanFilters.write(this.filter, ((RegistryFriendlyByteBuf)buffer).registryAccess()));
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, ((RegistryFriendlyByteBuf)buffer).registryAccess());
+        LiquidTrashCanFilters.write(this.filter, output);
+        buffer.writeNbt(output.buildResult());
     }
 
     @Override
     public void read(FriendlyByteBuf buffer){
         super.read(buffer);
         this.filterSlot = buffer.readInt();
-        this.filter = LiquidTrashCanFilters.read(buffer.readNbt(), ((RegistryFriendlyByteBuf)buffer).registryAccess());
+        this.filter = LiquidTrashCanFilters.read(TagValueInput.create(ProblemReporter.DISCARDING, ((RegistryFriendlyByteBuf)buffer).registryAccess(), buffer.readNbt()));
     }
 
     @Override

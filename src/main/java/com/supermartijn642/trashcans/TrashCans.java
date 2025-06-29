@@ -103,6 +103,7 @@ public class TrashCans implements ModInitializer {
 
     private static void registerGenerators(){
         GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get("trashcans");
+        handler.addGenerator(TrashCansAtlasSourceGenerator::new);
         handler.addGenerator(TrashCansAdvancementGenerator::new);
         handler.addGenerator(TrashCansModelGenerator::new);
         handler.addGenerator(TrashCansBlockStateGenerator::new);

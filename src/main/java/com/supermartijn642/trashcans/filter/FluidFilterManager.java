@@ -5,10 +5,9 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -21,8 +20,8 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
-        return new FluidFilter(tag, provider);
+    public ItemFilter readFilter(ValueInput input){
+        return new FluidFilter(input);
     }
 
     private static class FluidFilter extends ItemFilter {
@@ -33,8 +32,8 @@ public class FluidFilterManager implements IFilterManager {
             this.stack = getFluid(stack);
         }
 
-        public FluidFilter(Tag tag, HolderLookup.Provider provider){
-            this.stack = FluidVariant.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
+        public FluidFilter(ValueInput input){
+            this.stack = input.read("stack", FluidVariant.CODEC).orElse(FluidVariant.blank());
         }
 
         @Override
@@ -50,8 +49,8 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         @Override
-        public Tag write(HolderLookup.Provider provider){
-            return FluidVariant.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
+        public void write(ValueOutput output){
+            output.store("stack", FluidVariant.CODEC, this.stack);
         }
 
         @Override

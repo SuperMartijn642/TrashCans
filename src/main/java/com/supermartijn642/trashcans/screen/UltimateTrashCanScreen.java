@@ -1,8 +1,7 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
@@ -11,11 +10,14 @@ import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanContainer> {
+
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "ultimate_screen");
 
     private WhitelistButton itemWhitelistButton;
     private WhitelistButton liquidWhitelistButton;
@@ -45,12 +47,12 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
-        super.renderTooltips(context, mouseX, mouseY, entity);
+    protected void renderTooltips(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderTooltips(context, graphics, mouseX, mouseY, entity);
         if(this.leftArrow.isFocused() && this.leftArrow.isActive())
-            ScreenUtils.drawTooltip(context.poseStack(), "" + (this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000), mouseX, mouseY);
+            graphics.submitTooltip(c -> c.literal("" + (this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000)), mouseX, mouseY);
         if(this.rightArrow.isFocused() && this.rightArrow.isActive())
-            ScreenUtils.drawTooltip(context.poseStack(), "+" + (this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000), mouseX, mouseY);
+            graphics.submitTooltip(c -> c.literal("+" + (this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000)), mouseX, mouseY);
     }
 
     @Override
@@ -66,18 +68,19 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected String getBackground(){
-        return "ultimate_screen.png";
+    protected ResourceLocation getBackground(){
+        return BACKGROUND;
     }
 
     @Override
-    protected void drawText(PoseStack poseStack, TrashCanBlockEntity entity){
-        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.ultimate_trash_can.item_filter").get(), 8, 53);
+    protected void drawText(GuiGraphicsHelper graphics, TrashCanBlockEntity entity){
+        graphics.submitText(TextComponents.translation("trashcans.gui.ultimate_trash_can.item_filter").get(), 8, 53);
 
-        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.ultimate_trash_can.liquid_filter").get(), 8, 83);
+        graphics.submitText(TextComponents.translation("trashcans.gui.ultimate_trash_can.liquid_filter").get(), 8, 83);
 
-        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.ultimate_trash_can.energy_limit").get(), 8, 113);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 132);
+        graphics.submitText(TextComponents.translation("trashcans.gui.ultimate_trash_can.energy_limit").get(), 8, 113);
+        //noinspection Convert2MethodRef
+        graphics.submitText(TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 132, p -> p.centerHorizontally());
     }
 
     @Override

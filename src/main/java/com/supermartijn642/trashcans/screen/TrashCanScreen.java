@@ -1,9 +1,8 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.ObjectBaseContainerWidget;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
@@ -15,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
  */
 public abstract class TrashCanScreen<T extends TrashCanContainer> extends ObjectBaseContainerWidget<TrashCanBlockEntity,T> {
 
-    private final ResourceLocation background = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/" + this.getBackground());
     private final Component title;
 
     public TrashCanScreen(String title){
@@ -48,22 +46,23 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Object
         return this.container.height;
     }
 
-    protected abstract String getBackground();
+    protected abstract ResourceLocation getBackground();
 
     @Override
-    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
-        super.renderBackground(context, mouseX, mouseY, entity);
-        ScreenUtils.drawTexture(this.background, context.poseStack(), 0, 0, this.width(), this.height());
+    protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderBackground(context, graphics, mouseX, mouseY, entity);
+        graphics.submitSprite(this.getBackground(), 0, 0, this.width(), this.height());
     }
 
     @Override
-    protected void renderForeground(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
-        super.renderForeground(context, mouseX, mouseY, entity);
-        ScreenUtils.drawCenteredString(context.poseStack(), this.title, this.width() / 2f, 6);
-        ScreenUtils.drawString(context.poseStack(), ClientUtils.getPlayer().getInventory().getName(), 21, this.height() - 94);
+    protected void renderForeground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderForeground(context, graphics, mouseX, mouseY, entity);
+        //noinspection Convert2MethodRef
+        graphics.submitText(this.title, this.width() / 2f, 6, p -> p.centerHorizontally());
+        graphics.submitText(ClientUtils.getPlayer().getInventory().getName(), 21, this.height() - 94);
 
-        this.drawText(context.poseStack(), entity);
+        this.drawText(graphics, entity);
     }
 
-    protected abstract void drawText(PoseStack poseStack, TrashCanBlockEntity entity);
+    protected abstract void drawText(GuiGraphicsHelper graphics, TrashCanBlockEntity entity);
 }

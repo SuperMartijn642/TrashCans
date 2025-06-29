@@ -1,6 +1,5 @@
 package com.supermartijn642.trashcans;
 
-import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.TickableBlockEntity;
 import com.supermartijn642.core.util.TriFunction;
@@ -18,12 +17,13 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.BlankVariantView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import team.reborn.energy.api.EnergyStorage;
 
 import java.util.ArrayList;
@@ -287,48 +287,46 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     }
 
     @Override
-    protected CompoundTag writeData(){
-        CompoundTag tag = new CompoundTag();
+    protected void writeData(ValueOutput output){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
                 if(!this.itemFilter.get(i).isEmpty())
-                    tag.put("itemFilter" + i, this.itemFilter.get(i).save(this.level.registryAccess()));
-            tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
+                    output.store("itemFilter" + i, ItemStack.CODEC, this.itemFilter.get(i));
+            output.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
                 if(this.liquidFilter.get(i) != null)
-                    tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i), this.level.registryAccess()));
-            tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
+                    LiquidTrashCanFilters.write(this.liquidFilter.get(i), output.child("liquidFilter" + i));
+            output.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                tag.put("liquidItem", this.liquidItem.save(this.level.registryAccess()));
+                output.store("liquidItem", ItemStack.CODEC, this.liquidItem);
         }
         if(this.energy){
-            tag.putBoolean("useEnergyLimit", this.useEnergyLimit);
-            tag.putInt("energyLimit", this.energyLimit);
+            output.putBoolean("useEnergyLimit", this.useEnergyLimit);
+            output.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                tag.put("energyItem", this.energyItem.save(this.level.registryAccess()));
+                output.store("energyItem", ItemStack.CODEC, this.energyItem);
         }
-        return tag;
     }
 
     @Override
-    protected void readData(CompoundTag tag){
+    protected void readData(ValueInput input){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.getCompound("itemFilter" + i).flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY));
-            this.itemFilterWhitelist = tag.getBooleanOr("itemFilterWhitelist", false);
+                this.itemFilter.set(i, input.read("itemFilter" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+            this.itemFilterWhitelist = input.getBooleanOr("itemFilterWhitelist", false);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.getCompound("liquidFilter" + i).map(t -> LiquidTrashCanFilters.read(t, CommonUtils.getRegistryAccess())).orElse(null));
-            this.liquidFilterWhitelist = tag.getBooleanOr("liquidFilterWhitelist", false);
-            this.liquidItem = tag.getCompound("liquidItem").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
+                this.liquidFilter.set(i, input.child("liquidFilter" + i).map(LiquidTrashCanFilters::read).orElse(null));
+            this.liquidFilterWhitelist = input.getBooleanOr("liquidFilterWhitelist", false);
+            this.liquidItem = input.read("liquidItem", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         }
         if(this.energy){
-            this.useEnergyLimit = tag.getBooleanOr("useEnergyLimit", false);
-            this.energyLimit = tag.getIntOr("energyLimit", DEFAULT_ENERGY_LIMIT);
-            this.energyItem = tag.getCompound("energyItem").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
+            this.useEnergyLimit = input.getBooleanOr("useEnergyLimit", false);
+            this.energyLimit = input.getIntOr("energyLimit", DEFAULT_ENERGY_LIMIT);
+            this.energyItem = input.read("energyItem", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         }
     }
 }

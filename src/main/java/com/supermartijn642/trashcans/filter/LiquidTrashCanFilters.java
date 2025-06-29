@@ -1,8 +1,8 @@
 package com.supermartijn642.trashcans.filter;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,17 +29,15 @@ public class LiquidTrashCanFilters {
         return null;
     }
 
-    public static CompoundTag write(ItemFilter filter, HolderLookup.Provider provider){
-        CompoundTag compound = new CompoundTag();
-        compound.putString("id", filter.getId());
-        compound.put("filter", filter.write(provider));
-        return compound;
+    public static void write(ItemFilter filter, ValueOutput output){
+        output.putString("id", filter.getId());
+        filter.write(output.child("filter"));
     }
 
-    public static ItemFilter read(CompoundTag compound, HolderLookup.Provider provider){
-        String id = compound.getStringOr("id", "");
+    public static ItemFilter read(ValueInput input){
+        String id = input.getStringOr("id", "");
         if(managers.containsKey(id)){
-            ItemFilter filter = managers.get(id).readFilter(compound.get("filter"), provider);
+            ItemFilter filter = managers.get(id).readFilter(input.childOrEmpty("filter"));
             filter.setId(id);
             return filter.isValid() ? filter : null;
         }
