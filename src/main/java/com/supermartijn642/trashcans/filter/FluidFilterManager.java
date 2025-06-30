@@ -1,10 +1,13 @@
 package com.supermartijn642.trashcans.filter;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -17,7 +20,7 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundTag tag, HolderLookup.Provider provider){
+    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
         return new FluidFilter(tag, provider);
     }
 
@@ -31,8 +34,8 @@ public class FluidFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public FluidFilter(CompoundTag compound, HolderLookup.Provider provider){
-            this.stack = FluidStack.loadFluidStackFromNBT(compound);
+        public FluidFilter(Tag tag, HolderLookup.Provider provider){
+            this.stack = FluidStack.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
         }
 
         @Override
@@ -49,7 +52,7 @@ public class FluidFilterManager implements IFilterManager {
 
         @Override
         public Tag write(HolderLookup.Provider provider){
-            return this.stack.writeToNBT(new CompoundTag());
+            return FluidStack.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
         }
 
         @Override
@@ -58,9 +61,11 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         private static FluidStack getFluid(ItemStack stack){
-//            IFluidHandler fluidHandler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null); // TODO
-//            return fluidHandler == null || fluidHandler.getTanks() != 1 || fluidHandler.getFluidInTank(0).isEmpty() ? null : fluidHandler.getFluidInTank(0);
-            return null;
+            LazyOptional<IFluidHandlerItem> fluidHandler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
+            return fluidHandler.filter(h -> h.getTanks() == 1)
+                .map(h -> h.getFluidInTank(0))
+                .filter(f -> !f.isEmpty())
+                .orElse(null);
         }
     }
 }

@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -174,12 +175,12 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             if(!filtered)
                 return false;
 
-//            return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).filter(handler -> { // TODO
-//                for(int tank = 0; tank < handler.getTanks(); tank++)
-//                    if(!handler.getFluidInTank(tank).isEmpty())
-//                        return true;
-//                return false;
-//            }).isPresent();
+            IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+            if(handler != null){
+                for(int tank = 0; tank < handler.getTanks(); tank++)
+                    if(!handler.getFluidInTank(tank).isEmpty())
+                        return true;
+            }
             return false;
         }
     };
@@ -250,8 +251,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         }
 
         public boolean isItemValid(ItemStack stack){
-//            return stack.getCapability(ForgeCapabilities.ENERGY).filter(storage -> storage.canExtract() && storage.getEnergyStored() > 0).isPresent(); // TODO
-            return false;
+            return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent();
         }
     };
 
@@ -282,24 +282,24 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     @Override
     public void update(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-//            this.liquidItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHandler -> { // TODO
-//                boolean changed = false;
-//                for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
-//                    if(!fluidHandler.getFluidInTank(tank).isEmpty()){
-//                        fluidHandler.drain(fluidHandler.getFluidInTank(tank), IFluidHandler.FluidAction.EXECUTE);
-//                        changed = true;
-//                    }
-//                if(changed){
-//                    this.liquidItem = fluidHandler.getContainer();
-//                    this.dataChanged();
-//                }
-//            });
+            this.liquidItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHandler -> {
+                boolean changed = false;
+                for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
+                    if(!fluidHandler.getFluidInTank(tank).isEmpty()){
+                        fluidHandler.drain(fluidHandler.getFluidInTank(tank), IFluidHandler.FluidAction.EXECUTE);
+                        changed = true;
+                    }
+                if(changed){
+                    this.liquidItem = fluidHandler.getContainer();
+                    this.dataChanged();
+                }
+            });
         }
         if(this.energy && !this.energyItem.isEmpty()){
-//            TrashCanBlockEntity.this.energyItem.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> { // TODO
-//                energyStorage.extractEnergy(energyStorage.getEnergyStored(), false);
-//                TrashCanBlockEntity.this.dataChanged();
-//            });
+            TrashCanBlockEntity.this.energyItem.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
+                energyStorage.extractEnergy(energyStorage.getEnergyStored(), false);
+                TrashCanBlockEntity.this.dataChanged();
+            });
         }
     }
 
@@ -330,7 +330,8 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         CompoundTag tag = new CompoundTag();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                tag.put("itemFilter" + i, this.itemFilter.get(i).saveOptional(this.level.registryAccess()));
+                if(!this.itemFilter.get(i).isEmpty())
+                    tag.put("itemFilter" + i, this.itemFilter.get(i).save(this.level.registryAccess()));
             tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
         }
         if(this.liquids){
@@ -339,13 +340,13 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                     tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i), this.level.registryAccess()));
             tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                tag.put("liquidItem", this.liquidItem.saveOptional(this.level.registryAccess()));
+                tag.put("liquidItem", this.liquidItem.save(this.level.registryAccess()));
         }
         if(this.energy){
             tag.putBoolean("useEnergyLimit", this.useEnergyLimit);
             tag.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                tag.put("energyItem", this.energyItem.saveOptional(this.level.registryAccess()));
+                tag.put("energyItem", this.energyItem.save(this.level.registryAccess()));
         }
         return tag;
     }
@@ -354,19 +355,19 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     protected void readData(CompoundTag tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);
-            this.itemFilterWhitelist = tag.contains("itemFilterWhitelist") && tag.getBoolean("itemFilterWhitelist");
+                this.itemFilter.set(i, tag.getCompound("itemFilter" + i).flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY));
+            this.itemFilterWhitelist = tag.getBooleanOr("itemFilterWhitelist", false);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i), CommonUtils.getRegistryAccess()) : null);
-            this.liquidFilterWhitelist = tag.contains("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
-            this.liquidItem = tag.contains("liquidItem") ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("liquidItem")) : ItemStack.EMPTY;
+                this.liquidFilter.set(i, tag.getCompound("liquidFilter" + i).map(t -> LiquidTrashCanFilters.read(t, CommonUtils.getRegistryAccess())).orElse(null));
+            this.liquidFilterWhitelist = tag.getBooleanOr("liquidFilterWhitelist", false);
+            this.liquidItem = tag.getCompound("liquidItem").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
         }
         if(this.energy){
-            this.useEnergyLimit = tag.contains("useEnergyLimit") && tag.getBoolean("useEnergyLimit");
-            this.energyLimit = tag.contains("energyLimit") ? tag.getInt("energyLimit") : DEFAULT_ENERGY_LIMIT;
-            this.energyItem = tag.contains("energyItem") ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("energyItem")) : ItemStack.EMPTY;
+            this.useEnergyLimit = tag.getBooleanOr("useEnergyLimit", false);
+            this.energyLimit = tag.getIntOr("energyLimit", DEFAULT_ENERGY_LIMIT);
+            this.energyItem = tag.getCompound("energyItem").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
         }
     }
 }
