@@ -1,16 +1,18 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer> {
+
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "liquid_screen");
 
     private WhitelistButton whitelistButton;
 
@@ -31,12 +33,12 @@ public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer
     }
 
     @Override
-    protected String getBackground(){
-        return "liquid_screen.png";
+    protected ResourceLocation getBackground(){
+        return BACKGROUND;
     }
 
     @Override
-    protected void drawText(PoseStack poseStack, TrashCanBlockEntity entity){
-        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.liquid_trash_can.filter").get(), 8, 52);
+    protected void drawText(GuiGraphicsHelper graphics, TrashCanBlockEntity entity){
+        graphics.submitText(TextComponents.translation("trashcans.gui.liquid_trash_can.filter").get(), 8, 52);
     }
 }

@@ -1,9 +1,7 @@
 package com.supermartijn642.trashcans.screen;
 
-import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
@@ -11,11 +9,14 @@ import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer> {
+
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "energy_screen");
 
     private CheckBox checkBox;
     private ArrowButton leftArrow, rightArrow;
@@ -37,17 +38,17 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
-        super.renderTooltips(context, mouseX, mouseY, entity);
+    protected void renderTooltips(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, TrashCanBlockEntity entity){
+        super.renderTooltips(context, graphics, mouseX, mouseY, entity);
         if(this.leftArrow.isFocused() && this.leftArrow.isActive())
-            ScreenUtils.drawTooltip(context.poseStack(), Lists.newArrayList(
+            graphics.submitTooltip(c -> c.text(
                     TextComponents.string("-" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "-100").color(ChatFormatting.AQUA).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "-10000").color(ChatFormatting.AQUA).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change3", "-1").color(ChatFormatting.AQUA).get()),
                 mouseX, mouseY);
         if(this.rightArrow.isFocused() && this.rightArrow.isActive())
-            ScreenUtils.drawTooltip(context.poseStack(), Lists.newArrayList(
+            graphics.submitTooltip(c -> c.text(
                     TextComponents.string("+" + (this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000)).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change1", "+100").color(ChatFormatting.AQUA).get(),
                     TextComponents.translation("trashcans.gui.energy_trash_can.limit.change2", "+10000").color(ChatFormatting.AQUA).get(),
@@ -64,14 +65,15 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected String getBackground(){
-        return "energy_screen.png";
+    protected ResourceLocation getBackground(){
+        return BACKGROUND;
     }
 
     @Override
-    protected void drawText(PoseStack poseStack, TrashCanBlockEntity entity){
-        ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.energy_trash_can.limit").get(), 8, 52);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 71);
+    protected void drawText(GuiGraphicsHelper graphics, TrashCanBlockEntity entity){
+        graphics.submitText(TextComponents.translation("trashcans.gui.energy_trash_can.limit").get(), 8, 52);
+        //noinspection Convert2MethodRef
+        graphics.submitText(TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 71, p -> p.centerHorizontally());
     }
 
     @Override

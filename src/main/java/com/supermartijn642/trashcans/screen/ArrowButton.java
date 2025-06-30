@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans.screen;
 
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.network.chat.Component;
@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/arrow_buttons.png");
+    public static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "arrow_buttons");
 
     private final boolean left;
     private boolean active = true;
@@ -31,8 +31,8 @@ public class ArrowButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.drawTexture(BUTTONS, context.poseStack(), this.x, this.y, this.width, this.height, this.left ? 0.5f : 0, (this.active ? this.isFocused() ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
+    public void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY){
+        graphics.submitSprite(BUTTONS, this.x, this.y, this.width, this.height, p -> p.uv(this.left ? 0.5f : 0, (this.active ? this.isFocused() ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f));
     }
 
     @Override

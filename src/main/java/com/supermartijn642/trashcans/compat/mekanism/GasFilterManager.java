@@ -6,10 +6,9 @@ import com.supermartijn642.trashcans.filter.ItemFilter;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -22,8 +21,8 @@ public class GasFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
-        return new GasFilter(tag, provider);
+    public ItemFilter readFilter(ValueInput input){
+        return new GasFilter(input);
     }
 
     private static class GasFilter extends ItemFilter {
@@ -36,8 +35,8 @@ public class GasFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public GasFilter(Tag tag, HolderLookup.Provider provider){
-            this.stack = ChemicalStack.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
+        public GasFilter(ValueInput input){
+            this.stack = input.read("stack", ChemicalStack.CODEC).orElse(ChemicalStack.EMPTY);
         }
 
         @Override
@@ -53,8 +52,8 @@ public class GasFilterManager implements IFilterManager {
         }
 
         @Override
-        public Tag write(HolderLookup.Provider provider){
-            return ChemicalStack.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
+        public void write(ValueOutput output){
+            output.store("stack", ChemicalStack.CODEC, this.stack);
         }
 
         @Override

@@ -6,7 +6,6 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
-import mekanism.api.chemical.attribute.ChemicalAttributes;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.core.Direction;
@@ -85,7 +84,7 @@ public class MekanismCompatOn extends MekanismCompatOff {
 
             @Override
             public boolean isValid(int i, ChemicalStack gasStack){
-                if(gasStack.has(ChemicalAttributes.Radiation.class) && !TrashCansConfig.allowVoidingNuclearWaste.get())
+                if(gasStack.isRadioactive() && !TrashCansConfig.allowVoidingNuclearWaste.get())
                     return false;
 
                 for(ItemFilter filter : filters){
