@@ -1,9 +1,8 @@
 package com.supermartijn642.trashcans.filter;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -20,8 +19,8 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
-        return new FluidFilter(tag, provider);
+    public ItemFilter readFilter(ValueInput input){
+        return new FluidFilter(input);
     }
 
     private static class FluidFilter extends ItemFilter {
@@ -34,8 +33,8 @@ public class FluidFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public FluidFilter(Tag tag, HolderLookup.Provider provider){
-            this.stack = FluidStack.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
+        public FluidFilter(ValueInput input){
+            this.stack = input.read("stack", FluidStack.CODEC).orElse(FluidStack.EMPTY);
         }
 
         @Override
@@ -51,8 +50,8 @@ public class FluidFilterManager implements IFilterManager {
         }
 
         @Override
-        public Tag write(HolderLookup.Provider provider){
-            return FluidStack.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
+        public void write(ValueOutput output){
+            output.store("stack", FluidStack.CODEC, this.stack);
         }
 
         @Override

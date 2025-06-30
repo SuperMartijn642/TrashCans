@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.gui.BaseContainerType;
@@ -16,8 +17,6 @@ import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.generators.*;
 import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -57,8 +56,8 @@ public class TrashCans {
     @RegistryEntryAcceptor(namespace = "trashcans", identifier = "ultimate_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<TrashCanContainer> ultimate_trash_can_container;
 
-    public TrashCans(){
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+    public TrashCans(FMLJavaModLoadingContext context){
+        FMLCommonSetupEvent.getBus(context.getModBusGroup()).addListener(this::init);
 
         CHANNEL.registerMessage(PacketToggleItemWhitelist.class, PacketToggleItemWhitelist::new, true);
         CHANNEL.registerMessage(PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist::new, true);
@@ -70,7 +69,8 @@ public class TrashCans {
         TrashCansConfig.init();
 
         register();
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> TrashCansClient::registerScreens);
+        if(CommonUtils.getEnvironmentSide().isClient())
+            TrashCansClient.registerScreens();
         registerGenerators();
     }
 
@@ -109,6 +109,7 @@ public class TrashCans {
 
     private static void registerGenerators(){
         GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get("trashcans");
+        handler.addGenerator(TrashCansAtlasSourceGenerator::new);
         handler.addGenerator(TrashCansAdvancementGenerator::new);
         handler.addGenerator(TrashCansModelGenerator::new);
         handler.addGenerator(TrashCansBlockStateGenerator::new);
