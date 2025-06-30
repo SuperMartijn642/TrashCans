@@ -7,7 +7,7 @@ import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
@@ -22,8 +22,8 @@ public class GasFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundTag compound, HolderLookup.Provider provider){
-        return new GasFilter(compound, provider);
+    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
+        return new GasFilter(tag, provider);
     }
 
     private static class GasFilter extends ItemFilter {
@@ -36,8 +36,8 @@ public class GasFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public GasFilter(CompoundTag compound, HolderLookup.Provider provider){
-            this.stack = ChemicalStack.parseOptional(provider, compound);
+        public GasFilter(Tag tag, HolderLookup.Provider provider){
+            this.stack = ChemicalStack.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
         }
 
         @Override
@@ -54,7 +54,7 @@ public class GasFilterManager implements IFilterManager {
 
         @Override
         public Tag write(HolderLookup.Provider provider){
-            return this.stack.saveOptional(provider);
+            return ChemicalStack.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
         }
 
         @Override

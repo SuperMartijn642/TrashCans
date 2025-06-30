@@ -37,9 +37,9 @@ public class LiquidTrashCanFilters {
     }
 
     public static ItemFilter read(CompoundTag compound, HolderLookup.Provider provider){
-        String id = compound.getString("id");
+        String id = compound.getStringOr("id", "");
         if(managers.containsKey(id)){
-            ItemFilter filter = managers.get(id).readFilter(compound.getCompound("filter"), provider);
+            ItemFilter filter = managers.get(id).readFilter(compound.get("filter"), provider);
             filter.setId(id);
             return filter.isValid() ? filter : null;
         }

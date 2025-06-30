@@ -319,7 +319,8 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         CompoundTag tag = new CompoundTag();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                tag.put("itemFilter" + i, this.itemFilter.get(i).saveOptional(this.level.registryAccess()));
+                if(!this.itemFilter.get(i).isEmpty())
+                    tag.put("itemFilter" + i, this.itemFilter.get(i).save(this.level.registryAccess()));
             tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
         }
         if(this.liquids){
@@ -328,13 +329,13 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                     tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i), this.level.registryAccess()));
             tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                tag.put("liquidItem", this.liquidItem.saveOptional(this.level.registryAccess()));
+                tag.put("liquidItem", this.liquidItem.save(this.level.registryAccess()));
         }
         if(this.energy){
             tag.putBoolean("useEnergyLimit", this.useEnergyLimit);
             tag.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                tag.put("energyItem", this.energyItem.saveOptional(this.level.registryAccess()));
+                tag.put("energyItem", this.energyItem.save(this.level.registryAccess()));
         }
         return tag;
     }
@@ -343,19 +344,19 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     protected void readData(CompoundTag tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);
-            this.itemFilterWhitelist = tag.contains("itemFilterWhitelist") && tag.getBoolean("itemFilterWhitelist");
+                this.itemFilter.set(i, tag.getCompound("itemFilter" + i).flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY));
+            this.itemFilterWhitelist = tag.getBooleanOr("itemFilterWhitelist", false);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i), CommonUtils.getRegistryAccess()) : null);
-            this.liquidFilterWhitelist = tag.contains("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
-            this.liquidItem = tag.contains("liquidItem") ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("liquidItem")) : ItemStack.EMPTY;
+                this.liquidFilter.set(i, tag.getCompound("liquidFilter" + i).map(t -> LiquidTrashCanFilters.read(t, CommonUtils.getRegistryAccess())).orElse(null));
+            this.liquidFilterWhitelist = tag.getBooleanOr("liquidFilterWhitelist", false);
+            this.liquidItem = tag.getCompound("liquidItem").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
         }
         if(this.energy){
-            this.useEnergyLimit = tag.contains("useEnergyLimit") && tag.getBoolean("useEnergyLimit");
-            this.energyLimit = tag.contains("energyLimit") ? tag.getInt("energyLimit") : DEFAULT_ENERGY_LIMIT;
-            this.energyItem = tag.contains("energyItem") ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("energyItem")) : ItemStack.EMPTY;
+            this.useEnergyLimit = tag.getBooleanOr("useEnergyLimit", false);
+            this.energyLimit = tag.getIntOr("energyLimit", DEFAULT_ENERGY_LIMIT);
+            this.energyItem = tag.getCompound("energyItem").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
         }
     }
 }

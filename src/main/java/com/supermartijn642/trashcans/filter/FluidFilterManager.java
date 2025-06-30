@@ -1,7 +1,7 @@
 package com.supermartijn642.trashcans.filter;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -19,7 +19,7 @@ public class FluidFilterManager implements IFilterManager {
     }
 
     @Override
-    public ItemFilter readFilter(CompoundTag tag, HolderLookup.Provider provider){
+    public ItemFilter readFilter(Tag tag, HolderLookup.Provider provider){
         return new FluidFilter(tag, provider);
     }
 
@@ -33,8 +33,8 @@ public class FluidFilterManager implements IFilterManager {
                 this.stack = this.stack.copy();
         }
 
-        public FluidFilter(CompoundTag tag, HolderLookup.Provider provider){
-            this.stack = FluidStack.parseOptional(provider, tag);
+        public FluidFilter(Tag tag, HolderLookup.Provider provider){
+            this.stack = FluidStack.CODEC.decode(provider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
         }
 
         @Override
@@ -51,7 +51,7 @@ public class FluidFilterManager implements IFilterManager {
 
         @Override
         public Tag write(HolderLookup.Provider provider){
-            return this.stack.saveOptional(provider);
+            return FluidStack.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow();
         }
 
         @Override
