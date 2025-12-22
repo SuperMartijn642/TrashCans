@@ -66,7 +66,7 @@ public class TrashCanBlock extends BaseBlock implements EntityHoldingBlock, Simp
 
     @Override
     protected InteractionFeedback interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, Direction hitSide, Vec3 hitLocation){
-        if(!level.isClientSide)
+        if(!level.isClientSide())
             CommonUtils.openContainer(this.containerProvider.apply(player, pos));
         return InteractionFeedback.SUCCESS;
     }
