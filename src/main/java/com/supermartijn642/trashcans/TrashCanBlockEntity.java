@@ -7,6 +7,7 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import com.supermartijn642.trashcans.screen.DummySlot;
+import com.supermartijn642.trashcans.util.MutableItemAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -16,14 +17,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 /**
@@ -33,98 +34,85 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
-    public final IItemHandler ITEM_HANDLER = new IItemHandlerModifiable() {
+    public final ResourceHandler<ItemResource> ITEM_HANDLER = new ResourceHandler<ItemResource>() {
         @Override
-        public void setStackInSlot(int slot, @Nonnull ItemStack stack){
-        }
-
-        @Override
-        public int getSlots(){
+        public int size(){
             return 1;
         }
 
-        @Nonnull
         @Override
-        public ItemStack getStackInSlot(int slot){
-            return ItemStack.EMPTY;
+        public ItemResource getResource(int index){
+            return ItemResource.EMPTY;
         }
 
-        @Nonnull
         @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate){
+        public long getAmountAsLong(int index){
+            return 0;
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource){
+            return this.isValid(index, resource) ? Long.MAX_VALUE : 0;
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource){
             for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-                if(!filter.isEmpty() && ItemStack.isSameItem(stack, filter))
-                    return TrashCanBlockEntity.this.itemFilterWhitelist ? ItemStack.EMPTY : stack;
-            }
-            return TrashCanBlockEntity.this.itemFilterWhitelist ? stack : ItemStack.EMPTY;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate){
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot){
-            return Integer.MAX_VALUE;
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack){
-            for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-                if(!filter.isEmpty() && ItemStack.isSameItem(stack, filter))
+                if(!filter.isEmpty() && resource.matches(filter))
                     return TrashCanBlockEntity.this.itemFilterWhitelist;
             }
             return !TrashCanBlockEntity.this.itemFilterWhitelist;
         }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction){
+            return this.isValid(index, resource) ? amount : 0;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction){
+            return 0;
+        }
     };
 
-    public final IFluidHandler FLUID_HANDLER = new IFluidHandler() {
+    public final ResourceHandler<FluidResource> FLUID_HANDLER = new ResourceHandler<>() {
         @Override
-        public int getTanks(){
+        public int size(){
             return 1;
         }
 
-        @Nonnull
         @Override
-        public FluidStack getFluidInTank(int tank){
-            return FluidStack.EMPTY;
+        public FluidResource getResource(int index){
+            return FluidResource.EMPTY;
         }
 
         @Override
-        public int getTankCapacity(int tank){
-            return Integer.MAX_VALUE;
+        public long getAmountAsLong(int index){
+            return 0;
         }
 
         @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack){
+        public long getCapacityAsLong(int index, FluidResource resource){
+            return this.isValid(index, resource) ? Long.MAX_VALUE : 0;
+        }
+
+        @Override
+        public boolean isValid(int index, FluidResource resource){
             for(ItemFilter filter : TrashCanBlockEntity.this.liquidFilter){
-                if(filter != null && filter.matches(stack))
+                if(filter != null && filter.matches(resource))
                     return TrashCanBlockEntity.this.liquidFilterWhitelist;
             }
             return !TrashCanBlockEntity.this.liquidFilterWhitelist;
         }
 
         @Override
-        public int fill(FluidStack resource, FluidAction action){
-            for(ItemFilter filter : TrashCanBlockEntity.this.liquidFilter){
-                if(filter != null && filter.matches(resource))
-                    return TrashCanBlockEntity.this.liquidFilterWhitelist ? resource.getAmount() : 0;
-            }
-            return TrashCanBlockEntity.this.liquidFilterWhitelist ? 0 : resource.getAmount();
+        public int insert(int index, FluidResource resource, int amount, TransactionContext transaction){
+            return this.isValid(index, resource) ? amount : 0;
         }
 
-        @Nonnull
         @Override
-        public FluidStack drain(FluidStack resource, FluidAction action){
-            return FluidStack.EMPTY;
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction action){
-            return FluidStack.EMPTY;
+        public int extract(int index, FluidResource resource, int amount, TransactionContext transaction){
+            return 0;
         }
     };
     public final TriFunction<Integer,Integer,Integer,Slot> LIQUID_ITEM_HANDLER = (slot, x, y) -> new DummySlot(slot, x, y) {
@@ -172,45 +160,36 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             if(!filtered)
                 return false;
 
-            IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+            ResourceHandler<FluidResource> handler = stack.getCapability(Capabilities.Fluid.ITEM, ItemAccess.forStack(stack));
             if(handler != null){
-                for(int tank = 0; tank < handler.getTanks(); tank++)
-                    if(!handler.getFluidInTank(tank).isEmpty())
+                for(int i = 0; i < handler.size(); i++){
+                    if(!handler.getResource(i).isEmpty() && handler.getAmountAsInt(i) > 0)
                         return true;
+                }
             }
             return Compatibility.MEKANISM.doesItemHaveGasStored(stack);
         }
     };
 
-    public final IEnergyStorage ENERGY_STORAGE = new IEnergyStorage() {
+    public final EnergyHandler ENERGY_STORAGE = new EnergyHandler() {
         @Override
-        public int receiveEnergy(int maxReceive, boolean simulate){
-            return TrashCanBlockEntity.this.useEnergyLimit ? Math.min(maxReceive, TrashCanBlockEntity.this.energyLimit) : maxReceive;
-        }
-
-        @Override
-        public int extractEnergy(int maxExtract, boolean simulate){
+        public long getAmountAsLong(){
             return 0;
         }
 
         @Override
-        public int getEnergyStored(){
+        public long getCapacityAsLong(){
+            return Long.MAX_VALUE;
+        }
+
+        @Override
+        public int insert(int amount, TransactionContext transaction){
+            return TrashCanBlockEntity.this.useEnergyLimit ? Math.min(amount, TrashCanBlockEntity.this.energyLimit) : amount;
+        }
+
+        @Override
+        public int extract(int amount, TransactionContext transaction){
             return 0;
-        }
-
-        @Override
-        public int getMaxEnergyStored(){
-            return Integer.MAX_VALUE;
-        }
-
-        @Override
-        public boolean canExtract(){
-            return false;
-        }
-
-        @Override
-        public boolean canReceive(){
-            return true;
         }
     };
     public final TriFunction<Integer,Integer,Integer,Slot> ENERGY_ITEM_HANDLER = (slot, x, y) -> new DummySlot(slot, x, y) {
@@ -248,7 +227,8 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         }
 
         public boolean isItemValid(ItemStack stack){
-            return stack.getCapability(Capabilities.ItemHandler.ITEM) != null;
+            EnergyHandler handler = stack.getCapability(Capabilities.Energy.ITEM, ItemAccess.forStack(stack));
+            return handler != null && handler.getAmountAsInt() > 0;
         }
     };
 
@@ -263,6 +243,8 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     public int energyLimit = DEFAULT_ENERGY_LIMIT;
     public boolean useEnergyLimit = false;
     public ItemStack energyItem = ItemStack.EMPTY;
+
+    private final MutableItemAccess itemAccess = new MutableItemAccess();
 
     public TrashCanBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, boolean items, boolean liquids, boolean energy){
         super(blockEntityType, pos, state);
@@ -279,26 +261,36 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     @Override
     public void update(){
         if(this.liquids && !this.liquidItem.isEmpty() && this.liquidItem.getItem() != Items.BUCKET){
-            IFluidHandlerItem fluidHandler = this.liquidItem.getCapability(Capabilities.FluidHandler.ITEM);
-            if(fluidHandler != null){
-                boolean changed = false;
-                for(int tank = 0; tank < fluidHandler.getTanks(); tank++)
-                    if(!fluidHandler.getFluidInTank(tank).isEmpty()){
-                        fluidHandler.drain(fluidHandler.getFluidInTank(tank), IFluidHandler.FluidAction.EXECUTE);
-                        changed = true;
+            this.itemAccess.setStack(this.liquidItem);
+            ResourceHandler<FluidResource> handler = this.itemAccess.getCapability(Capabilities.Fluid.ITEM);
+            if(handler != null){
+                try(Transaction transaction = Transaction.openRoot()){
+                    for(int i = 0; i < handler.size(); i++){
+                        int amount = handler.getAmountAsInt(i);
+                        if(amount > 0)
+                            handler.extract(i, handler.getResource(i), amount, transaction);
                     }
-                if(changed){
-                    this.liquidItem = fluidHandler.getContainer();
-                    this.dataChanged();
+                    transaction.commit();
                 }
+            }
+            if(!this.itemAccess.matches(this.liquidItem)){
+                this.liquidItem = this.itemAccess.getStack();
+                this.dataChanged();
             }
             if(Compatibility.MEKANISM.drainGasFromItem(this.liquidItem))
                 this.dataChanged();
         }
         if(this.energy && !this.energyItem.isEmpty()){
-            IEnergyStorage energyStorage = this.energyItem.getCapability(Capabilities.EnergyStorage.ITEM);
-            if(energyStorage != null){
-                energyStorage.extractEnergy(energyStorage.getEnergyStored(), false);
+            this.itemAccess.setStack(this.energyItem);
+            EnergyHandler handler = this.itemAccess.getCapability(Capabilities.Energy.ITEM);
+            if(handler != null && handler.getAmountAsLong() > 0){
+                try(Transaction transaction = Transaction.openRoot()){
+                    handler.extract(handler.getAmountAsInt(), transaction);
+                    transaction.commit();
+                }
+            }
+            if(!this.itemAccess.matches(this.energyItem)){
+                this.energyItem = this.itemAccess.getStack();
                 this.dataChanged();
             }
         }
@@ -314,7 +306,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     @Override
     protected void writeData(ValueOutput output){
-        if(this.level.isClientSide) // Forge/NeoForge try to save block entity data on the client and this can lead to crashes with items as some data like enchantments registries is not available on the client
+        if(this.level.isClientSide()) // Forge/NeoForge try to save block entity data on the client and this can lead to crashes with items as some data like enchantments registries is not available on the client
             return;
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
