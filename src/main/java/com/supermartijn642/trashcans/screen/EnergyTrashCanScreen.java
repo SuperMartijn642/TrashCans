@@ -8,6 +8,7 @@ import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 
@@ -77,20 +78,16 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected boolean keyPressed(int keyCode, boolean hasBeenHandled, TrashCanBlockEntity object){
-        if(keyCode == 340)
-            this.shift = true;
-        else if(keyCode == 341)
-            this.control = true;
-        return super.keyPressed(keyCode, hasBeenHandled, object);
+    protected boolean keyPressed(KeyEvent event, boolean hasBeenHandled, TrashCanBlockEntity object){
+        this.shift = event.hasShiftDown();
+        this.control = event.hasControlDown();
+        return super.keyPressed(event, hasBeenHandled, object);
     }
 
     @Override
-    protected boolean keyReleased(int keyCode, boolean hasBeenHandled, TrashCanBlockEntity object){
-        if(keyCode == 340)
-            this.shift = false;
-        else if(keyCode == 341)
-            this.control = false;
-        return super.keyReleased(keyCode, hasBeenHandled, object);
+    protected boolean keyReleased(KeyEvent event, boolean hasBeenHandled, TrashCanBlockEntity object){
+        this.shift = event.hasShiftDown();
+        this.control = event.hasControlDown();
+        return super.keyReleased(event, hasBeenHandled, object);
     }
 }

@@ -325,7 +325,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     @Override
     protected void writeData(ValueOutput output){
-        if(this.level.isClientSide) // Forge/NeoForge try to save block entity data on the client and this can lead to crashes with items as some data like enchantments registries is not available on the client
+        if(this.level.isClientSide()) // Forge/NeoForge try to save block entity data on the client and this can lead to crashes with items as some data like enchantments registries is not available on the client
             return;
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
