@@ -5,14 +5,14 @@ import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    public static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "arrow_buttons");
+    public static final Identifier BUTTONS = Identifier.fromNamespaceAndPath("trashcans", "arrow_buttons");
 
     private final boolean left;
     private boolean active = true;

@@ -4,7 +4,7 @@ import com.supermartijn642.trashcans.screen.TrashCanWidgetContainerScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @JeiPlugin
 public class TrashCansJEIPlugin implements IModPlugin {
@@ -15,7 +15,7 @@ public class TrashCansJEIPlugin implements IModPlugin {
     }
 
     @Override
-    public ResourceLocation getPluginUid(){
-        return ResourceLocation.fromNamespaceAndPath("trashcans", "jei_plugin");
+    public Identifier getPluginUid(){
+        return Identifier.fromNamespaceAndPath("trashcans", "jei_plugin");
     }
 }

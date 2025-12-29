@@ -7,7 +7,7 @@ import com.supermartijn642.core.gui.widget.ObjectBaseContainerWidget;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -46,7 +46,7 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Object
         return this.container.height;
     }
 
-    protected abstract ResourceLocation getBackground();
+    protected abstract Identifier getBackground();
 
     @Override
     protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, TrashCanBlockEntity entity){
