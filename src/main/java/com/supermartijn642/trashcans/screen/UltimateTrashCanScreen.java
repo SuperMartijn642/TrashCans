@@ -11,14 +11,14 @@ import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanContainer> {
 
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "ultimate_screen");
+    public static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath("trashcans", "ultimate_screen");
 
     private WhitelistButton itemWhitelistButton;
     private WhitelistButton liquidWhitelistButton;
@@ -69,7 +69,7 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     }
 
     @Override
-    protected ResourceLocation getBackground(){
+    protected Identifier getBackground(){
         return BACKGROUND;
     }
 

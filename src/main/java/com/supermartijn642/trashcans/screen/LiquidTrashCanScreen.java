@@ -5,14 +5,14 @@ import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer> {
 
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "liquid_screen");
+    public static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath("trashcans", "liquid_screen");
 
     private WhitelistButton whitelistButton;
 
@@ -33,7 +33,7 @@ public class LiquidTrashCanScreen extends TrashCanScreen<LiquidTrashCanContainer
     }
 
     @Override
-    protected ResourceLocation getBackground(){
+    protected Identifier getBackground(){
         return BACKGROUND;
     }
 

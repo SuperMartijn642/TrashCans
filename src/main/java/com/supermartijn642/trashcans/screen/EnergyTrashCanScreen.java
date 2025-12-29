@@ -10,14 +10,14 @@ import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer> {
 
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "energy_screen");
+    public static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath("trashcans", "energy_screen");
 
     private CheckBox checkBox;
     private ArrowButton leftArrow, rightArrow;
@@ -66,7 +66,7 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     }
 
     @Override
-    protected ResourceLocation getBackground(){
+    protected Identifier getBackground(){
         return BACKGROUND;
     }
 
