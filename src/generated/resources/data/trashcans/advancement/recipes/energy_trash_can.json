@@ -5,10 +5,10 @@
       "id": "trashcans:energy_trash_can"
     },
     "title": {
-      "translate": "trashcans.advancement.recipes/misc/energy_trash_can.title"
+      "translate": "trashcans.advancement.recipes/energy_trash_can.title"
     },
     "description": {
-      "translate": "trashcans.advancement.recipes/misc/energy_trash_can.description"
+      "translate": "trashcans.advancement.recipes/energy_trash_can.description"
     },
     "frame": "task",
     "show_toast": false,
