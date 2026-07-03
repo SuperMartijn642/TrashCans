@@ -5,10 +5,10 @@
       "id": "trashcans:liquid_trash_can"
     },
     "title": {
-      "translate": "trashcans.advancement.recipes/misc/liquid_trash_can.title"
+      "translate": "trashcans.advancement.recipes/liquid_trash_can.title"
     },
     "description": {
-      "translate": "trashcans.advancement.recipes/misc/liquid_trash_can.description"
+      "translate": "trashcans.advancement.recipes/liquid_trash_can.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": "minecraft:bucket"
+            "items": "#c:buckets/empty"
           }
         ]
       }

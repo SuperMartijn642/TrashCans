@@ -8,7 +8,7 @@
   "key": {
     "A": "#c:stones",
     "B": "#c:cobblestones",
-    "C": "minecraft:bucket"
+    "C": "#c:buckets/empty"
   },
   "result": {
     "id": "trashcans:liquid_trash_can"

@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "id": "trashcans:ultimate_trash_can"
+      "id": "trashcans:item_trash_can"
     },
     "title": {
-      "translate": "trashcans.advancement.recipes/misc/ultimate_trash_can.title"
+      "translate": "trashcans.advancement.recipes/item_trash_can.title"
     },
     "description": {
-      "translate": "trashcans.advancement.recipes/misc/ultimate_trash_can.description"
+      "translate": "trashcans.advancement.recipes/item_trash_can.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "trashcans:ultimate_trash_can"
+        "recipe": "trashcans:item_trash_can"
       }
     },
     "recipe_condition": {
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": "trashcans:item_trash_can"
+            "items": "#c:chests/wooden"
           }
         ]
       }
@@ -41,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "trashcans:ultimate_trash_can"
+      "trashcans:item_trash_can"
     ]
   }
 }
