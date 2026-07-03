@@ -4,7 +4,7 @@ import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -43,7 +43,7 @@ public class ItemTrashCanContainer extends TrashCanContainer {
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player){
+    public void clicked(int slotId, int dragType, ContainerInput input, Player player){
         if(!this.validateObjectOrClose())
             return;
 
@@ -58,7 +58,7 @@ public class ItemTrashCanContainer extends TrashCanContainer {
             this.object.dataChanged();
             return;
         }
-        super.clicked(slotId, dragType, clickTypeIn, player);
+        super.clicked(slotId, dragType, input, player);
     }
 
     @Override
