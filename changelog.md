@@ -1,3 +1,5 @@
+## Update to Minecraft 26.2
+
 ## Update to Minecraft 26.1
 
 ### Trash Cans 1.0.18
