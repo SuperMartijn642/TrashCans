@@ -31,9 +31,11 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 ---
 
 ### FAQ
-Is there a limit on how much can be voided?  
+**Can Trash Cans be used to void Mekanism nuclear waste?**  
+Yes, although disabled by default, you can enable voiding nuclear waste in the config file  
+**Is there a limit on how much can be voided?**  
 No, you can void items, fluids and energy as much and as fast as you want  
-Can I use your mod in my modpack?  
+**Can I use your mod in my modpack?**  
 Yes, feel free to use my mod in your modpack
 
 ### Discord
