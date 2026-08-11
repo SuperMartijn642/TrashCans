@@ -11,7 +11,7 @@ import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 public class TrashCansRecipeGenerator extends RecipeGenerator {
 
     public TrashCansRecipeGenerator(ResourceCache cache){
-        super("trashcans", cache);
+        super(TrashCans.MODID, cache);
     }
 
     @Override

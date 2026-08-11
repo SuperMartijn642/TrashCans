@@ -10,11 +10,11 @@ import team.reborn.energy.api.EnergyStorage;
 public class TrashCanBlockApiProviders {
 
     public static void register(){
-        ItemStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.ITEM_HANDLER, TrashCans.item_trash_can_tile);
-        ItemStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.ITEM_HANDLER, TrashCans.ultimate_trash_can_tile);
-        FluidStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.FLUID_HANDLER, TrashCans.liquid_trash_can_tile);
-        FluidStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.FLUID_HANDLER, TrashCans.ultimate_trash_can_tile);
-        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.ENERGY_STORAGE, TrashCans.energy_trash_can_tile);
-        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.ENERGY_STORAGE, TrashCans.ultimate_trash_can_tile);
+        ItemStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.itemHandler, TrashCans.item_trash_can_tile);
+        ItemStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.itemHandler, TrashCans.ultimate_trash_can_tile);
+        FluidStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.fluidHandler, TrashCans.liquid_trash_can_tile);
+        FluidStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.fluidHandler, TrashCans.ultimate_trash_can_tile);
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.energyHandler, TrashCans.energy_trash_can_tile);
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.energyHandler, TrashCans.ultimate_trash_can_tile);
     }
 }
