@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCansConfig;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
@@ -11,9 +12,6 @@ import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
-
-import java.util.ArrayList;
-import java.util.function.Supplier;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -45,6 +43,11 @@ public class MekanismCompatOn extends MekanismCompatOff {
     }
 
     @Override
+    public boolean doesItemHaveGasHandler(ItemStack stack){
+        return stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).isPresent();
+    }
+
+    @Override
     public boolean drainGasFromItem(ItemStack stack){
         return stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY).map(handler -> {
             boolean changed = false;
@@ -58,7 +61,7 @@ public class MekanismCompatOn extends MekanismCompatOff {
     }
 
     @Override
-    public Object getGasHandler(ArrayList<ItemFilter> filters, Supplier<Boolean> whitelist){
+    public Object createGasHandler(TrashCanBlockEntity entity){
         return new IGasHandler() {
             @Override
             public int getTanks(){
@@ -66,40 +69,41 @@ public class MekanismCompatOn extends MekanismCompatOff {
             }
 
             @Override
-            public GasStack getChemicalInTank(int i){
+            public GasStack getChemicalInTank(int index){
                 return GasStack.EMPTY;
             }
 
             @Override
-            public void setChemicalInTank(int i, GasStack gasStack){
+            public void setChemicalInTank(int index, GasStack gas){
             }
 
             @Override
-            public long getTankCapacity(int i){
+            public long getTankCapacity(int index){
                 return Integer.MAX_VALUE;
             }
 
             @Override
-            public boolean isValid(int i, GasStack gasStack){
-                if(gasStack.has(GasAttributes.Radiation.class) && !TrashCansConfig.allowVoidingNuclearWaste.get())
+            public boolean isValid(int index, GasStack gas){
+                if(gas.has(GasAttributes.Radiation.class) && !TrashCansConfig.allowVoidingNuclearWaste.get())
                     return false;
 
-                for(ItemFilter filter : filters){
-                    if(filter != null && filter.matches(gasStack))
-                        return whitelist.get();
+                for(int i = 0; i < 9; i++){
+                    ItemFilter filter = entity.getFluidFilter(i);
+                    if(filter != null && filter.matches(gas))
+                        return entity.isFluidFilterWhitelist();
                 }
-                return !whitelist.get();
+                return !entity.isFluidFilterWhitelist();
             }
 
             @Override
-            public GasStack insertChemical(int i, GasStack gasStack, Action action){
-                if(this.isValid(i, gasStack))
+            public GasStack insertChemical(int index, GasStack gas, Action action){
+                if(this.isValid(index, gas))
                     return GasStack.EMPTY;
-                return gasStack;
+                return gas;
             }
 
             @Override
-            public GasStack extractChemical(int i, long l, Action action){
+            public GasStack extractChemical(int index, long amount, Action action){
                 return GasStack.EMPTY;
             }
         };

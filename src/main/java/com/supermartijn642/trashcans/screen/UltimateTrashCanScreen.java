@@ -9,12 +9,18 @@ import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
+import com.supermartijn642.trashcans.screen.components.ArrowButton;
+import com.supermartijn642.trashcans.screen.components.CheckBox;
+import com.supermartijn642.trashcans.screen.components.WhitelistButton;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanContainer> {
+
+    private static final ResourceLocation BACKGROUND = TrashCans.identifier("textures/ultimate_screen.png");
 
     private WhitelistButton itemWhitelistButton;
     private WhitelistButton liquidWhitelistButton;
@@ -30,17 +36,17 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     @Override
     protected void addWidgets(TrashCanBlockEntity entity){
         this.itemWhitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 185, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getBlockEntityPos()))));
-        this.itemWhitelistButton.update(entity.itemFilterWhitelist);
+        this.itemWhitelistButton.update(entity.isItemFilterWhitelist());
 
         this.liquidWhitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 155, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleLiquidWhitelist(this.container.getBlockEntityPos()))));
-        this.liquidWhitelistButton.update(entity.liquidFilterWhitelist);
+        this.liquidWhitelistButton.update(entity.isFluidFilterWhitelist());
 
         this.checkBox = this.addWidget(new CheckBox(21, 127, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.container.getBlockEntityPos()))));
-        this.checkBox.update(entity.useEnergyLimit);
+        this.checkBox.update(entity.isEnergyLimited());
         this.leftArrow = this.addWidget(new ArrowButton(49, 127, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getBlockEntityPos(), this.shift ? this.control ? -100000 : -100 : this.control ? -10000 : -1000))));
-        this.leftArrow.setActive(entity.useEnergyLimit);
+        this.leftArrow.setActive(entity.isEnergyLimited());
         this.rightArrow = this.addWidget(new ArrowButton(170, 127, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getBlockEntityPos(), this.shift ? this.control ? 100000 : 100 : this.control ? 10000 : 1000))));
-        this.rightArrow.setActive(entity.useEnergyLimit);
+        this.rightArrow.setActive(entity.isEnergyLimited());
     }
 
     @Override
@@ -55,18 +61,18 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     @Override
     protected void update(TrashCanBlockEntity entity){
         super.update(entity);
-        this.itemWhitelistButton.update(entity.itemFilterWhitelist);
+        this.itemWhitelistButton.update(entity.isItemFilterWhitelist());
 
-        this.liquidWhitelistButton.update(entity.liquidFilterWhitelist);
+        this.liquidWhitelistButton.update(entity.isFluidFilterWhitelist());
 
-        this.checkBox.update(entity.useEnergyLimit);
-        this.leftArrow.setActive(entity.useEnergyLimit);
-        this.rightArrow.setActive(entity.useEnergyLimit);
+        this.checkBox.update(entity.isEnergyLimited());
+        this.leftArrow.setActive(entity.isEnergyLimited());
+        this.rightArrow.setActive(entity.isEnergyLimited());
     }
 
     @Override
-    protected String getBackground(){
-        return "ultimate_screen.png";
+    protected ResourceLocation getBackground(){
+        return BACKGROUND;
     }
 
     @Override
@@ -76,7 +82,7 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
         ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.ultimate_trash_can.liquid_filter").get(), 8, 83);
 
         ScreenUtils.drawString(poseStack, TextComponents.translation("trashcans.gui.ultimate_trash_can.energy_limit").get(), 8, 113);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 132);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.getEnergyLimit())).get(), 114, 132);
     }
 
     @Override

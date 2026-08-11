@@ -1,27 +1,28 @@
-package com.supermartijn642.trashcans.screen;
+package com.supermartijn642.trashcans.screen.components;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.core.util.Holder;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Consumer;
 
 /**
- * Created 7/8/2020 by SuperMartijn642
+ * Created 7/7/2020 by SuperMartijn642
  */
-public class WhitelistButton extends AbstractButtonWidget {
+public class CheckBox extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/blacklist_button.png");
+    private static final ResourceLocation BUTTONS = TrashCans.identifier("textures/checkmarkbox.png");
 
-    public boolean white = true;
+    public boolean checked;
     private boolean active = true;
 
-    public WhitelistButton(int x, int y, Runnable onPress){
-        super(x, y, 20, 20, onPress);
+    public CheckBox(int x, int y, Runnable onPress){
+        super(x, y, 17, 17, onPress);
     }
 
     public void setActive(boolean active){
@@ -32,14 +33,14 @@ public class WhitelistButton extends AbstractButtonWidget {
         return this.active;
     }
 
-    public void update(boolean white){
-        this.white = white;
+    public void update(boolean checked){
+        this.checked = checked;
     }
 
     @Override
     public void render(MatrixStack poseStack, int mouseX, int mouseY){
         ScreenUtils.bindTexture(BUTTONS);
-        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, this.white ? 0 : 0.5f, (this.active ? this.isFocused() ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
+        ScreenUtils.drawTexture(poseStack, this.x, this.y - 3, this.width + 3, this.height + 3, this.checked ? 0 : 0.5f, (this.active ? this.isFocused() ? 1 : 0 : 2) / 3f, 0.5f, 1 / 3f);
     }
 
     @Override
@@ -51,6 +52,6 @@ public class WhitelistButton extends AbstractButtonWidget {
 
     @Override
     protected void getTooltips(Consumer<ITextComponent> tooltips){
-        tooltips.accept(TextComponents.translation("trashcans.gui.whitelist." + (this.white ? "on" : "off")).get());
+        tooltips.accept(TextComponents.translation("trashcans.gui.energy_trash_can.check." + (this.checked ? "on" : "off")).get());
     }
 }

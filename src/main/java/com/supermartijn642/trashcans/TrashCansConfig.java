@@ -13,7 +13,7 @@ public class TrashCansConfig {
     public static final Supplier<Boolean> allowVoidingNuclearWaste;
 
     static{
-        IConfigBuilder builder = ConfigBuilders.newTomlConfig("trashcans", null, false);
+        IConfigBuilder builder = ConfigBuilders.newTomlConfig(TrashCans.MODID, null, false);
 
         allowVoidingNuclearWaste = builder.define("allowVoidingNuclearWaste", false);
 

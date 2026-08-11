@@ -1,11 +1,8 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
-import com.supermartijn642.trashcans.filter.ItemFilter;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
-
-import java.util.ArrayList;
-import java.util.function.Supplier;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -24,11 +21,15 @@ public class MekanismCompatOff {
         return false;
     }
 
+    public boolean doesItemHaveGasHandler(ItemStack stack){
+        return false;
+    }
+
     public boolean drainGasFromItem(ItemStack stack){
         return false;
     }
 
-    public Object getGasHandler(ArrayList<ItemFilter> filters, Supplier<Boolean> whitelist){
+    public Object createGasHandler(TrashCanBlockEntity entity){
         return null;
     }
 

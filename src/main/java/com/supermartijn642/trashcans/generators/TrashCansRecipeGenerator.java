@@ -12,7 +12,7 @@ import net.minecraftforge.common.Tags;
 public class TrashCansRecipeGenerator extends RecipeGenerator {
 
     public TrashCansRecipeGenerator(ResourceCache cache){
-        super("trashcans", cache);
+        super(TrashCans.MODID, cache);
     }
 
     @Override
