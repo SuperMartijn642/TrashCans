@@ -11,7 +11,7 @@ import net.minecraft.item.ItemBlock;
 public class TrashCansAdvancementGenerator extends AdvancementGenerator {
 
     public TrashCansAdvancementGenerator(ResourceCache cache){
-        super("trashcans", cache);
+        super(TrashCans.MODID, cache);
     }
 
     @Override

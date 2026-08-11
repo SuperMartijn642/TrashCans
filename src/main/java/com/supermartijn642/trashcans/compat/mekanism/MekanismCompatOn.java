@@ -1,6 +1,6 @@
 package com.supermartijn642.trashcans.compat.mekanism;
 
-import com.supermartijn642.trashcans.filter.ItemFilter;
+import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import mekanism.api.gas.*;
 import mekanism.common.MekanismBlocks;
@@ -9,9 +9,6 @@ import mekanism.common.item.ItemBlockGasTank;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-
-import java.util.ArrayList;
-import java.util.function.Supplier;
 
 /**
  * Created 12/19/2020 by SuperMartijn642
@@ -41,6 +38,11 @@ public class MekanismCompatOn extends MekanismCompatOff {
     }
 
     @Override
+    public boolean doesItemHaveGasHandler(ItemStack stack){
+        return stack.getItem() instanceof IGasItem;
+    }
+
+    @Override
     public boolean drainGasFromItem(ItemStack stack){
         if(stack.getItem() instanceof IGasItem){
             IGasItem item = (IGasItem)stack.getItem();
@@ -49,48 +51,49 @@ public class MekanismCompatOn extends MekanismCompatOff {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <R> R getGasHandler(ArrayList<ItemFilter> filters, Supplier<Boolean> whitelist){
-        return (R)new IGasHandler() {
+    public Object createGasHandler(TrashCanBlockEntity entity){
+        return new IGasHandler() {
+            final GasTankInfo[] tankInfo = {new GasTankInfo() {
+                @Override
+                public GasStack getGas(){
+                    return null;
+                }
+
+                @Override
+                public int getStored(){
+                    return 0;
+                }
+
+                @Override
+                public int getMaxGas(){
+                    return Integer.MAX_VALUE;
+                }
+            }};
+
             @Override
-            public int receiveGas(EnumFacing enumFacing, GasStack gasStack, boolean b){
-                return gasStack.amount;
+            public GasTankInfo[] getTankInfo(){
+                return this.tankInfo;
             }
 
             @Override
-            public GasStack drawGas(EnumFacing enumFacing, int i, boolean b){
-                return null;
-            }
-
-            @Override
-            public boolean canReceiveGas(EnumFacing enumFacing, Gas gas){
+            public boolean canReceiveGas(EnumFacing side, Gas gas){
                 return true;
             }
 
             @Override
-            public boolean canDrawGas(EnumFacing enumFacing, Gas gas){
+            public int receiveGas(EnumFacing side, GasStack gas, boolean simulate){
+                return gas.amount;
+            }
+
+            @Override
+            public boolean canDrawGas(EnumFacing side, Gas gas){
                 return false;
             }
 
             @Override
-            public GasTankInfo[] getTankInfo(){
-                return new GasTankInfo[]{new GasTankInfo() {
-                    @Override
-                    public GasStack getGas(){
-                        return null;
-                    }
-
-                    @Override
-                    public int getStored(){
-                        return 0;
-                    }
-
-                    @Override
-                    public int getMaxGas(){
-                        return Integer.MAX_VALUE;
-                    }
-                }};
+            public GasStack drawGas(EnumFacing side, int amount, boolean simulate){
+                return null;
             }
         };
     }

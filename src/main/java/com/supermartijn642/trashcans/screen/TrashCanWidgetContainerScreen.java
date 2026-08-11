@@ -12,10 +12,6 @@ public class TrashCanWidgetContainerScreen extends WidgetContainerScreen<TrashCa
         super(widget, container, drawSlots);
     }
 
-    public TrashCanScreen<?> getWidget(){
-        return this.widget;
-    }
-
     public TrashCanContainer getContainer(){
         return this.container;
     }

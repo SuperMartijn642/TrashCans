@@ -44,9 +44,8 @@ public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBloc
 
     @Override
     protected void handle(TrashCanBlockEntity entity, PacketContext context){
-        if(entity.liquids){
-            entity.liquidFilter.set(this.filterSlot, this.filter);
-            entity.dataChanged();
-        }
+        if(!entity.handlesFluids())
+            return;
+        entity.setFluidFilter(this.filterSlot, this.filter);
     }
 }
