@@ -2,6 +2,7 @@ package com.supermartijn642.trashcans.generators;
 
 import com.supermartijn642.core.generator.ModelGenerator;
 import com.supermartijn642.core.generator.ResourceCache;
+import com.supermartijn642.trashcans.TrashCans;
 
 /**
  * Created 08/09/2022 by SuperMartijn642
@@ -9,7 +10,7 @@ import com.supermartijn642.core.generator.ResourceCache;
 public class TrashCansModelGenerator extends ModelGenerator {
 
     public TrashCansModelGenerator(ResourceCache cache){
-        super("trashcans", cache);
+        super(TrashCans.MODID, cache);
     }
 
     @Override
