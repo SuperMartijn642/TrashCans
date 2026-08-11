@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
 public class TrashCansRecipeGenerator extends RecipeGenerator {
 
     public TrashCansRecipeGenerator(ResourceCache cache){
-        super("trashcans", cache);
+        super(TrashCans.MODID, cache);
     }
 
     @Override
