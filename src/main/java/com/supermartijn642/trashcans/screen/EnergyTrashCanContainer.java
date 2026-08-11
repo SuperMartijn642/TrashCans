@@ -1,11 +1,13 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.supermartijn642.core.gui.CustomSlot;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
+import com.supermartijn642.trashcans.TrashCanResourceHandlers;
 import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -18,21 +20,49 @@ public class EnergyTrashCanContainer extends TrashCanContainer {
 
     @Override
     protected void addSlots(Player player, TrashCanBlockEntity entity){
-        this.addSlot(new SlotItemHandler(entity.ENERGY_ITEM_HANDLER, 0, 93, 25));
+        this.addSlot(
+            CustomSlot.builder()
+                .position(93, 25)
+                .getter(() -> this.object.getEnergyItem())
+                .setter(s -> this.object.setEnergyItem(s))
+                .filter(TrashCanResourceHandlers::doesItemContainEnergy)
+                .inserter(s -> {
+                    int inserted = Math.min(s.getCount(), s.getMaxStackSize());
+                    s = s.copy();
+                    s.setCount(inserted);
+                    this.object.setEnergyItem(s);
+                    return inserted;
+                })
+                .extractor(amount -> {
+                    ItemStack stack = this.object.getEnergyItem();
+                    amount = Math.min(amount, stack.getCount());
+                    if(amount <= 0)
+                        return ItemStack.EMPTY;
+                    ItemStack extractedStack = stack.copy();
+                    extractedStack.setCount(amount);
+                    stack = stack.copy();
+                    stack.shrink(amount);
+                    this.object.setEnergyItem(stack);
+                    return extractedStack;
+                })
+                .build().getVanillaSlot()
+        );
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index){
+    public ItemStack quickMoveStack(Player player, int index){
         if(!this.validateObjectOrClose())
             return ItemStack.EMPTY;
 
         if(index == 0){
-            if(this.moveItemStackTo(this.getSlot(index).getItem(), 1, this.slots.size(), true))
-                this.getSlot(index).set(ItemStack.EMPTY);
-        }else if(!this.getSlot(index).getItem().isEmpty() && this.getSlot(0).getItem().isEmpty() && this.getSlot(0).mayPlace(this.getSlot(index).getItem())){
-            this.getSlot(0).set(this.getSlot(index).getItem());
-            this.getSlot(index).set(ItemStack.EMPTY);
-            this.object.dataChanged();
+            ItemStack stack = this.object.getEnergyItem().copy();
+            if(this.moveItemStackTo(stack, 1, this.slots.size(), true))
+                this.object.setEnergyItem(stack);
+        }else{
+            Slot slot = this.getSlot(index);
+            ItemStack stack = slot.getItem().copy();
+            if(this.moveItemStackTo(stack, 0, 1, false))
+                slot.set(stack);
         }
         return ItemStack.EMPTY;
     }

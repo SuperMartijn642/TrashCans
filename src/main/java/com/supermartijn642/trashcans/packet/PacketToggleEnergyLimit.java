@@ -19,9 +19,8 @@ public class PacketToggleEnergyLimit extends BlockEntityBasePacket<TrashCanBlock
 
     @Override
     protected void handle(TrashCanBlockEntity entity, PacketContext context){
-        if(entity.energy){
-            entity.useEnergyLimit = !entity.useEnergyLimit;
-            entity.dataChanged();
-        }
+        if(!entity.handlesEnergy())
+            return;
+        entity.toggleEnergyLimited();
     }
 }
