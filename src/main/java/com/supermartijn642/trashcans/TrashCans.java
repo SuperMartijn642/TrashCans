@@ -7,6 +7,7 @@ import com.supermartijn642.core.item.BaseBlockItem;
 import com.supermartijn642.core.item.CreativeItemGroup;
 import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.core.network.PacketChannel;
+import com.supermartijn642.core.network.PacketDirection;
 import com.supermartijn642.core.registry.GeneratorRegistrationHandler;
 import com.supermartijn642.core.registry.RegistrationHandler;
 import com.supermartijn642.core.registry.RegistryEntryAcceptor;
@@ -17,48 +18,55 @@ import com.supermartijn642.trashcans.generators.*;
 import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.*;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
 public class TrashCans implements ModInitializer {
 
-    public static final PacketChannel CHANNEL = PacketChannel.create("trashcans");
+    public static final String MODID = "trashcans";
 
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "item_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    public static ResourceLocation identifier(String path){
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static final PacketChannel CHANNEL = PacketChannel.create(MODID);
+
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "item_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static BaseBlock item_trash_can;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "liquid_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "liquid_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static BaseBlock liquid_trash_can;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "energy_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "energy_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static BaseBlock energy_trash_can;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "ultimate_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "ultimate_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static BaseBlock ultimate_trash_can;
 
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "item_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "item_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<TrashCanBlockEntity> item_trash_can_tile;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "liquid_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "liquid_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<TrashCanBlockEntity> liquid_trash_can_tile;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "energy_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "energy_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<TrashCanBlockEntity> energy_trash_can_tile;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "ultimate_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "ultimate_trash_can_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<TrashCanBlockEntity> ultimate_trash_can_tile;
 
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "item_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "item_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<TrashCanContainer> item_trash_can_container;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "liquid_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "liquid_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<TrashCanContainer> liquid_trash_can_container;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "energy_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "energy_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<TrashCanContainer> energy_trash_can_container;
-    @RegistryEntryAcceptor(namespace = "trashcans", identifier = "ultimate_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
+    @RegistryEntryAcceptor(namespace = MODID, identifier = "ultimate_trash_can_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<TrashCanContainer> ultimate_trash_can_container;
 
     public TrashCans(){
-        CHANNEL.registerMessage(PacketToggleItemWhitelist.class, PacketToggleItemWhitelist::new, true);
-        CHANNEL.registerMessage(PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist::new, true);
-        CHANNEL.registerMessage(PacketToggleEnergyLimit.class, PacketToggleEnergyLimit::new, true);
-        CHANNEL.registerMessage(PacketChangeEnergyLimit.class, PacketChangeEnergyLimit::new, true);
-        CHANNEL.registerMessage(PacketChangeItemFilter.class, PacketChangeItemFilter::new, true);
-        CHANNEL.registerMessage(PacketChangeLiquidFilter.class, PacketChangeLiquidFilter::new, true);
+        CHANNEL.registerMessage(PacketToggleItemWhitelist.class, PacketToggleItemWhitelist::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketToggleLiquidWhitelist.class, PacketToggleLiquidWhitelist::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketToggleEnergyLimit.class, PacketToggleEnergyLimit::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketChangeEnergyLimit.class, PacketChangeEnergyLimit::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketChangeItemFilter.class, PacketChangeItemFilter::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketChangeLiquidFilter.class, PacketChangeLiquidFilter::new, PacketDirection.CLIENT_TO_SERVER, true);
 
         register();
         registerGenerators();
@@ -71,7 +79,7 @@ public class TrashCans implements ModInitializer {
     }
 
     private static void register(){
-        RegistrationHandler handler = RegistrationHandler.get("trashcans");
+        RegistrationHandler handler = RegistrationHandler.get(MODID);
 
         // Blocks
         handler.registerBlock("item_trash_can", () -> new TrashCanBlock(() -> item_trash_can_tile, ItemTrashCanContainer::new));
@@ -102,7 +110,7 @@ public class TrashCans implements ModInitializer {
     }
 
     private static void registerGenerators(){
-        GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get("trashcans");
+        GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get(MODID);
         handler.addGenerator(TrashCansAdvancementGenerator::new);
         handler.addGenerator(TrashCansModelGenerator::new);
         handler.addGenerator(TrashCansBlockStateGenerator::new);
