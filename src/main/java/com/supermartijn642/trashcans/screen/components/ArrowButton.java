@@ -1,9 +1,10 @@
-package com.supermartijn642.trashcans.screen;
+package com.supermartijn642.trashcans.screen.components;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -12,7 +13,7 @@ import net.minecraft.util.text.ITextComponent;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/arrow_buttons.png");
+    private static final ResourceLocation BUTTONS = TrashCans.identifier("textures/arrow_buttons.png");
 
     private final boolean left;
     private boolean active = true;
