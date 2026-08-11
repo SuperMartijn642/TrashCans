@@ -55,8 +55,8 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
                 Target<I> target = createTarget(bounds, input -> {
                     TrashCanBlockEntity entity = container.getBlockEntity();
                     if(entity != null){
-                        entity.itemFilter.set(index, (ItemStack)input);
                         TrashCans.CHANNEL.sendToServer(new PacketChangeItemFilter(container.getBlockEntityPos(), index, (ItemStack)input));
+                        entity.setItemFilter(index, (ItemStack)input);
                     }
                 });
                 targets.add(target);
@@ -85,8 +85,8 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
                 Target<I> target = createTarget(bounds, input -> {
                     TrashCanBlockEntity entity = container.getBlockEntity();
                     if(entity != null){
-                        entity.liquidFilter.set(index, filter);
                         TrashCans.CHANNEL.sendToServer(new PacketChangeLiquidFilter(container.getBlockEntityPos(), index, filter));
+                        entity.setFluidFilter(index, filter);
                     }
                 });
                 targets.add(target);
