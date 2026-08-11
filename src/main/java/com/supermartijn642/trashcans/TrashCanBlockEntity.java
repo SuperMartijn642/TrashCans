@@ -8,6 +8,8 @@ import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -21,6 +23,8 @@ import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  * Created 7/10/2020 by SuperMartijn642
@@ -28,6 +32,7 @@ import java.util.ArrayList;
 public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBlockEntity {
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
+    public static final int MAX_DELETED_ITEMS = 6;
 
     public final IItemHandler itemHandler = TrashCanResourceHandlers.createItemHandler(this);
     public final IFluidHandler fluidHandler = TrashCanResourceHandlers.createFluidHandler(this);
@@ -37,6 +42,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     private final boolean items;
     private final ArrayList<ItemStack> itemFilter = new ArrayList<>();
     private boolean itemFilterWhitelist = false;
+    private final LinkedList<ItemStack> deletedItems = new LinkedList<>(); // We don't care about iteration, insertion at index 0 and removal of last element should be as fast as possible
     private final boolean liquids;
     private final ArrayList<ItemFilter> liquidFilter = new ArrayList<>();
     private boolean liquidFilterWhitelist = false;
@@ -119,6 +125,53 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     public void toggleItemFilterWhitelist(){
         this.itemFilterWhitelist = !this.itemFilterWhitelist;
+        this.dataChanged();
+    }
+
+    public void pushDeletedItem(ItemStack stack){
+        if(!this.deletedItems.isEmpty()){
+            ItemStack last = this.deletedItems.getFirst();
+            if(ItemStack.isSameItemSameComponents(last, stack)){
+                int added = Math.min(stack.getCount(), last.getMaxStackSize() - last.getCount());
+                if(added > 0){
+                    last.grow(added);
+                    stack.shrink(added);
+                    if(stack.isEmpty()){
+                        this.dataChanged();
+                        return;
+                    }
+                }
+            }
+        }
+        this.deletedItems.addFirst(stack);
+        if(this.deletedItems.size() > MAX_DELETED_ITEMS)
+            this.deletedItems.removeLast();
+        this.dataChanged();
+    }
+
+    public void setDeletedItem(int index, ItemStack stack){
+        if(stack.isEmpty())
+            throw new IllegalArgumentException("Stack cannot be empty!");
+        this.deletedItems.set(index, stack);
+        this.dataChanged();
+    }
+
+    public void removeDeletedItem(int index){
+        this.deletedItems.remove(index);
+        this.dataChanged();
+    }
+
+    public LinkedList<ItemStack> getDeletedItems(){
+        return this.deletedItems;
+    }
+
+    public ItemStack getDeletedItem(int index){
+        return this.deletedItems.get(index);
+    }
+
+    public void restoreDeletedItems(ItemStack[] items){ // Used when transaction are canceled
+        this.deletedItems.clear();
+        this.deletedItems.addAll(Arrays.asList(items));
         this.dataChanged();
     }
 
@@ -218,6 +271,10 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                 if(!this.itemFilter.get(i).isEmpty())
                     tag.put("itemFilter" + i, this.itemFilter.get(i).save(this.level.registryAccess()));
             tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
+            ListTag deletedItems = new ListTag();
+            for(ItemStack stack : this.deletedItems)
+                deletedItems.add(stack.save(this.level.registryAccess()));
+            tag.put("deletedItems", deletedItems);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
@@ -242,6 +299,9 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             for(int i = 0; i < this.itemFilter.size(); i++)
                 this.itemFilter.set(i, tag.getCompound("itemFilter" + i).flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY));
             this.itemFilterWhitelist = tag.getBooleanOr("itemFilterWhitelist", false);
+            this.deletedItems.clear();
+            for(Tag t : tag.getListOrEmpty("deletedItems"))
+                ItemStack.parse(CommonUtils.getRegistryAccess(), t).ifPresent(this.deletedItems::add);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
