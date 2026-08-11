@@ -1,0 +1,205 @@
+package com.supermartijn642.trashcans.screen.components;
+
+import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.gui.CustomSlot;
+import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.WidgetContainerScreen;
+import com.supermartijn642.core.gui.widget.BaseWidget;
+import com.supermartijn642.core.gui.widget.Widget;
+import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
+import com.supermartijn642.core.gui.widget.premade.ScissorWidget;
+import com.supermartijn642.trashcans.TrashCans;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * Created 11/08/2026 by SuperMartijn642
+ */
+public class DeletedItemsList extends BaseWidget {
+
+    private static final ResourceLocation TOGGLE_TAB = TrashCans.identifier("textures/toggle_tab.png");
+    private static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("supermartijn642corelib", "textures/gui/slot.png");
+
+    private static boolean expanded;
+
+    private final List<CustomSlot> slots;
+    private final Supplier<List<ItemStack>> items;
+    private final Supplier<WidgetContainerScreen<?,?>> screen;
+    private SlotsBar slotsBar;
+    private Toggle toggle;
+    private float expansionProgress = expanded ? 1 : 0;
+
+    public DeletedItemsList(int x, int y, List<CustomSlot> slots, Supplier<List<ItemStack>> items, Supplier<WidgetContainerScreen<?,?>> screen){
+        super(x, y, 34, slots.size() * 18 + 8);
+        this.slots = slots;
+        this.items = items;
+        this.screen = screen;
+    }
+
+    @Override
+    public ITextComponent getNarrationMessage(){
+        return null;
+    }
+
+    @Override
+    protected void addWidgets(){
+        List<Widget> widgets = new ArrayList<>();
+        widgets.add(this.slotsBar = new SlotsBar(this.x, this.y));
+        widgets.add(this.toggle = new Toggle(this.x, this.y + 4));
+        ScissorWidget scissor = ScissorWidget.create(this.x, this.y, this.width, this.height, widgets.toArray(new Widget[0]));
+        scissor.setScissorOffset(() -> this.screen.get().getGuiLeft(), () -> this.screen.get().getGuiTop());
+        this.addWidget(scissor);
+    }
+
+    private int slotCount(){
+        return Math.min(this.slots.size(), this.items.get().size());
+    }
+
+    private float getOffset(){
+        return -(1 - this.expansionProgress) * 26;
+    }
+
+    @Override
+    public void renderBackground(int mouseX, int mouseY){
+        if(this.items.get().isEmpty()){
+            expanded = false;
+            this.expansionProgress = 0;
+        }
+        if(expanded){
+            if(this.expansionProgress < 1)
+                this.expansionProgress = Math.min(1, this.expansionProgress + 0.15f * ClientUtils.getPartialTicks());
+        }else{
+            if(this.expansionProgress > 0)
+                this.expansionProgress = Math.max(0, this.expansionProgress - 0.15f * ClientUtils.getPartialTicks());
+        }
+        super.renderBackground(mouseX, mouseY);
+    }
+
+    @Override
+    public void update(){
+        if(this.expansionProgress == 1){
+            List<ItemStack> items = this.items.get();
+            for(int i = 0; i < this.slots.size(); i++){
+                CustomSlot slot = this.slots.get(i);
+                if(items.size() > i){
+                    slot.setActive(true);
+                    slot.move(this.x + 5, this.y + 5 + i * 18);
+                }else
+                    slot.setActive(false);
+            }
+        }else{
+            for(CustomSlot slot : this.slots)
+                slot.setActive(false);
+        }
+        super.update();
+    }
+
+    private class SlotsBar extends BaseWidget {
+
+        public SlotsBar(int x, int y){
+            super(x, y, 26, 26);
+        }
+
+        @Override
+        public ITextComponent getNarrationMessage(){
+            return null;
+        }
+
+        private float x(){
+            return DeletedItemsList.this.x + DeletedItemsList.this.getOffset();
+        }
+
+        @Override
+        public void update(){
+            super.update();
+            this.x = (int)Math.floor(this.x());
+            int slotCount = DeletedItemsList.this.slotCount();
+            this.height = slotCount * 18 + 8;
+        }
+
+        @Override
+        public void renderBackground(int mouseX, int mouseY){
+            super.renderBackground(mouseX, mouseY);
+            int slots = DeletedItemsList.this.slotCount();
+            float x = this.x();
+            ScreenUtils.drawScreenBackground(x, this.y, this.width, this.height);
+            ScreenUtils.bindTexture(SLOT_TEXTURE);
+            for(int i = 0; i < slots; i++)
+                ScreenUtils.drawTexture(x + 4, this.y + 4 + i * 18, 18, 18);
+        }
+
+        @Override
+        public void render(int mouseX, int mouseY){
+            super.render(mouseX, mouseY);
+            if(DeletedItemsList.this.expansionProgress != 0){
+                float x = this.x();
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(x, 0, 0);
+                int slotCount = DeletedItemsList.this.slotCount();
+                for(int i = 0; i < slotCount; i++){
+                    CustomSlot slot = DeletedItemsList.this.slots.get(i);
+                    if(!slot.isActive()){
+                        ItemStack stack = slot.getItem();
+                        if(!stack.isEmpty())
+                            ClientUtils.getItemRenderer().renderItemIntoGUI(stack, 5, this.y + 5 + i * 18);
+                    }
+                }
+                GlStateManager.popMatrix();
+            }
+        }
+    }
+
+    private class Toggle extends AbstractButtonWidget {
+        public Toggle(int x, int y){
+            super(x, y, 7, 9, () -> expanded = !expanded);
+        }
+
+        @Override
+        protected boolean isClickable(){
+            return !DeletedItemsList.this.items.get().isEmpty();
+        }
+
+        @Override
+        public ITextComponent getNarrationMessage(){
+            return expanded ?
+                TextComponents.translation("trashcans.gui.item_trash_can.deleted_items.hide").get() :
+                TextComponents.translation("trashcans.gui.item_trash_can.deleted_items.show").get();
+        }
+
+        @Override
+        protected void getTooltips(Consumer<ITextComponent> tooltips){
+            if(this.isClickable())
+                tooltips.accept(this.getNarrationMessage());
+        }
+
+        private float x(){
+            return DeletedItemsList.this.x + DeletedItemsList.this.slotsBar.width() + DeletedItemsList.this.getOffset();
+        }
+
+        @Override
+        public void update(){
+            super.update();
+            this.x = (int)Math.floor(this.x());
+        }
+
+        @Override
+        public void renderBackground(int mouseX, int mouseY){
+            super.renderBackground(mouseX, mouseY);
+            if(this.isClickable()){
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(this.x(), 0, 0);
+                ScreenUtils.bindTexture(TOGGLE_TAB);
+                ScreenUtils.drawTexture(0, this.y, this.width, this.height, expanded ? 0.5f : 0, this.isFocused() ? 1 / 3f : 0, 0.5f, 1 / 3f);
+                GlStateManager.popMatrix();
+            }
+        }
+    }
+}

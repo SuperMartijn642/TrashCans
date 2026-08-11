@@ -10,6 +10,7 @@ public class TrashCanWidgetContainerScreen extends WidgetContainerScreen<TrashCa
     // Need this class just for the JEI GhostIngredientHandler to target
     public TrashCanWidgetContainerScreen(TrashCanScreen<?> widget, TrashCanContainer container, boolean drawSlots){
         super(widget, container, drawSlots);
+        widget.setScreen(this);
     }
 
     public TrashCanContainer getContainer(){
