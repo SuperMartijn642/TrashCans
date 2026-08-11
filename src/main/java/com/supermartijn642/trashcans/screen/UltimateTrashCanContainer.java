@@ -1,12 +1,15 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.supermartijn642.core.gui.CustomSlot;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
+import com.supermartijn642.trashcans.TrashCanResourceHandlers;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -20,116 +23,146 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
 
     @Override
     protected void addSlots(Player player, TrashCanBlockEntity entity){
-        this.addSlot(new DummySlot(0, 63, 25){
-            @Override
-            public boolean mayPlace(ItemStack stack){
-                return UltimateTrashCanContainer.this.validateObjectOrClose() && UltimateTrashCanContainer.this.object.isRegularItemValid(stack);
-            }
-        });
-        this.addSlot(entity.LIQUID_ITEM_HANDLER.apply(0, 93, 25));
-        this.addSlot(entity.ENERGY_ITEM_HANDLER.apply(0, 123, 25));
+        // Items
+        this.addSlot(
+            CustomSlot.builder()
+                .position(63, 25)
+                .filter(s -> this.object.matchesItemFilter(s))
+                .inserter(ItemStack::getCount)
+                .canExtract(false)
+                .build().getVanillaSlot()
+        );
+        // Fluids
+        this.addSlot(
+            CustomSlot.builder()
+                .position(93, 25)
+                .getter(() -> this.object.getFluidItem())
+                .setter(s -> this.object.setFluidItem(s))
+                .filter(s -> this.object.matchesFluidFilter(s) && TrashCanResourceHandlers.doesItemContainFluid(s))
+                .inserter(s -> {
+                    int inserted = Math.min(s.getCount(), s.getMaxStackSize());
+                    this.object.setFluidItem(s.copyWithCount(inserted));
+                    return inserted;
+                })
+                .extractor(amount -> {
+                    ItemStack stack = this.object.getFluidItem();
+                    amount = Math.min(amount, stack.getCount());
+                    if(amount <= 0)
+                        return ItemStack.EMPTY;
+                    this.object.setFluidItem(stack.copyWithCount(stack.getCount() - amount));
+                    return stack.copyWithCount(amount);
+                })
+                .build().getVanillaSlot()
+        );
+        // Energy
+        this.addSlot(
+            CustomSlot.builder()
+                .position(123, 25)
+                .getter(() -> this.object.getEnergyItem())
+                .setter(s -> this.object.setEnergyItem(s))
+                .filter(TrashCanResourceHandlers::doesItemContainEnergy)
+                .inserter(s -> {
+                    int inserted = Math.min(s.getCount(), s.getMaxStackSize());
+                    this.object.setEnergyItem(s.copyWithCount(inserted));
+                    return inserted;
+                })
+                .extractor(amount -> {
+                    ItemStack stack = this.object.getEnergyItem();
+                    amount = Math.min(amount, stack.getCount());
+                    if(amount <= 0)
+                        return ItemStack.EMPTY;
+                    this.object.setEnergyItem(stack.copyWithCount(stack.getCount() - amount));
+                    return stack.copyWithCount(amount);
+                })
+                .build().getVanillaSlot()
+        );
 
-        // item filter
+        // Item filter
         for(int column = 0; column < 9; column++){
             int slotIndex = column;
-            this.addSlot(new DummySlot(slotIndex, 8 + column * 18, 64) {
-                @Override
-                public boolean mayPickup(Player playerIn){
-                    return false;
-                }
-
-                @Override
-                public ItemStack getItem(){
-                    return UltimateTrashCanContainer.this.validateObjectOrClose() ? UltimateTrashCanContainer.this.object.itemFilter.get(slotIndex) : ItemStack.EMPTY;
-                }
-            });
+            this.addSlot(
+                CustomSlot.builder()
+                    .position(8 + column * 18, 64)
+                    .getter(() -> this.object.getItemFilter(slotIndex))
+                    .canInsertExtract(false)
+                    .build().getVanillaSlot()
+            );
         }
-
-        // liquid filter
+        // Fluid filter
         for(int column = 0; column < 9; column++){
             int slotIndex = column;
-            this.addSlot(new DummySlot(slotIndex, 8 + column * 18, 94) {
-                @Override
-                public boolean mayPickup(Player playerIn){
-                    return false;
-                }
-
-                @Override
-                public ItemStack getItem(){
-                    TrashCanBlockEntity entity = UltimateTrashCanContainer.this.object;
-                    return entity == null || entity.liquidFilter.get(slotIndex) == null ? ItemStack.EMPTY : entity.liquidFilter.get(slotIndex).getRepresentingItem();
-                }
-            });
+            this.addSlot(
+                CustomSlot.builder()
+                    .position(8 + column * 18, 94)
+                    .getter(() -> {
+                        ItemFilter filter = this.object.getFluidFilter(slotIndex);
+                        return filter == null ? ItemStack.EMPTY : filter.getRepresentingItem();
+                    })
+                    .canInsertExtract(false)
+                    .build().getVanillaSlot()
+            );
         }
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player){
+    public void clicked(int index, int dragType, ClickType clickType, Player player){
         if(!this.validateObjectOrClose())
             return;
 
-        if(slotId >= 3 && slotId <= 11){
-            if(this.getCarried().isEmpty())
-                this.object.itemFilter.set(slotId - 3, ItemStack.EMPTY);
-            else{
-                ItemStack stack = this.getCarried().copy();
-                stack.setCount(1);
-                this.object.itemFilter.set(slotId - 3, stack);
-            }
-            this.object.dataChanged();
+        if(index >= 3 && index <= 11){
+            this.object.setItemFilter(index - 3, this.getCarried());
             return;
-        }else if(slotId >= 12 && slotId <= 20){
-            if(this.getCarried().isEmpty())
-                this.object.liquidFilter.set(slotId - 12, null);
+        }else if(index >= 12 && index <= 20){
+            ItemStack carried = this.getCarried();
+            if(carried.isEmpty())
+                this.object.setFluidFilter(index - 12, null);
             else{
-                ItemFilter filter = LiquidTrashCanFilters.createFilter(this.getCarried());
+                ItemFilter filter = LiquidTrashCanFilters.createFilter(carried);
                 if(filter != null)
-                    this.object.liquidFilter.set(slotId - 12, filter);
+                    this.object.setFluidFilter(index - 12, filter);
             }
-            this.object.dataChanged();
             return;
         }
-        super.clicked(slotId, dragType, clickTypeIn, player);
+        super.clicked(index, dragType, clickType, player);
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index){
+    public ItemStack quickMoveStack(Player player, int index){
         if(!this.validateObjectOrClose())
             return ItemStack.EMPTY;
 
-        if(index == 1 || index == 2){
-            if(this.moveItemStackTo(this.getSlot(index).getItem(), 21, this.slots.size(), true))
-                this.getSlot(index).set(ItemStack.EMPTY);
-        }else if(index >= 3 && index <= 11){
-            if(this.getCarried().isEmpty())
-                this.object.itemFilter.set(index - 3, ItemStack.EMPTY);
+        if(index == 1){
+            ItemStack stack = this.object.getFluidItem().copy();
+            if(this.moveItemStackTo(stack, 21, this.slots.size(), true))
+                this.object.setFluidItem(stack);
+        }else if(index == 2){
+            ItemStack stack = this.object.getEnergyItem().copy();
+            if(this.moveItemStackTo(stack, 21, this.slots.size(), true))
+                this.object.setEnergyItem(stack);
+        }else if(index >= 3 && index <= 11)
+            this.object.setItemFilter(index - 3, this.getCarried());
+        else if(index >= 12 && index <= 20){
+            ItemStack carried = this.getCarried();
+            if(carried.isEmpty())
+                this.object.setFluidFilter(index - 12, null);
             else{
-                ItemStack stack = this.getCarried().copy();
-                stack.setCount(1);
-                this.object.itemFilter.set(index - 3, stack);
-            }
-            this.object.dataChanged();
-        }else if(index >= 12 && index <= 20){
-            if(this.getCarried().isEmpty())
-                this.object.liquidFilter.set(index - 12, null);
-            else{
-                ItemFilter filter = LiquidTrashCanFilters.createFilter(this.getCarried());
+                ItemFilter filter = LiquidTrashCanFilters.createFilter(carried);
                 if(filter != null)
-                    this.object.liquidFilter.set(index - 12, filter);
+                    this.object.setFluidFilter(index - 12, filter);
             }
-            this.object.dataChanged();
         }else if(index >= 21 && !this.getSlot(index).getItem().isEmpty()){
-            ItemStack stack = this.getSlot(index).getItem();
-            if(this.getSlot(1).getItem().isEmpty() && this.getSlot(1).mayPlace(stack)){
-                this.getSlot(1).set(stack);
-                this.getSlot(index).set(ItemStack.EMPTY);
-                this.object.dataChanged();
-            }else if(this.getSlot(2).getItem().isEmpty() && this.getSlot(2).mayPlace(stack)){
-                this.getSlot(2).set(stack);
-                this.getSlot(index).set(ItemStack.EMPTY);
-                this.object.dataChanged();
-            }else if(this.getSlot(0).mayPlace(stack))
-                this.getSlot(index).set(ItemStack.EMPTY);
+            Slot slot = this.getSlot(index);
+            ItemStack stack = slot.getItem().copy();
+            if(TrashCanResourceHandlers.doesItemHaveFluidHandler(stack)){
+                if(this.moveItemStackTo(stack, 1, 2, false))
+                    slot.set(stack);
+            }else if(TrashCanResourceHandlers.doesItemHaveEnergyHandler(stack)){
+                if(this.moveItemStackTo(stack, 2, 3, false))
+                    slot.set(stack);
+            }else{
+                if(this.object.matchesItemFilter(stack))
+                    slot.set(ItemStack.EMPTY);
+            }
         }
         return ItemStack.EMPTY;
     }

@@ -1,4 +1,4 @@
-package com.supermartijn642.trashcans.screen;
+package com.supermartijn642.trashcans.screen.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.core.TextComponents;
@@ -6,6 +6,7 @@ import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.core.util.Holder;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
  */
 public class WhitelistButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/blacklist_button.png");
+    private static final ResourceLocation BUTTONS = TrashCans.identifier("textures/blacklist_button.png");
 
     public boolean white = true;
     private boolean active = true;
