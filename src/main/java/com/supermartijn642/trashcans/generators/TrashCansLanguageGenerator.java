@@ -36,6 +36,8 @@ public class TrashCansLanguageGenerator extends LanguageGenerator {
         // Screen
         this.translation("trashcans.gui.item_trash_can.title", "Item Trash Can");
         this.translation("trashcans.gui.item_trash_can.filter", "Filter");
+        this.translation("trashcans.gui.item_trash_can.deleted_items.show", "Show deleted items");
+        this.translation("trashcans.gui.item_trash_can.deleted_items.hide", "Hide deleted items");
         this.translation("trashcans.gui.liquid_trash_can.title", "Liquid Trash Can");
         this.translation("trashcans.gui.liquid_trash_can.filter", "Filter");
         this.translation("trashcans.gui.energy_trash_can.title", "Energy Trash Can");
