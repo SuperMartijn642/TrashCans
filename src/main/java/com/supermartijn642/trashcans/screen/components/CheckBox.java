@@ -1,9 +1,10 @@
-package com.supermartijn642.trashcans.screen;
+package com.supermartijn642.trashcans.screen.components;
 
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.core.util.Holder;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
  */
 public class CheckBox extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("trashcans", "textures/checkmarkbox.png");
+    private static final ResourceLocation BUTTONS = TrashCans.identifier("textures/checkmarkbox.png");
 
     public boolean checked;
     private boolean active = true;

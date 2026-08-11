@@ -1,16 +1,13 @@
 package com.supermartijn642.trashcans.screen;
 
+import com.supermartijn642.core.gui.CustomSlot;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created 7/11/2020 by SuperMartijn642
@@ -23,62 +20,52 @@ public class ItemTrashCanContainer extends TrashCanContainer {
 
     @Override
     protected void addSlots(PlayerEntity player, TrashCanBlockEntity entity){
-        this.addSlot(new SlotItemHandler(entity.ITEM_HANDLER, 0, 93, 25));
+        this.addSlot(
+            CustomSlot.builder()
+                .position(93, 25)
+                .filter(s -> this.object.matchesItemFilter(s))
+                .inserter(ItemStack::getCount)
+                .canExtract(false)
+                .build().getVanillaSlot()
+        );
 
-        for(int column = 0; column < 9; column++)
-            this.addSlot(new SlotItemHandler(this.itemHandler(), column, 8 + column * 18, 64) {
-                @Override
-                public boolean mayPickup(PlayerEntity playerIn){
-                    return false;
-                }
-            });
-    }
-
-    @Override
-    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
-        if(!this.validateObjectOrClose())
-            return ItemStack.EMPTY;
-
-        if(slotId >= 1 && slotId <= 9){
-            if(this.player.inventory.getCarried().isEmpty())
-                this.object.itemFilter.set(slotId - 1, ItemStack.EMPTY);
-            else{
-                ItemStack stack = this.player.inventory.getCarried().copy();
-                stack.setCount(1);
-                this.object.itemFilter.set(slotId - 1, stack);
-            }
-            this.object.dataChanged();
-            return ItemStack.EMPTY;
+        // item filter
+        for(int column = 0; column < 9; column++){
+            int slotIndex = column;
+            this.addSlot(
+                CustomSlot.builder()
+                    .position(8 + column * 18, 64)
+                    .getter(() -> this.object.getItemFilter(slotIndex))
+                    .canInsertExtract(false)
+                    .build().getVanillaSlot()
+            );
         }
-        return super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
+    public ItemStack clicked(int index, int dragType, ClickType clickType, PlayerEntity player){
         if(!this.validateObjectOrClose())
             return ItemStack.EMPTY;
 
         if(index >= 1 && index <= 9){
-            if(this.player.inventory.getCarried().isEmpty())
-                this.object.itemFilter.set(index - 1, ItemStack.EMPTY);
-            else{
-                ItemStack stack = this.player.inventory.getCarried().copy();
-                stack.setCount(1);
-                this.object.itemFilter.set(index - 1, stack);
-            }
-            this.object.dataChanged();
-        }else if(index >= 10 && this.getSlot(0).mayPlace(this.getSlot(index).getItem()))
-            this.getSlot(index).set(ItemStack.EMPTY);
-        return ItemStack.EMPTY;
+            this.object.setItemFilter(index - 1, this.player.inventory.getCarried());
+            return ItemStack.EMPTY;
+        }
+        return super.clicked(index, dragType, clickType, player);
     }
 
-    private IItemHandlerModifiable itemHandler(){
-        return new ItemStackHandler(9) {
-            @Nonnull
-            @Override
-            public ItemStack getStackInSlot(int slot){
-                return ItemTrashCanContainer.this.validateObjectOrClose() ? ItemTrashCanContainer.this.object.itemFilter.get(slot) : ItemStack.EMPTY;
-            }
-        };
+    @Override
+    public ItemStack quickMoveStack(PlayerEntity player, int index){
+        if(!this.validateObjectOrClose())
+            return ItemStack.EMPTY;
+
+        if(index >= 1 && index <= 9)
+            this.object.setItemFilter(index - 1, this.player.inventory.getCarried());
+        else if(index >= 10){
+            Slot slot = this.getSlot(index);
+            if(this.object.matchesItemFilter(slot.getItem()))
+                slot.set(ItemStack.EMPTY);
+        }
+        return ItemStack.EMPTY;
     }
 }
