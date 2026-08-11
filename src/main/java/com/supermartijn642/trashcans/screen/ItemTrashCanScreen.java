@@ -5,6 +5,7 @@ import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
+import com.supermartijn642.trashcans.screen.components.WhitelistButton;
 import net.minecraft.resources.Identifier;
 
 /**
@@ -12,7 +13,7 @@ import net.minecraft.resources.Identifier;
  */
 public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
 
-    public static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath("trashcans", "item_screen");
+    public static final Identifier BACKGROUND = TrashCans.identifier("item_screen");
 
     private WhitelistButton whitelistButton;
 
@@ -23,13 +24,13 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
     @Override
     protected void addWidgets(TrashCanBlockEntity entity){
         this.whitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getBlockEntityPos()))));
-        this.whitelistButton.update(entity.itemFilterWhitelist);
+        this.whitelistButton.update(entity.isItemFilterWhitelist());
     }
 
     @Override
     protected void update(TrashCanBlockEntity entity){
         super.update(entity);
-        this.whitelistButton.update(entity.itemFilterWhitelist);
+        this.whitelistButton.update(entity.isItemFilterWhitelist());
     }
 
     @Override
