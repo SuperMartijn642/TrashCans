@@ -4,7 +4,9 @@ import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
+import com.supermartijn642.trashcans.TrashCansConfig;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
+import com.supermartijn642.trashcans.screen.components.DeletedItemsList;
 import com.supermartijn642.trashcans.screen.components.WhitelistButton;
 import net.minecraft.resources.Identifier;
 
@@ -25,6 +27,8 @@ public class ItemTrashCanScreen extends TrashCanScreen<ItemTrashCanContainer> {
     protected void addWidgets(TrashCanBlockEntity entity){
         this.whitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 118, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getBlockEntityPos()))));
         this.whitelistButton.update(entity.isItemFilterWhitelist());
+        if(TrashCansConfig.retrieveDeletedItems.get())
+            this.addWidget(new DeletedItemsList(this.width(), 0, this.container.deletedItemSlots, () -> this.object.getDeletedItems()));
     }
 
     @Override
