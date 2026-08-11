@@ -10,7 +10,7 @@ import com.supermartijn642.trashcans.TrashCans;
 public class TrashCansLootTableGenerator extends LootTableGenerator {
 
     public TrashCansLootTableGenerator(ResourceCache cache){
-        super("trashcans", cache);
+        super(TrashCans.MODID, cache);
     }
 
     @Override
