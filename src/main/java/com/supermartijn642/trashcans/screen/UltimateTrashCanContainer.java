@@ -12,10 +12,16 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created 7/11/2020 by SuperMartijn642
  */
 public class UltimateTrashCanContainer extends TrashCanContainer {
+
+    List<CustomSlot> deletedItemSlots;
 
     public UltimateTrashCanContainer(PlayerEntity player, BlockPos pos){
         super(TrashCans.ultimate_trash_can_container, player, pos, 202, 247);
@@ -28,7 +34,10 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
             CustomSlot.builder()
                 .position(63, 25)
                 .filter(s -> this.object.matchesItemFilter(s))
-                .inserter(ItemStack::getCount)
+                .inserter(s -> {
+                    this.object.pushDeletedItem(s);
+                    return s.getCount();
+                })
                 .canExtract(false)
                 .build().getVanillaSlot()
         );
@@ -114,6 +123,47 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
                     .build().getVanillaSlot()
             );
         }
+
+        // Deleted items
+        List<CustomSlot> deletedItemSlots = new ArrayList<>(TrashCanBlockEntity.MAX_DELETED_ITEMS);
+        for(int i = 0; i < TrashCanBlockEntity.MAX_DELETED_ITEMS; i++){
+            int index = i;
+            deletedItemSlots.add(
+                CustomSlot.builder()
+                    .getter(() -> {
+                        LinkedList<ItemStack> items = this.object.getDeletedItems();
+                        return items.size() > index ? items.get(index) : ItemStack.EMPTY;
+                    })
+                    .setter(s -> {
+                        LinkedList<ItemStack> items = this.object.getDeletedItems();
+                        if(items.size() > index){
+                            if(s.isEmpty())
+                                this.object.removeDeletedItem(index);
+                            else
+                                this.object.setDeletedItem(index, s);
+                        }
+                    })
+                    .canInsert(false)
+                    .extractor(amount -> {
+                        ItemStack stack = this.object.getDeletedItem(index);
+                        int extracted = Math.min(amount, stack.getCount());
+                        ItemStack extractedStack = stack.copy();
+                        extractedStack.setCount(extracted);
+                        if(extracted == stack.getCount())
+                            this.object.removeDeletedItem(index);
+                        else{
+                            stack = stack.copy();
+                            stack.shrink(extracted);
+                            this.object.setDeletedItem(index, stack);
+                        }
+                        return extractedStack;
+                    })
+                    .build()
+            );
+        }
+        deletedItemSlots.forEach(s -> s.setActive(false));
+        deletedItemSlots.forEach(s -> this.addSlot(s.getVanillaSlot()));
+        this.deletedItemSlots = deletedItemSlots;
     }
 
     @Override
@@ -145,11 +195,11 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
 
         if(index == 1){
             ItemStack stack = this.object.getFluidItem().copy();
-            if(this.moveItemStackTo(stack, 21, this.slots.size(), true))
+            if(this.moveItemStackTo(stack, 21 + TrashCanBlockEntity.MAX_DELETED_ITEMS, this.slots.size(), true))
                 this.object.setFluidItem(stack);
         }else if(index == 2){
             ItemStack stack = this.object.getEnergyItem().copy();
-            if(this.moveItemStackTo(stack, 21, this.slots.size(), true))
+            if(this.moveItemStackTo(stack, 21 + TrashCanBlockEntity.MAX_DELETED_ITEMS, this.slots.size(), true))
                 this.object.setEnergyItem(stack);
         }else if(index >= 3 && index <= 11)
             this.object.setItemFilter(index - 3, this.player.inventory.getCarried());
@@ -162,7 +212,15 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
                 if(filter != null)
                     this.object.setFluidFilter(index - 12, filter);
             }
-        }else if(index >= 21 && !this.getSlot(index).getItem().isEmpty()){
+        }else if(index >= 21 && index < 21 + TrashCanBlockEntity.MAX_DELETED_ITEMS){
+            ItemStack stack = this.object.getDeletedItem(index - 21).copy();
+            if(this.moveItemStackTo(stack, 21 + TrashCanBlockEntity.MAX_DELETED_ITEMS, this.slots.size(), true)){
+                if(stack.isEmpty())
+                    this.object.removeDeletedItem(index - 21);
+                else
+                    this.object.setDeletedItem(index - 21, stack);
+            }
+        }else if(index >= 21 + TrashCanBlockEntity.MAX_DELETED_ITEMS && !this.getSlot(index).getItem().isEmpty()){
             Slot slot = this.getSlot(index);
             ItemStack stack = slot.getItem().copy();
             if(TrashCanResourceHandlers.doesItemHaveFluidHandler(stack)){
@@ -172,8 +230,10 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
                 if(this.moveItemStackTo(stack, 2, 3, false))
                     slot.set(stack);
             }else{
-                if(this.object.matchesItemFilter(stack))
+                if(!stack.isEmpty() && this.object.matchesItemFilter(stack)){
+                    this.object.pushDeletedItem(stack);
                     slot.set(ItemStack.EMPTY);
+                }
             }
         }
         return ItemStack.EMPTY;
