@@ -10,12 +10,14 @@ import java.util.function.Supplier;
  */
 public class TrashCansConfig {
 
+    public static final Supplier<Boolean> retrieveDeletedItems;
     public static final Supplier<Boolean> allowVoidingNuclearWaste;
 
     static{
         IConfigBuilder builder = ConfigBuilders.newTomlConfig(TrashCans.MODID, null, false);
 
-        allowVoidingNuclearWaste = builder.define("allowVoidingNuclearWaste", false);
+        retrieveDeletedItems = builder.comment("Whether to allow retrieving the last couple deleted items from the trash can screen").define("retrieveDeletedItems", true);
+        allowVoidingNuclearWaste = builder.comment("Can radioactive fluids from Mekanism be voided?").define("allowVoidingNuclearWaste", false);
 
         builder.build();
     }
