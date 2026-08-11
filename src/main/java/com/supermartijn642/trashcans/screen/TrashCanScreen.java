@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.WidgetContainerScreen;
 import com.supermartijn642.core.gui.widget.ObjectBaseContainerWidget;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import net.minecraft.util.ResourceLocation;
@@ -15,10 +16,15 @@ import net.minecraft.util.text.ITextComponent;
 public abstract class TrashCanScreen<T extends TrashCanContainer> extends ObjectBaseContainerWidget<TrashCanBlockEntity,T> {
 
     private final ITextComponent title;
+    protected WidgetContainerScreen<?,?> screen;
 
     public TrashCanScreen(String title){
         super(0, 0, 1, 1);
         this.title = TextComponents.translation(title).get();
+    }
+
+    public void setScreen(WidgetContainerScreen<?,?> screen){
+        this.screen = screen;
     }
 
     @Override
