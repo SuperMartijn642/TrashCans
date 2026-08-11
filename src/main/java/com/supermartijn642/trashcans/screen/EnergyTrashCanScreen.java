@@ -7,6 +7,8 @@ import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
+import com.supermartijn642.trashcans.screen.components.ArrowButton;
+import com.supermartijn642.trashcans.screen.components.CheckBox;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer> {
 
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("trashcans", "energy_screen");
+    public static final ResourceLocation BACKGROUND = TrashCans.identifier("energy_screen");
 
     private CheckBox checkBox;
     private ArrowButton leftArrow, rightArrow;
@@ -30,11 +32,11 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     @Override
     protected void addWidgets(TrashCanBlockEntity entity){
         this.checkBox = this.addWidget(new CheckBox(21, 66, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleEnergyLimit(this.container.getBlockEntityPos()))));
-        this.checkBox.update(entity.useEnergyLimit);
+        this.checkBox.update(entity.isEnergyLimited());
         this.leftArrow = this.addWidget(new ArrowButton(49, 66, true, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getBlockEntityPos(), this.shift ? this.control ? -1 : -100 : this.control ? -10000 : -1000))));
-        this.leftArrow.setActive(entity.useEnergyLimit);
+        this.leftArrow.setActive(entity.isEnergyLimited());
         this.rightArrow = this.addWidget(new ArrowButton(170, 66, false, () -> TrashCans.CHANNEL.sendToServer(new PacketChangeEnergyLimit(this.container.getBlockEntityPos(), this.shift ? this.control ? 1 : 100 : this.control ? 10000 : 1000))));
-        this.rightArrow.setActive(entity.useEnergyLimit);
+        this.rightArrow.setActive(entity.isEnergyLimited());
     }
 
     @Override
@@ -59,9 +61,9 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     @Override
     protected void update(TrashCanBlockEntity entity){
         super.update(entity);
-        this.checkBox.update(entity.useEnergyLimit);
-        this.leftArrow.setActive(entity.useEnergyLimit);
-        this.rightArrow.setActive(entity.useEnergyLimit);
+        this.checkBox.update(entity.isEnergyLimited());
+        this.leftArrow.setActive(entity.isEnergyLimited());
+        this.rightArrow.setActive(entity.isEnergyLimited());
     }
 
     @Override
@@ -73,7 +75,7 @@ public class EnergyTrashCanScreen extends TrashCanScreen<EnergyTrashCanContainer
     protected void drawText(GuiGraphicsHelper graphics, TrashCanBlockEntity entity){
         graphics.submitText(TextComponents.translation("trashcans.gui.energy_trash_can.limit").get(), 8, 52);
         //noinspection Convert2MethodRef
-        graphics.submitText(TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.energyLimit)).get(), 114, 71, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.string(I18n.get("trashcans.gui.energy_trash_can.value").replace("$number$", "" + entity.getEnergyLimit())).get(), 114, 71, p -> p.centerHorizontally());
     }
 
     @Override
