@@ -82,7 +82,11 @@ public class TrashCanResourceHandlers {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate){
-            return this.isItemValid(0, stack) ? ItemStack.EMPTY : stack;
+            if(!this.isItemValid(0, stack))
+                return stack;
+            if(!simulate)
+                this.entity.pushDeletedItem(stack.copy());
+            return ItemStack.EMPTY;
         }
 
         @Override
