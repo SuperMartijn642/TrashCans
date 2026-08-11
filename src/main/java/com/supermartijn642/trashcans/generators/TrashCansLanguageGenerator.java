@@ -10,7 +10,7 @@ import com.supermartijn642.trashcans.TrashCans;
 public class TrashCansLanguageGenerator extends LanguageGenerator {
 
     public TrashCansLanguageGenerator(ResourceCache cache){
-        super("trashcans", cache, "en_us");
+        super(TrashCans.MODID, cache, "en_us");
     }
 
     @Override
