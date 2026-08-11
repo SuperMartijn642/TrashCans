@@ -1,10 +1,11 @@
-package com.supermartijn642.trashcans.screen;
+package com.supermartijn642.trashcans.screen.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -13,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("trashcans", "textures/arrow_buttons.png");
+    private static final ResourceLocation BUTTONS = TrashCans.identifier("textures/arrow_buttons.png");
 
     private final boolean left;
     private boolean active = true;
