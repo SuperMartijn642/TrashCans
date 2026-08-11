@@ -47,12 +47,12 @@ public abstract class TrashCanScreen<T extends TrashCanContainer> extends Object
         return this.container.height;
     }
 
-    protected abstract String getBackground();
+    protected abstract ResourceLocation getBackground();
 
     @Override
     protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, TrashCanBlockEntity entity){
         super.renderBackground(context, mouseX, mouseY, entity);
-        ScreenUtils.bindTexture(new ResourceLocation("trashcans", "textures/" + this.getBackground()));
+        ScreenUtils.bindTexture(this.getBackground());
         ScreenUtils.drawTexture(context.poseStack(), 0, 0, this.width(), this.height());
     }
 
