@@ -22,6 +22,8 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  * Created 7/10/2020 by SuperMartijn642
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBlockEntity {
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
+    public static final int MAX_DELETED_ITEMS = 6;
 
     public final ResourceHandler<ItemResource> itemHandler = TrashCanResourceHandlers.createItemHandler(this);
     public final ResourceHandler<FluidResource> fluidHandler = TrashCanResourceHandlers.createFluidHandler(this);
@@ -38,6 +41,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     private final boolean items;
     private final ArrayList<ItemStack> itemFilter = new ArrayList<>();
     private boolean itemFilterWhitelist = false;
+    private final LinkedList<ItemStack> deletedItems = new LinkedList<>(); // We don't care about iteration, insertion at index 0 and removal of last element should be as fast as possible
     private final boolean liquids;
     private final ArrayList<ItemFilter> liquidFilter = new ArrayList<>();
     private boolean liquidFilterWhitelist = false;
@@ -143,6 +147,53 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         this.dataChanged();
     }
 
+    public void pushDeletedItem(ItemStack stack){
+        if(!this.deletedItems.isEmpty()){
+            ItemStack last = this.deletedItems.getFirst();
+            if(ItemStack.isSameItemSameComponents(last, stack)){
+                int added = Math.min(stack.getCount(), last.getMaxStackSize() - last.getCount());
+                if(added > 0){
+                    last.grow(added);
+                    stack.shrink(added);
+                    if(stack.isEmpty()){
+                        this.dataChanged();
+                        return;
+                    }
+                }
+            }
+        }
+        this.deletedItems.addFirst(stack);
+        if(this.deletedItems.size() > MAX_DELETED_ITEMS)
+            this.deletedItems.removeLast();
+        this.dataChanged();
+    }
+
+    public void setDeletedItem(int index, ItemStack stack){
+        if(stack.isEmpty())
+            throw new IllegalArgumentException("Stack cannot be empty!");
+        this.deletedItems.set(index, stack);
+        this.dataChanged();
+    }
+
+    public void removeDeletedItem(int index){
+        this.deletedItems.remove(index);
+        this.dataChanged();
+    }
+
+    public LinkedList<ItemStack> getDeletedItems(){
+        return this.deletedItems;
+    }
+
+    public ItemStack getDeletedItem(int index){
+        return this.deletedItems.get(index);
+    }
+
+    public void restoreDeletedItems(ItemStack[] items){ // Used when transaction are canceled
+        this.deletedItems.clear();
+        this.deletedItems.addAll(Arrays.asList(items));
+        this.dataChanged();
+    }
+
     public boolean handlesFluids(){
         return this.liquids;
     }
@@ -238,6 +289,9 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                 if(!this.itemFilter.get(i).isEmpty())
                     output.store("itemFilter" + i, ItemStack.CODEC, this.itemFilter.get(i));
             output.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
+            var deletedItems = output.list("deletedItems", ItemStack.CODEC);
+            for(ItemStack stack : this.deletedItems)
+                deletedItems.add(stack);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
@@ -261,6 +315,9 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             for(int i = 0; i < this.itemFilter.size(); i++)
                 this.itemFilter.set(i, input.read("itemFilter" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
             this.itemFilterWhitelist = input.getBooleanOr("itemFilterWhitelist", false);
+            this.deletedItems.clear();
+            for(ItemStack stack : input.listOrEmpty("deletedItems", ItemStack.CODEC))
+                this.deletedItems.add(stack);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)

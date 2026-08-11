@@ -9,6 +9,7 @@ import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -53,7 +54,7 @@ public class TrashCanResourceHandlers {
         return new TrashCanEnergyHandler(entity);
     }
 
-    private static class TrashCanItemHandler implements ResourceHandler<ItemResource> {
+    private static class TrashCanItemHandler extends SnapshotJournal<TrashCanItemHandler.SnapShot> implements ResourceHandler<ItemResource> {
 
         private final TrashCanBlockEntity entity;
 
@@ -95,7 +96,11 @@ public class TrashCanResourceHandlers {
         @Override
         public int insert(ItemResource resource, int amount, TransactionContext transaction){
             TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-            return this.isValid(0, resource) ? amount : 0;
+            if(!this.isValid(0, resource))
+                return 0;
+            this.updateSnapshots(transaction);
+            this.entity.pushDeletedItem(resource.toStack(amount));
+            return amount;
         }
 
         @Override
@@ -106,6 +111,20 @@ public class TrashCanResourceHandlers {
         @Override
         public int extract(ItemResource resource, int amount, TransactionContext transaction){
             return 0;
+        }
+
+        @Override
+        protected SnapShot createSnapshot(){
+            return new SnapShot(this.entity.getDeletedItems().toArray(new ItemStack[0]));
+        }
+
+        @Override
+        protected void revertToSnapshot(SnapShot snapshot){
+            assert snapshot != null;
+            this.entity.restoreDeletedItems(snapshot.deletedItems);
+        }
+
+        private record SnapShot(ItemStack[] deletedItems){
         }
     }
 
