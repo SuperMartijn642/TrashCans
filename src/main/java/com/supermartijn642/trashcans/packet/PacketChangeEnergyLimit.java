@@ -35,18 +35,13 @@ public class PacketChangeEnergyLimit extends BlockEntityBasePacket<TrashCanBlock
 
     @Override
     public boolean verify(PacketContext context){
-        return Math.abs(this.amount) >= 1 && Math.abs(this.amount) <= 1000;
+        return Math.abs(this.amount) >= 1 && Math.abs(this.amount) <= 100000;
     }
 
     @Override
     protected void handle(TrashCanBlockEntity entity, PacketContext context){
-        if(entity.energy && Math.abs(this.amount) >= 1 && Math.abs(this.amount) <= 10000){
-            int amount = entity.energyLimit == 1 && this.amount > 1 ? this.amount : entity.energyLimit + this.amount;
-            int limit = Math.min(Math.max(amount, TrashCanBlockEntity.MIN_ENERGY_LIMIT), TrashCanBlockEntity.MAX_ENERGY_LIMIT);
-            if(entity.energyLimit != limit){
-                entity.energyLimit = limit;
-                entity.dataChanged();
-            }
-        }
+        if(!entity.handlesEnergy())
+            return;
+        entity.setEnergyLimit(entity.getEnergyLimit() + this.amount);
     }
 }
