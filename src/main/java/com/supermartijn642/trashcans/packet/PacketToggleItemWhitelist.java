@@ -19,9 +19,8 @@ public class PacketToggleItemWhitelist extends BlockEntityBasePacket<TrashCanBlo
 
     @Override
     protected void handle(TrashCanBlockEntity entity, PacketContext context){
-        if(entity.items){
-            entity.itemFilterWhitelist = !entity.itemFilterWhitelist;
-            entity.dataChanged();
-        }
+        if(!entity.handlesItems())
+            return;
+        entity.toggleItemFilterWhitelist();
     }
 }
