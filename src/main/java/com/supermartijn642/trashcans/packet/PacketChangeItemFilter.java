@@ -43,9 +43,8 @@ public class PacketChangeItemFilter extends BlockEntityBasePacket<TrashCanBlockE
 
     @Override
     protected void handle(TrashCanBlockEntity entity, PacketContext context){
-        if(entity.items){
-            entity.itemFilter.set(this.filterSlot, this.stack);
-            entity.dataChanged();
-        }
+        if(!entity.handlesItems())
+            return;
+        entity.setItemFilter(this.filterSlot, this.stack);
     }
 }
