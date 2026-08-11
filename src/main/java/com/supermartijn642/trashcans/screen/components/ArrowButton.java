@@ -1,9 +1,10 @@
-package com.supermartijn642.trashcans.screen;
+package com.supermartijn642.trashcans.screen.components;
 
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
+import com.supermartijn642.trashcans.TrashCans;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -12,7 +13,7 @@ import net.minecraft.resources.Identifier;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    public static final Identifier BUTTONS = Identifier.fromNamespaceAndPath("trashcans", "arrow_buttons");
+    public static final Identifier BUTTONS = TrashCans.identifier("arrow_buttons");
 
     private final boolean left;
     private boolean active = true;
