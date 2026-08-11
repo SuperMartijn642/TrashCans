@@ -2,232 +2,48 @@ package com.supermartijn642.trashcans;
 
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.TickableBlockEntity;
-import com.supermartijn642.core.util.TriFunction;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
-import com.supermartijn642.trashcans.screen.DummySlot;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.BlankVariantView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import team.reborn.energy.api.EnergyStorage;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Created 7/10/2020 by SuperMartijn642
  */
-@SuppressWarnings("UnstableApiUsage")
 public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBlockEntity {
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
 
-    public final Storage<ItemVariant> ITEM_HANDLER = new Storage<>() {
-        private static final Supplier<Iterator<StorageView<ItemVariant>>> ITERATOR = List.<StorageView<ItemVariant>>of(new BlankVariantView<>(ItemVariant.blank(), Integer.MAX_VALUE))::iterator;
+    public final Storage<ItemVariant> itemHandler = TrashCanResourceHandlers.createItemHandler(this);
+    public final Storage<FluidVariant> fluidHandler = TrashCanResourceHandlers.createFluidHandler(this);
+    public final EnergyStorage energyHandler = TrashCanResourceHandlers.createEnergyHandler(this);
 
-        @Override
-        public long insert(ItemVariant resource, long maxAmount, TransactionContext transaction){
-            StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            return this.isItemValid(resource) ? maxAmount : 0;
-        }
-
-        @Override
-        public long extract(ItemVariant resource, long maxAmount, TransactionContext transaction){
-            StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            return 0;
-        }
-
-        @Override
-        public Iterator<StorageView<ItemVariant>> iterator(){
-            return ITERATOR.get();
-        }
-
-        private boolean isItemValid(ItemVariant item){
-            for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-                if(!filter.isEmpty() && item.matches(filter))
-                    return TrashCanBlockEntity.this.itemFilterWhitelist;
-            }
-            return !TrashCanBlockEntity.this.itemFilterWhitelist;
-        }
-    };
-
-    public final Storage<FluidVariant> FLUID_HANDLER = new Storage<>() {
-        private static final Supplier<Iterator<StorageView<FluidVariant>>> ITERATOR = List.<StorageView<FluidVariant>>of(new BlankVariantView<>(FluidVariant.blank(), Integer.MAX_VALUE))::iterator;
-
-        @Override
-        public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction){
-            StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            return this.isFluidValid(resource) ? maxAmount : 0;
-        }
-
-        @Override
-        public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction){
-            StoragePreconditions.notBlankNotNegative(resource, maxAmount);
-            return 0;
-        }
-
-        @Override
-        public Iterator<StorageView<FluidVariant>> iterator(){
-            return ITERATOR.get();
-        }
-
-        private boolean isFluidValid(FluidVariant fluid){
-            for(ItemFilter filter : TrashCanBlockEntity.this.liquidFilter){
-                if(filter != null && filter.matches(fluid))
-                    return TrashCanBlockEntity.this.liquidFilterWhitelist;
-            }
-            return !TrashCanBlockEntity.this.liquidFilterWhitelist;
-        }
-    };
-    public final TriFunction<Integer,Integer,Integer,Slot> LIQUID_ITEM_HANDLER = (slot, x, y) -> new DummySlot(slot, x, y) {
-        @Override
-        public boolean mayPlace(ItemStack stack){
-            return this.isItemValid(stack);
-        }
-
-        @Override
-        public ItemStack getItem(){
-            return TrashCanBlockEntity.this.liquidItem;
-        }
-
-        @Override
-        public void set(ItemStack stack){
-            TrashCanBlockEntity.this.liquidItem = stack.copy();
-            TrashCanBlockEntity.this.liquidItem.setCount(1);
-            TrashCanBlockEntity.this.dataChanged();
-        }
-
-        @Override
-        public void setChanged(){
-        }
-
-        @Override
-        public int getMaxStackSize(){
-            return 1;
-        }
-
-        @Override
-        public ItemStack remove(int count){
-            ItemStack result = TrashCanBlockEntity.this.liquidItem.split(count);
-            TrashCanBlockEntity.this.dataChanged();
-            return result;
-        }
-
-        public boolean isItemValid(ItemStack stack){
-            boolean filtered = !TrashCanBlockEntity.this.liquidFilterWhitelist;
-            for(ItemFilter filter : TrashCanBlockEntity.this.liquidFilter){
-                if(filter != null && filter.matches(stack)){
-                    filtered = TrashCanBlockEntity.this.liquidFilterWhitelist;
-                    break;
-                }
-            }
-            if(!filtered)
-                return false;
-
-            Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
-            if(storage == null || !storage.supportsExtraction())
-                return false;
-            for(StorageView<FluidVariant> slot : storage){
-                if(!slot.isResourceBlank())
-                    return true;
-            }
-            return false;
-        }
-    };
-
-    public final EnergyStorage ENERGY_STORAGE = new EnergyStorage() {
-        @Override
-        public boolean supportsExtraction(){
-            return false;
-        }
-
-        @Override
-        public long insert(long maxAmount, TransactionContext transaction){
-            return TrashCanBlockEntity.this.useEnergyLimit ? Math.min(maxAmount, TrashCanBlockEntity.this.energyLimit) : maxAmount;
-        }
-
-        @Override
-        public long extract(long maxAmount, TransactionContext transaction){
-            return 0;
-        }
-
-        @Override
-        public long getAmount(){
-            return 0;
-        }
-
-        @Override
-        public long getCapacity(){
-            return Long.MAX_VALUE;
-        }
-    };
-    public final TriFunction<Integer,Integer,Integer,Slot> ENERGY_ITEM_HANDLER = (slot, x, y) -> new DummySlot(slot, x, y) {
-        @Override
-        public boolean mayPlace(ItemStack stack){
-            return this.isItemValid(stack);
-        }
-
-        @Override
-        public ItemStack getItem(){
-            return TrashCanBlockEntity.this.energyItem;
-        }
-
-        @Override
-        public void set(ItemStack stack){
-            TrashCanBlockEntity.this.energyItem = stack.copy();
-            TrashCanBlockEntity.this.energyItem.setCount(1);
-            TrashCanBlockEntity.this.dataChanged();
-        }
-
-        @Override
-        public void setChanged(){
-        }
-
-        @Override
-        public int getMaxStackSize(){
-            return 1;
-        }
-
-        @Override
-        public ItemStack remove(int count){
-            ItemStack result = TrashCanBlockEntity.this.energyItem.split(count);
-            TrashCanBlockEntity.this.dataChanged();
-            return result;
-        }
-
-        public boolean isItemValid(ItemStack stack){
-            EnergyStorage storage = EnergyStorage.ITEM.find(stack, null);
-            return storage != null && storage.supportsExtraction() && storage.getAmount() > 0;
-        }
-    };
-
-    public final boolean items;
-    public final ArrayList<ItemStack> itemFilter = new ArrayList<>();
-    public boolean itemFilterWhitelist = false;
-    public final boolean liquids;
-    public final ArrayList<ItemFilter> liquidFilter = new ArrayList<>();
-    public boolean liquidFilterWhitelist = false;
-    public ItemStack liquidItem = ItemStack.EMPTY;
-    public final boolean energy;
-    public int energyLimit = DEFAULT_ENERGY_LIMIT;
-    public boolean useEnergyLimit = false;
-    public ItemStack energyItem = ItemStack.EMPTY;
+    private final boolean items;
+    private final ArrayList<ItemStack> itemFilter = new ArrayList<>();
+    private boolean itemFilterWhitelist = false;
+    private final boolean liquids;
+    private final ArrayList<ItemFilter> liquidFilter = new ArrayList<>();
+    private boolean liquidFilterWhitelist = false;
+    private ItemStack liquidItem = ItemStack.EMPTY;
+    private final boolean energy;
+    private int energyLimit = DEFAULT_ENERGY_LIMIT;
+    private boolean useEnergyLimit = false;
+    private ItemStack energyItem = ItemStack.EMPTY;
 
     public TrashCanBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, boolean items, boolean liquids, boolean energy){
         super(blockEntityType, pos, state);
@@ -277,12 +93,134 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         }
     }
 
-    public boolean isRegularItemValid(ItemStack stack){
-        for(ItemStack filter : TrashCanBlockEntity.this.itemFilter){
-            if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
-                return TrashCanBlockEntity.this.itemFilterWhitelist;
+    public boolean handlesItems(){
+        return this.items;
+    }
+
+    public ItemStack getItemFilter(int index){
+        return this.itemFilter.get(index);
+    }
+
+    public void setItemFilter(int index, ItemStack stack){
+        if(stack.isEmpty())
+            stack = ItemStack.EMPTY;
+        else{
+            stack = stack.copy();
+            stack.setCount(1);
         }
-        return !TrashCanBlockEntity.this.itemFilterWhitelist;
+        this.itemFilter.set(index, stack);
+        this.dataChanged();
+    }
+
+    public boolean matchesItemFilter(ItemStack stack){
+        for(ItemStack filter : this.itemFilter){
+            if(!filter.isEmpty() && ItemStack.isSame(stack, filter))
+                return this.itemFilterWhitelist;
+        }
+        return !this.itemFilterWhitelist;
+    }
+
+    public boolean matchesItemFilter(ItemVariant resource){
+        for(ItemStack filter : this.itemFilter){
+            if(!filter.isEmpty() && resource.matches(filter))
+                return this.itemFilterWhitelist;
+        }
+        return !this.itemFilterWhitelist;
+    }
+
+    public boolean isItemFilterWhitelist(){
+        return this.itemFilterWhitelist;
+    }
+
+    public void toggleItemFilterWhitelist(){
+        this.itemFilterWhitelist = !this.itemFilterWhitelist;
+        this.dataChanged();
+    }
+
+    public boolean handlesFluids(){
+        return this.liquids;
+    }
+
+    public ItemStack getFluidItem(){
+        return this.liquidItem;
+    }
+
+    public void setFluidItem(ItemStack stack){
+        this.liquidItem = stack;
+        this.dataChanged();
+    }
+
+    @Nullable
+    public ItemFilter getFluidFilter(int index){
+        return this.liquidFilter.get(index);
+    }
+
+    public void setFluidFilter(int index, @Nullable ItemFilter filter){
+        this.liquidFilter.set(index, filter);
+        this.dataChanged();
+    }
+
+    public boolean matchesFluidFilter(ItemStack stack){
+        for(ItemFilter filter : this.liquidFilter){
+            if(filter != null && filter.matches(stack))
+                return this.liquidFilterWhitelist;
+        }
+        return !this.liquidFilterWhitelist;
+    }
+
+    public boolean matchesFluidFilter(FluidVariant resource){
+        for(ItemFilter filter : this.liquidFilter){
+            if(filter != null && filter.matches(resource))
+                return this.liquidFilterWhitelist;
+        }
+        return !this.liquidFilterWhitelist;
+    }
+
+    public boolean isFluidFilterWhitelist(){
+        return this.liquidFilterWhitelist;
+    }
+
+    public void toggleFluidFilterWhitelist(){
+        this.liquidFilterWhitelist = !this.liquidFilterWhitelist;
+        this.dataChanged();
+    }
+
+    public boolean handlesEnergy(){
+        return this.energy;
+    }
+
+    public ItemStack getEnergyItem(){
+        return this.energyItem;
+    }
+
+    public void setEnergyItem(ItemStack stack){
+        this.energyItem = stack;
+        this.dataChanged();
+    }
+
+    public int getEnergyLimit(){
+        return this.energyLimit;
+    }
+
+    public void setEnergyLimit(int limit){
+        limit = Math.min(Math.max(limit, MIN_ENERGY_LIMIT), MAX_ENERGY_LIMIT);
+        if(limit == this.energyLimit)
+            return;
+        this.energyLimit = limit;
+        this.dataChanged();
+    }
+
+    public boolean isEnergyLimited(){
+        return this.useEnergyLimit;
+    }
+
+    public void toggleEnergyLimited(){
+        this.useEnergyLimit = !this.useEnergyLimit;
+        this.dataChanged();
+    }
+
+    public int getMaxEnergyInsertion(){
+        return this.useEnergyLimit ? this.energyLimit : Integer.MAX_VALUE;
     }
 
     @Override
