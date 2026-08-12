@@ -48,7 +48,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
             for(int i = 0; i < itemFilterSlots.size(); i++){
                 int index = i;
                 Slot slot = itemFilterSlots.get(i);
-                Rect2i bounds = new Rect2i(screen.getWidget().left() + slot.x, screen.getWidget().top() + slot.y, 17, 17);
+                Rect2i bounds = new Rect2i(screen.left() + slot.x, screen.top() + slot.y, 17, 17);
 
                 // Create the target
                 Target<I> target = createTarget(bounds, input -> {
@@ -76,7 +76,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
             for(int i = 0; i < fluidFilterSlots.size(); i++){
                 int index = i;
                 Slot slot = fluidFilterSlots.get(i);
-                Rect2i bounds = new Rect2i(screen.getWidget().left() + slot.x, screen.getWidget().top() + slot.y, 17, 17);
+                Rect2i bounds = new Rect2i(screen.left() + slot.x, screen.top() + slot.y, 17, 17);
 
                 // Create the target
                 Target<I> target = createTarget(bounds, input -> {
