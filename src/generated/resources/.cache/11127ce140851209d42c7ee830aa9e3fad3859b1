@@ -1,6 +1,6 @@
-// 26.2	2026-07-04T18:57:04.0906905	Core Lib Generators
+// 26.2	2026-08-12T15:32:42.6140026	Core Lib Generators
 c4355c455d9f1442b9919cd3e173c3551a2b3162 assets/minecraft/atlases/blocks.json
-9efed44e6de9b7f86ef9d4e8b3ccb68194df33dc assets/minecraft/atlases/gui.json
+042b26c8c612260c05e4df0d4dc03f0df22184ee assets/minecraft/atlases/gui.json
 6f49ca62c58a62335067d908270c937a6e8b1509 assets/trashcans/blockstates/energy_trash_can.json
 9f2f79d801d20e01dd9bfd72552530bfdf127756 assets/trashcans/blockstates/item_trash_can.json
 41468c627b848b30ed3add46d42390e9cdb45266 assets/trashcans/blockstates/liquid_trash_can.json
@@ -9,7 +9,7 @@ fa7be5b7c84f4164624b98c2df64b3e83bab12b3 assets/trashcans/blockstates/ultimate_t
 ac27822e95057072f7baab331f23ad679062ea2f assets/trashcans/items/item_trash_can.json
 37b235ab354efcd64140722cd0e4cb790ac5a5c2 assets/trashcans/items/liquid_trash_can.json
 f12ebc47603dffd6c506aa5892e2fec5011f59e9 assets/trashcans/items/ultimate_trash_can.json
-8816348df1ede015fcdee3f1071bc3aace1b9ee1 assets/trashcans/lang/en_us.json
+4fb501eeb610e9506e5e8a93f8f4183ce60b8724 assets/trashcans/lang/en_us.json
 9505831ca933da59cde9b3fccb07ec069b86fad4 assets/trashcans/models/energy_trash_can.json
 9403a6f933c03110621dbd7ef2ad71efc7ed04d6 assets/trashcans/models/item_trash_can.json
 4b24adfd65b42f52e7b93fccc8df65cf2f234608 assets/trashcans/models/liquid_trash_can.json
