@@ -11,6 +11,7 @@ import com.supermartijn642.trashcans.screen.*;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -68,8 +69,8 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<TrashCanW
         ItemStack ingredientStack = ItemStack.EMPTY;
         if(ingredient.getType() == VanillaTypes.ITEM_STACK)
             ingredientStack = ingredient.getIngredient(VanillaTypes.ITEM_STACK).get();
-//        else if(ingredient.getType() == ForgeTypes.FLUID_STACK) // TODO
-//            ingredientStack = ingredient.getIngredient(ForgeTypes.FLUID_STACK).get().getFluid().getBucket().getDefaultInstance();
+        else if(ingredient.getType() == NeoForgeTypes.FLUID_STACK)
+            ingredientStack = ingredient.getIngredient(NeoForgeTypes.FLUID_STACK).get().getFluid().getBucket().getDefaultInstance();
         else if(Compatibility.MEKANISM.isGasStack(ingredient.getIngredient()))
             ingredientStack = Compatibility.MEKANISM.getChemicalTankForGasStack(ingredient.getIngredient());
 
