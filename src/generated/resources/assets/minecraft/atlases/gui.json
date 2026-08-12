@@ -10,6 +10,10 @@
     },
     {
       "type": "minecraft:single",
+      "resource": "trashcans:toggle_tab"
+    },
+    {
+      "type": "minecraft:single",
       "resource": "trashcans:energy_screen"
     },
     {
