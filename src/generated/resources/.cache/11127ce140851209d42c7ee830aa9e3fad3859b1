@@ -1,9 +1,9 @@
-// this.cache.versionId	2024-07-21T02:33:18.9253215	Core Lib Generators
+// this.cache.versionId	2026-08-13T16:52:35.3243921	Core Lib Generators
 8b48bb67b33dca55aa9cf25bb3414e566f589d6d assets\trashcans\models\item\ultimate_trash_can.json
 fa7be5b7c84f4164624b98c2df64b3e83bab12b3 assets\trashcans\blockstates\ultimate_trash_can.json
-3ec44408d53fccc0f975de131281534177057fd2 data\minecraft\tags\block\mineable\pickaxe.json
+bf1c48241b42e5238a9e66c51ade64a843d66a34 data\minecraft\tags\block\mineable\pickaxe.json
 99fa912e9b76a513c615413fc4c19f9cb510d774 data\trashcans\loot_table\blocks\energy_trash_can.json
-8816348df1ede015fcdee3f1071bc3aace1b9ee1 assets\trashcans\lang\en_us.json
+4fb501eeb610e9506e5e8a93f8f4183ce60b8724 assets\trashcans\lang\en_us.json
 1579c5d2491547948dcb0713f1bd3d5dd2b2d344 assets\trashcans\models\item\energy_trash_can.json
 41468c627b848b30ed3add46d42390e9cdb45266 assets\trashcans\blockstates\liquid_trash_can.json
 6f49ca62c58a62335067d908270c937a6e8b1509 assets\trashcans\blockstates\energy_trash_can.json
