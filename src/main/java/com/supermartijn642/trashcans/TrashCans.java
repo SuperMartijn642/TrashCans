@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
-@Mod(modid = "@mod_id@", name = "@mod_name@", version = "@mod_version@", dependencies = "required-after:supermartijn642corelib@@core_library_dependency@")
+@Mod(modid = "@mod_id@", name = "@mod_name@", version = "@mod_version@", dependencies = "required-after:supermartijn642corelib@@core_library_dependency@;required-after:supermartijn642configlib@@config_library_dependency@")
 public class TrashCans {
 
     public static final String MODID = "trashcans";
