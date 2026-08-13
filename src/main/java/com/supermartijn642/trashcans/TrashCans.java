@@ -68,6 +68,8 @@ public class TrashCans implements ModInitializer {
         CHANNEL.registerMessage(PacketChangeItemFilter.class, PacketChangeItemFilter::new, PacketDirection.CLIENT_TO_SERVER, true);
         CHANNEL.registerMessage(PacketChangeLiquidFilter.class, PacketChangeLiquidFilter::new, PacketDirection.CLIENT_TO_SERVER, true);
 
+        TrashCansConfig.init();
+
         register();
         registerGenerators();
     }

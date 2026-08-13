@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.world.item.ItemStack;
 import team.reborn.energy.api.EnergyStorage;
 
@@ -59,7 +60,7 @@ public class TrashCanResourceHandlers {
         return new TrashCanEnergyHandler(entity);
     }
 
-    private static class TrashCanItemHandler implements Storage<ItemVariant> {
+    private static class TrashCanItemHandler extends SnapshotParticipant<TrashCanItemHandler.SnapShot> implements Storage<ItemVariant> {
 
         private final TrashCanBlockEntity entity;
 
@@ -75,7 +76,11 @@ public class TrashCanResourceHandlers {
         @Override
         public long insert(ItemVariant resource, long amount, TransactionContext transaction){
             StoragePreconditions.notBlankNotNegative(resource, amount);
-            return this.entity.matchesItemFilter(resource) ? amount : 0;
+            if(!this.entity.matchesItemFilter(resource))
+                return 0;
+            this.updateSnapshots(transaction);
+            this.entity.pushDeletedItem(resource.toStack((int)Math.min(amount, Integer.MAX_VALUE))); // This may discard some items, but if the amount is greater than what an int can hold, it shouldn't matter anyway
+            return amount;
         }
 
         @Override
@@ -91,6 +96,20 @@ public class TrashCanResourceHandlers {
         @Override
         public long getVersion(){
             return 0;
+        }
+
+        @Override
+        protected SnapShot createSnapshot(){
+            return new SnapShot(this.entity.getDeletedItems().toArray(new ItemStack[0]));
+        }
+
+        @Override
+        protected void readSnapshot(SnapShot snapshot){
+            assert snapshot != null;
+            this.entity.restoreDeletedItems(snapshot.deletedItems);
+        }
+
+        private record SnapShot(ItemStack[] deletedItems){
         }
     }
 
