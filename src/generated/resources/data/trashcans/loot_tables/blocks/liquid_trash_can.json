@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "trashcans:liquid_trash_can"
+          "name": "trashcans:liquid_trash_can",
+          "type": "minecraft:item"
         }
       ]
     }
