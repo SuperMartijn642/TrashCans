@@ -28,7 +28,7 @@ public class DeletedItemsList extends BaseWidget {
     private static final ResourceLocation TOGGLE_TAB = TrashCans.identifier("textures/toggle_tab.png");
     private static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("supermartijn642corelib", "textures/gui/slot.png");
 
-    private static boolean expanded;
+    public static boolean expanded;
 
     private final List<CustomSlot> slots;
     private final Supplier<List<ItemStack>> items;
