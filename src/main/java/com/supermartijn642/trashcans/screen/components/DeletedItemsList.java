@@ -25,7 +25,7 @@ public class DeletedItemsList extends BaseWidget {
 
     public static final Identifier TOGGLE_TAB = TrashCans.identifier("toggle_tab");
 
-    private static boolean expanded;
+    public static boolean expanded;
 
     private final List<CustomSlot> slots;
     private final Supplier<List<ItemStack>> items;
