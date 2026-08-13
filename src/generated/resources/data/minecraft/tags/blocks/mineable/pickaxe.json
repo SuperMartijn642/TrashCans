@@ -1,9 +1,21 @@
 {
   "replace": false,
   "values": [
-    "trashcans:ultimate_trash_can",
-    "trashcans:item_trash_can",
-    "trashcans:energy_trash_can",
-    "trashcans:liquid_trash_can"
+    {
+      "id": "trashcans:energy_trash_can",
+      "required": true
+    },
+    {
+      "id": "trashcans:item_trash_can",
+      "required": true
+    },
+    {
+      "id": "trashcans:liquid_trash_can",
+      "required": true
+    },
+    {
+      "id": "trashcans:ultimate_trash_can",
+      "required": true
+    }
   ]
 }

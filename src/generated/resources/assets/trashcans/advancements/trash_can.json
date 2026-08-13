@@ -16,23 +16,23 @@
     "hidden": false
   },
   "criteria": {
-    "has_liquid_trash_can": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "trashcans:liquid_trash_can",
-            "data": 0
-          }
-        ]
-      }
-    },
     "has_item_trash_can": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "item": "trashcans:item_trash_can",
+            "data": 0
+          }
+        ]
+      }
+    },
+    "has_liquid_trash_can": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "trashcans:liquid_trash_can",
             "data": 0
           }
         ]
