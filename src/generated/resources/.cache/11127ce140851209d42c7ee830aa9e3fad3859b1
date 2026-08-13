@@ -1,10 +1,10 @@
-// this.cache.versionId	2024-07-21T01:26:55.7001002	Core Lib Generators
+// this.cache.versionId	2026-08-13T18:20:49.4733379	Core Lib Generators
 8b48bb67b33dca55aa9cf25bb3414e566f589d6d assets\trashcans\models\item\ultimate_trash_can.json
 99fa912e9b76a513c615413fc4c19f9cb510d774 data\trashcans\loot_tables\blocks\energy_trash_can.json
 2b953aad9423dc883d37cb8ebf6da2882afafc65 data\trashcans\advancements\recipes\misc\liquid_trash_can.json
 fa7be5b7c84f4164624b98c2df64b3e83bab12b3 assets\trashcans\blockstates\ultimate_trash_can.json
 6985c53e6514f85fca385865206b519ef9387e99 data\trashcans\recipes\item_trash_can.json
-8816348df1ede015fcdee3f1071bc3aace1b9ee1 assets\trashcans\lang\en_us.json
+4fb501eeb610e9506e5e8a93f8f4183ce60b8724 assets\trashcans\lang\en_us.json
 1579c5d2491547948dcb0713f1bd3d5dd2b2d344 assets\trashcans\models\item\energy_trash_can.json
 41468c627b848b30ed3add46d42390e9cdb45266 assets\trashcans\blockstates\liquid_trash_can.json
 6f49ca62c58a62335067d908270c937a6e8b1509 assets\trashcans\blockstates\energy_trash_can.json
@@ -21,7 +21,7 @@ a45c7a91f9d62cd51f2542e1f91013cb38a7d597 data\trashcans\loot_tables\blocks\ultim
 f971054af0427ed1334267e24af665d7dcc1e52a assets\trashcans\models\item\liquid_trash_can.json
 4d56a6b21bd9897ddb362c3ff703d3a83ff021d0 data\trashcans\advancements\recipes\misc\ultimate_trash_can.json
 ace2f426e91c7b708fafc521be08a891d3b75863 data\trashcans\loot_tables\blocks\item_trash_can.json
-3ec44408d53fccc0f975de131281534177057fd2 data\minecraft\tags\blocks\mineable\pickaxe.json
+bf1c48241b42e5238a9e66c51ade64a843d66a34 data\minecraft\tags\blocks\mineable\pickaxe.json
 a73dd1510e319e36c500d123b22ad9ec404d306d data\trashcans\recipes\ultimate_trash_can.json
 1eecb213a2a31d5b98908477c50dd071e20b77b2 data\trashcans\advancements\recipes\misc\item_trash_can.json
 9403a6f933c03110621dbd7ef2ad71efc7ed04d6 assets\trashcans\models\item_trash_can.json
