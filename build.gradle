@@ -27,7 +27,12 @@ repositories {
         }
         filter { includeGroup "maven.modrinth" }
     }
-    maven { url = "https://repo.spongepowered.org/maven" }
+    exclusiveContent {
+        forRepository {
+            maven { url = "https://repo.spongepowered.org/maven" }
+        }
+        filter { includeGroup "org.spongepowered" }
+    }
 }
 
 dependencies {
@@ -57,6 +62,7 @@ processResources {
 
     // Replace the mod version
     Map<String, ?> copyProperties = project.properties.clone() as Map<String, ?>
+    copyProperties.removeAll { !(it.value instanceof String) }
     //noinspection UnnecessaryQualifiedReference
     var matcher = java.util.regex.Pattern.compile("[^.0-9]").matcher(copyProperties.mod_version as String)
     if (matcher.find())
@@ -100,6 +106,8 @@ minecraft {
         }
 
         data {
+            //noinspection GroovyAssignabilityCheck
+            parent(runs.client)
             property "--generatorModid", mod_id
             property "--output", file("src/generated/resources/")
             //noinspection GroovyAssignabilityCheck
@@ -152,6 +160,7 @@ tasks.register('prepareDataResources', Sync) {
 
     // Replace the mod version
     Map<String, ?> copyProperties = project.properties.clone() as Map<String, ?>
+    copyProperties.removeAll { !(it.value instanceof String) }
     //noinspection UnnecessaryQualifiedReference
     var matcher = java.util.regex.Pattern.compile("[^.0-9]").matcher(copyProperties.mod_version as String)
     if (matcher.find())
