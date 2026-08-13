@@ -5,12 +5,14 @@ import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.TrashCans;
+import com.supermartijn642.trashcans.TrashCansConfig;
 import com.supermartijn642.trashcans.packet.PacketChangeEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleEnergyLimit;
 import com.supermartijn642.trashcans.packet.PacketToggleItemWhitelist;
 import com.supermartijn642.trashcans.packet.PacketToggleLiquidWhitelist;
 import com.supermartijn642.trashcans.screen.components.ArrowButton;
 import com.supermartijn642.trashcans.screen.components.CheckBox;
+import com.supermartijn642.trashcans.screen.components.DeletedItemsList;
 import com.supermartijn642.trashcans.screen.components.WhitelistButton;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +39,8 @@ public class UltimateTrashCanScreen extends TrashCanScreen<UltimateTrashCanConta
     protected void addWidgets(TrashCanBlockEntity entity){
         this.itemWhitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 185, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleItemWhitelist(this.container.getBlockEntityPos()))));
         this.itemWhitelistButton.update(entity.isItemFilterWhitelist());
+        if(TrashCansConfig.retrieveDeletedItems.get())
+            this.addWidget(new DeletedItemsList(this.width(), 0, this.container.deletedItemSlots, () -> this.object.getDeletedItems()));
 
         this.liquidWhitelistButton = this.addWidget(new WhitelistButton(175, this.height() - 155, () -> TrashCans.CHANNEL.sendToServer(new PacketToggleLiquidWhitelist(this.container.getBlockEntityPos()))));
         this.liquidWhitelistButton.update(entity.isFluidFilterWhitelist());
