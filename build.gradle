@@ -158,6 +158,10 @@ tasks.register('prepareDataResources', Sync) {
     rename "^icon.png\$", "${mod_id}.png"
 }
 
+mixin {
+    disableAnnotationProcessorCheck()
+}
+
 // Run prepareDataResources before prepareRunData
 tasks.configureEach {
     if (it.name == "prepareRunData" || it.name == "prepareRunDataCompile")
