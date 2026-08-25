@@ -3,6 +3,7 @@ package com.supermartijn642.trashcans.packet;
 import com.supermartijn642.core.network.BlockEntityBasePacket;
 import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -24,7 +25,7 @@ public class PacketChangeEnergyLimit extends BlockEntityBasePacket<TrashCanBlock
     @Override
     public void write(FriendlyByteBuf buffer){
         super.write(buffer);
-        buffer.writeInt(this.amount);
+        ((ByteBuf)buffer).writeInt(this.amount);
     }
 
     @Override

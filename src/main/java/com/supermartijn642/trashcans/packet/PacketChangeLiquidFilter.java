@@ -5,6 +5,7 @@ import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.trashcans.TrashCanBlockEntity;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -24,7 +25,7 @@ public class PacketChangeLiquidFilter extends BlockEntityBasePacket<TrashCanBloc
     @Override
     public void write(FriendlyByteBuf buffer){
         super.write(buffer);
-        buffer.writeInt(this.filterSlot);
+        ((ByteBuf)buffer).writeInt(this.filterSlot);
         buffer.writeNbt(LiquidTrashCanFilters.write(this.filter));
     }
 
