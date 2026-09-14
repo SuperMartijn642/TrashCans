@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "trashcans:liquid_trash_can"
+        "recipes": "trashcans:liquid_trash_can"
       }
     },
     "recipe_condition": {

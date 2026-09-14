@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "trashcans:ultimate_trash_can"
+        "recipes": "trashcans:ultimate_trash_can"
       }
     },
     "recipe_condition": {
