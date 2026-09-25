@@ -1,5 +1,7 @@
 package com.supermartijn642.trashcans;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.TickableBlockEntity;
@@ -7,14 +9,19 @@ import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.DataComponentUtil;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -33,6 +40,33 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
     public static final int MAX_DELETED_ITEMS = 6;
+
+    /**
+     * Copy of {@link ItemStack#CODEC}, but not arbitrary limited to 99 stack size.
+     */
+    private static final Codec<ItemStack> NOT_LIMITED_ITEM_STACK_CODEC = Codec.lazyInitialized(
+        () -> RecordCodecBuilder.create(
+            app -> app.group(
+                ItemStack.ITEM_NON_AIR_CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder),
+                ExtraCodecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
+                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(ItemStack::getComponentsPatch)
+            ).apply(app, ItemStack::new)
+        )
+    );
+
+    private static Tag encodeItemStack(ItemStack stack, HolderLookup.Provider registryAccess){
+        if(stack.isEmpty())
+            return new CompoundTag();
+        return DataComponentUtil.wrapEncodingExceptions(stack, NOT_LIMITED_ITEM_STACK_CODEC, registryAccess);
+    }
+
+    private static ItemStack decodeItemStack(Tag tag, HolderLookup.Provider registryAccess){
+        if(tag.getId() == Tag.TAG_COMPOUND && ((CompoundTag)tag).isEmpty())
+            return ItemStack.EMPTY;
+        return NOT_LIMITED_ITEM_STACK_CODEC.parse(registryAccess.createSerializationContext(NbtOps.INSTANCE), tag)
+            .resultOrPartial(error -> TrashCans.LOGGER.error("Tried to load invalid item: '{}'", error))
+            .orElse(ItemStack.EMPTY);
+    }
 
     public final IItemHandler itemHandler = TrashCanResourceHandlers.createItemHandler(this);
     public final IFluidHandler fluidHandler = TrashCanResourceHandlers.createFluidHandler(this);
@@ -268,11 +302,11 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         CompoundTag tag = new CompoundTag();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                tag.put("itemFilter" + i, this.itemFilter.get(i).saveOptional(this.level.registryAccess()));
+                tag.put("itemFilter" + i, encodeItemStack(this.itemFilter.get(i), this.level.registryAccess()));
             tag.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
             ListTag deletedItems = new ListTag();
             for(ItemStack stack : this.deletedItems)
-                deletedItems.add(stack.save(this.level.registryAccess()));
+                deletedItems.add(encodeItemStack(stack, this.level.registryAccess()));
             tag.put("deletedItems", deletedItems);
         }
         if(this.liquids){
@@ -281,13 +315,13 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                     tag.put("liquidFilter" + i, LiquidTrashCanFilters.write(this.liquidFilter.get(i), this.level.registryAccess()));
             tag.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                tag.put("liquidItem", this.liquidItem.saveOptional(this.level.registryAccess()));
+                tag.put("liquidItem", encodeItemStack(this.liquidItem, this.level.registryAccess()));
         }
         if(this.energy){
             tag.putBoolean("useEnergyLimit", this.useEnergyLimit);
             tag.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                tag.put("energyItem", this.energyItem.saveOptional(this.level.registryAccess()));
+                tag.put("energyItem", encodeItemStack(this.energyItem, this.level.registryAccess()));
         }
         return tag;
     }
@@ -296,22 +330,25 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     protected void readData(CompoundTag tag){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("itemFilter" + i)) : ItemStack.EMPTY);
+                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? decodeItemStack(tag.getCompound("itemFilter" + i), CommonUtils.getRegistryAccess()) : ItemStack.EMPTY);
             this.itemFilterWhitelist = tag.contains("itemFilterWhitelist") && tag.getBoolean("itemFilterWhitelist");
             this.deletedItems.clear();
-            for(Tag t : tag.getList("deletedItems", Tag.TAG_COMPOUND))
-                ItemStack.parse(CommonUtils.getRegistryAccess(), t).ifPresent(this.deletedItems::add);
+            for(Tag t : tag.getList("deletedItems", Tag.TAG_COMPOUND)){
+                ItemStack stack = decodeItemStack(t, CommonUtils.getRegistryAccess());
+                if(!stack.isEmpty())
+                    this.deletedItems.add(stack);
+            }
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
                 this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i), CommonUtils.getRegistryAccess()) : null);
             this.liquidFilterWhitelist = tag.contains("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
-            this.liquidItem = tag.contains("liquidItem") ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("liquidItem")) : ItemStack.EMPTY;
+            this.liquidItem = tag.contains("liquidItem") ? decodeItemStack(tag.getCompound("liquidItem"), CommonUtils.getRegistryAccess()) : ItemStack.EMPTY;
         }
         if(this.energy){
             this.useEnergyLimit = tag.contains("useEnergyLimit") && tag.getBoolean("useEnergyLimit");
             this.energyLimit = tag.contains("energyLimit") ? tag.getInt("energyLimit") : DEFAULT_ENERGY_LIMIT;
-            this.energyItem = tag.contains("energyItem") ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("energyItem")) : ItemStack.EMPTY;
+            this.energyItem = tag.contains("energyItem") ? decodeItemStack(tag.getCompound("energyItem"), CommonUtils.getRegistryAccess()) : ItemStack.EMPTY;
         }
     }
 }
