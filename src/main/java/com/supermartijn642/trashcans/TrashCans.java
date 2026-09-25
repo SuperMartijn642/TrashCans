@@ -1,5 +1,6 @@
 package com.supermartijn642.trashcans;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.gui.BaseContainerType;
@@ -19,6 +20,7 @@ import com.supermartijn642.trashcans.packet.*;
 import com.supermartijn642.trashcans.screen.*;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.ResourceLocation;
+import org.slf4j.Logger;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -31,6 +33,7 @@ public class TrashCans implements ModInitializer {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
+    public static final Logger LOGGER = CommonUtils.getLogger(MODID);
     public static final PacketChannel CHANNEL = PacketChannel.create(MODID);
 
     @RegistryEntryAcceptor(namespace = MODID, identifier = "item_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
