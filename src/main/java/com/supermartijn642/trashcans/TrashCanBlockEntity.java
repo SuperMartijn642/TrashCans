@@ -1,11 +1,17 @@
 package com.supermartijn642.trashcans;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.TickableBlockEntity;
 import com.supermartijn642.trashcans.compat.Compatibility;
 import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,6 +37,20 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     public static final int DEFAULT_ENERGY_LIMIT = 10000, MAX_ENERGY_LIMIT = 10000000, MIN_ENERGY_LIMIT = 1;
     public static final int MAX_DELETED_ITEMS = 6;
+
+    /**
+     * Copy of {@link ItemStack#CODEC}, but not arbitrary limited to 99 stack size.
+     */
+    private static final Codec<ItemStack> NOT_LIMITED_ITEM_STACK_CODEC = Codec.lazyInitialized(() -> MapCodec.<ItemStack>recursive(
+        "ItemStack",
+        codec -> RecordCodecBuilder.mapCodec(
+            app -> app.group(
+                Item.CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder),
+                ExtraCodecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
+                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(p_330103_ -> null)
+            ).apply(app, ItemStack::new)
+        )
+    ).codec());
 
     public final IItemHandler itemHandler = TrashCanResourceHandlers.createItemHandler(this);
     public final IFluidHandler fluidHandler = TrashCanResourceHandlers.createFluidHandler(this);
@@ -266,9 +286,9 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
                 if(!this.itemFilter.get(i).isEmpty())
-                    output.store("itemFilter" + i, ItemStack.CODEC, this.itemFilter.get(i));
+                    output.store("itemFilter" + i, NOT_LIMITED_ITEM_STACK_CODEC, this.itemFilter.get(i));
             output.putBoolean("itemFilterWhitelist", this.itemFilterWhitelist);
-            var deletedItems = output.list("deletedItems", ItemStack.CODEC);
+            var deletedItems = output.list("deletedItems", NOT_LIMITED_ITEM_STACK_CODEC);
             for(ItemStack stack : this.deletedItems)
                 deletedItems.add(stack);
         }
@@ -278,13 +298,13 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
                     LiquidTrashCanFilters.write(this.liquidFilter.get(i), output.child("liquidFilter" + i));
             output.putBoolean("liquidFilterWhitelist", this.liquidFilterWhitelist);
             if(!this.liquidItem.isEmpty())
-                output.store("liquidItem", ItemStack.CODEC, this.liquidItem);
+                output.store("liquidItem", NOT_LIMITED_ITEM_STACK_CODEC, this.liquidItem);
         }
         if(this.energy){
             output.putBoolean("useEnergyLimit", this.useEnergyLimit);
             output.putInt("energyLimit", this.energyLimit);
             if(!this.energyItem.isEmpty())
-                output.store("energyItem", ItemStack.CODEC, this.energyItem);
+                output.store("energyItem", NOT_LIMITED_ITEM_STACK_CODEC, this.energyItem);
         }
     }
 
@@ -292,22 +312,22 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
     protected void readData(ValueInput input){
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, input.read("itemFilter" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+                this.itemFilter.set(i, input.read("itemFilter" + i, NOT_LIMITED_ITEM_STACK_CODEC).orElse(ItemStack.EMPTY));
             this.itemFilterWhitelist = input.getBooleanOr("itemFilterWhitelist", false);
             this.deletedItems.clear();
-            for(ItemStack stack : input.listOrEmpty("deletedItems", ItemStack.CODEC))
+            for(ItemStack stack : input.listOrEmpty("deletedItems", NOT_LIMITED_ITEM_STACK_CODEC))
                 this.deletedItems.add(stack);
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
                 this.liquidFilter.set(i, input.child("liquidFilter" + i).map(LiquidTrashCanFilters::read).orElse(null));
             this.liquidFilterWhitelist = input.getBooleanOr("liquidFilterWhitelist", false);
-            this.liquidItem = input.read("liquidItem", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+            this.liquidItem = input.read("liquidItem", NOT_LIMITED_ITEM_STACK_CODEC).orElse(ItemStack.EMPTY);
         }
         if(this.energy){
             this.useEnergyLimit = input.getBooleanOr("useEnergyLimit", false);
             this.energyLimit = input.getIntOr("energyLimit", DEFAULT_ENERGY_LIMIT);
-            this.energyItem = input.read("energyItem", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+            this.energyItem = input.read("energyItem", NOT_LIMITED_ITEM_STACK_CODEC).orElse(ItemStack.EMPTY);
         }
     }
 }
