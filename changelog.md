@@ -1,3 +1,7 @@
+### Trash Cans 1.1.1
+- Fixed crash due to `CustomSlot#isActive` being obfuscated
+- Fixed crash when saving deleted items with stack size of greater than 99
+
 ### Trash Cans 1.1.0
 - Added tab to retrieve up to the last 6 deleted items from the trash can screen
 - Added config option to disable retrieving deleted items
