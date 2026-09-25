@@ -1,3 +1,7 @@
+### Trash Cans 1.1.1
+- Fixed crash due to `CustomSlot#isActive` being obfuscated
+- Fixed crash when saving deleted items with stack size of greater than 99
+
 ### Trash Cans 1.1.0a
 - Added icon and banner images for new NeoForge 26.2.0.50-beta mod list
 
