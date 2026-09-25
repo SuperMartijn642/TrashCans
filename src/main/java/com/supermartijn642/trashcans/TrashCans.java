@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.slf4j.Logger;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -35,6 +36,7 @@ public class TrashCans {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
+    public static final Logger LOGGER = CommonUtils.getLogger(MODID);
     public static final PacketChannel CHANNEL = PacketChannel.create(MODID);
 
     @RegistryEntryAcceptor(namespace = MODID, identifier = "item_trash_can", registry = RegistryEntryAcceptor.Registry.BLOCKS)
