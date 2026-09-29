@@ -1,3 +1,6 @@
+### Trash Cans 1.1.1a
+- Fixed crash on Minecraft 1.20.1 when dragging fluids from JEI into trash can filters
+
 ### Trash Cans 1.1.1
 - Fixed crash due to `CustomSlot#isActive` being obfuscated
 
