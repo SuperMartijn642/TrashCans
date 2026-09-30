@@ -52,7 +52,7 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
             app -> app.group(
                 Item.CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder),
                 ExtraCodecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
-                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(p_330103_ -> null)
+                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(ItemStack::getComponentsPatch)
             ).apply(app, ItemStack::new)
         )
     ).codec());
