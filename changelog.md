@@ -1,3 +1,6 @@
+### Trash Cans 1.1.2
+- Fixed trash can screen item slot interaction sometimes decreasing wrong number of items
+
 ### Trash Cans 1.1.1
 - Fixed crash due to `CustomSlot#isActive` being obfuscated
 
