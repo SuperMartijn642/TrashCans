@@ -31,8 +31,9 @@ public class ItemTrashCanContainer extends TrashCanContainer {
                 .position(93, 25)
                 .filter(s -> this.object.matchesItemFilter(s))
                 .inserter(s -> {
+                    int count = s.getCount();
                     this.object.pushDeletedItem(s);
-                    return s.getCount();
+                    return count;
                 })
                 .canExtract(false)
                 .build().getVanillaSlot()
