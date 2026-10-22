@@ -11,6 +11,7 @@ import com.supermartijn642.trashcans.filter.ItemFilter;
 import com.supermartijn642.trashcans.filter.LiquidTrashCanFilters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -332,27 +333,28 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     @Override
     protected void readData(CompoundTag tag){
+        RegistryAccess registryAccess = this.level == null ? CommonUtils.getRegistryAccess() : this.level.registryAccess();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.getCompound("itemFilter" + i).map(t -> decodeItemStack(t, CommonUtils.getRegistryAccess())).orElse(ItemStack.EMPTY));
+                this.itemFilter.set(i, tag.getCompound("itemFilter" + i).map(t -> decodeItemStack(t, registryAccess)).orElse(ItemStack.EMPTY));
             this.itemFilterWhitelist = tag.getBooleanOr("itemFilterWhitelist", false);
             this.deletedItems.clear();
             for(Tag t : tag.getListOrEmpty("deletedItems")){
-                ItemStack stack = decodeItemStack(t, CommonUtils.getRegistryAccess());
+                ItemStack stack = decodeItemStack(t, registryAccess);
                 if(!stack.isEmpty())
                     this.deletedItems.add(stack);
             }
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.getCompound("liquidFilter" + i).map(t -> LiquidTrashCanFilters.read(t, CommonUtils.getRegistryAccess())).orElse(null));
+                this.liquidFilter.set(i, tag.getCompound("liquidFilter" + i).map(t -> LiquidTrashCanFilters.read(t, registryAccess)).orElse(null));
             this.liquidFilterWhitelist = tag.getBooleanOr("liquidFilterWhitelist", false);
-            this.liquidItem = tag.getCompound("liquidItem").map(t -> decodeItemStack(t, CommonUtils.getRegistryAccess())).orElse(ItemStack.EMPTY);
+            this.liquidItem = tag.getCompound("liquidItem").map(t -> decodeItemStack(t, registryAccess)).orElse(ItemStack.EMPTY);
         }
         if(this.energy){
             this.useEnergyLimit = tag.getBooleanOr("useEnergyLimit", false);
             this.energyLimit = tag.getIntOr("energyLimit", DEFAULT_ENERGY_LIMIT);
-            this.energyItem = tag.getCompound("energyItem").map(t -> decodeItemStack(t, CommonUtils.getRegistryAccess())).orElse(ItemStack.EMPTY);
+            this.energyItem = tag.getCompound("energyItem").map(t -> decodeItemStack(t, registryAccess)).orElse(ItemStack.EMPTY);
         }
     }
 }
