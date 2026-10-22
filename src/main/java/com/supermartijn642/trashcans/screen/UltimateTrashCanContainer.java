@@ -35,7 +35,7 @@ public class UltimateTrashCanContainer extends TrashCanContainer {
                 .position(63, 25)
                 .filter(s -> this.object.matchesItemFilter(s))
                 .inserter(s -> {
-                    this.object.pushDeletedItem(s);
+                    this.object.pushDeletedItem(s.copy());
                     return s.getCount();
                 })
                 .canExtract(false)
