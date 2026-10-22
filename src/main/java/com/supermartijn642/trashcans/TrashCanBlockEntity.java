@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -342,27 +343,28 @@ public class TrashCanBlockEntity extends BaseBlockEntity implements TickableBloc
 
     @Override
     protected void readData(CompoundTag tag){
+        RegistryAccess registryAccess = this.level == null ? CommonUtils.getRegistryAccess() : this.level.registryAccess();
         if(this.items){
             for(int i = 0; i < this.itemFilter.size(); i++)
-                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? decodeItemStack(tag.getCompound("itemFilter" + i), CommonUtils.getRegistryAccess()) : ItemStack.EMPTY);
+                this.itemFilter.set(i, tag.contains("itemFilter" + i) ? decodeItemStack(tag.getCompound("itemFilter" + i), registryAccess) : ItemStack.EMPTY);
             this.itemFilterWhitelist = tag.contains("itemFilterWhitelist") && tag.getBoolean("itemFilterWhitelist");
             this.deletedItems.clear();
             for(Tag t : tag.getList("deletedItems", Tag.TAG_COMPOUND)){
-                ItemStack stack = decodeItemStack(t, CommonUtils.getRegistryAccess());
+                ItemStack stack = decodeItemStack(t, registryAccess);
                 if(!stack.isEmpty())
                     this.deletedItems.add(stack);
             }
         }
         if(this.liquids){
             for(int i = 0; i < this.liquidFilter.size(); i++)
-                this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i), CommonUtils.getRegistryAccess()) : null);
+                this.liquidFilter.set(i, tag.contains("liquidFilter" + i) ? LiquidTrashCanFilters.read(tag.getCompound("liquidFilter" + i), registryAccess) : null);
             this.liquidFilterWhitelist = tag.contains("liquidFilterWhitelist") && tag.getBoolean("liquidFilterWhitelist");
-            this.liquidItem = tag.contains("liquidItem") ? decodeItemStack(tag.getCompound("liquidItem"), CommonUtils.getRegistryAccess()) : ItemStack.EMPTY;
+            this.liquidItem = tag.contains("liquidItem") ? decodeItemStack(tag.getCompound("liquidItem"), registryAccess) : ItemStack.EMPTY;
         }
         if(this.energy){
             this.useEnergyLimit = tag.contains("useEnergyLimit") && tag.getBoolean("useEnergyLimit");
             this.energyLimit = tag.contains("energyLimit") ? tag.getInt("energyLimit") : DEFAULT_ENERGY_LIMIT;
-            this.energyItem = tag.contains("energyItem") ? decodeItemStack(tag.getCompound("energyItem"), CommonUtils.getRegistryAccess()) : ItemStack.EMPTY;
+            this.energyItem = tag.contains("energyItem") ? decodeItemStack(tag.getCompound("energyItem"), registryAccess) : ItemStack.EMPTY;
         }
     }
 }
