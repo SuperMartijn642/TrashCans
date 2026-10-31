@@ -1,4 +1,4 @@
-// 26.1.2	2026-08-12T16:15:07.6733135	Core Lib Generators
+// 26.1.2	2026-10-31T23:56:03.8152847	Core Lib Generators
 c4355c455d9f1442b9919cd3e173c3551a2b3162 assets/minecraft/atlases/blocks.json
 042b26c8c612260c05e4df0d4dc03f0df22184ee assets/minecraft/atlases/gui.json
 6f49ca62c58a62335067d908270c937a6e8b1509 assets/trashcans/blockstates/energy_trash_can.json
@@ -19,7 +19,7 @@ df69496607d07bbad8e9debe3bfee90aed01307d data/trashcans/advancement/recipes/ener
 24d99d1430a5184dbe09b326e604c9bd4dbc113b data/trashcans/advancement/recipes/item_trash_can.json
 7f27864c6a0e9562bf07f01be2ec32a99257103e data/trashcans/advancement/recipes/liquid_trash_can.json
 9109756dd3923e486efc87d5e2e0199fe463fe9c data/trashcans/advancement/recipes/ultimate_trash_can.json
-82c3c359c517f7a0bf3b8956544c36200711a099 data/trashcans/advancement/trash_can.json
+5cb9fa1c2613654829e077124e64897978f2d543 data/trashcans/advancement/trash_can.json
 4286d27c77552d146740cc7331a83c937fa8e9fe data/trashcans/advancement/ultimate_trash_can.json
 99fa912e9b76a513c615413fc4c19f9cb510d774 data/trashcans/loot_table/blocks/energy_trash_can.json
 ace2f426e91c7b708fafc521be08a891d3b75863 data/trashcans/loot_table/blocks/item_trash_can.json
