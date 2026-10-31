@@ -1,3 +1,6 @@
+### Trash Cans 1.1.2a
+- Fixed missing texture for advancement backgrounds
+
 ### Trash Cans 1.1.2
 - Fixed trash can screen item slot interaction sometimes decreasing wrong number of items
 
